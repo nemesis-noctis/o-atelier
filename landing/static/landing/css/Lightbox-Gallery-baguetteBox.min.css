@@ -233,3 +233,16 @@ img:hover {
   border-color: rgba(108,117,125,0.19);
 }
 
+.password-recovery-container {
+  text-align: center;
+  margin-top: 6px;
+}
+
+.password-recovery-link {
+  color: #69A7FC;
+  font-size: 12px;
+}
+
+
+
+

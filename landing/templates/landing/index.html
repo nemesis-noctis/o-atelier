@@ -1,233 +1,155 @@
+{% extends "base.html" %}
 {% load static %}
 
-<!DOCTYPE html>
-<html data-bs-theme="light" lang="en" style="border-radius: 50px;background: rgb(237,245,254);">
+{% block title %}
+    O' Atelier
+{% endblock %}
 
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>O' Atelier</title>
-    <link rel="canonical" href="https://olimpium-atelier.com/">
-    <meta property="og:url" content="https://olimpium-atelier.com/">
-    <meta name="twitter:title" content="O' Atelier">
-    <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:description" content="Lírio Guinevere's Portfolio and Commissions Manager.">
-    <meta name="description" content="Lírio Guinevere's Portfolio and Commissions Manager.">
-    <meta property="og:image" content="O' Atelier.png">
-    <script type="application/ld+json">
-        {
-            "@context": "http://schema.org",
-            "@type": "WebSite",
-            "name": "O' Atelier",
-            "url": "https://olimpium-atelier.com"
-        }
-    </script>
-    <link rel="icon" type="image/png" sizes="2000x2000"
-          href="{% static "landing/img/O’ Atelier icon.png?h=89f6824d1f7405c418ef3a7e222115fb" %}">
-    <link rel="icon" type="image/png" sizes="2000x2000"
-          href="{% static "landing/img/O’ Atelier icon.png?h=89f6824d1f7405c418ef3a7e222115fb" %}">
-    <link rel="icon" type="image/png" sizes="2000x2000"
-          href="{% static "landing/img/O’ Atelier icon.png?h=89f6824d1f7405c418ef3a7e222115fb" %}">
-    <link rel="icon" type="image/png" sizes="2000x2000"
-          href="{% static "landing/img/O’ Atelier icon.png?h=89f6824d1f7405c418ef3a7e222115fb" %}">
-    <link rel="icon" type="image/png" sizes="2000x2000"
-          href="{% static "landing/img/O’ Atelier icon.png?h=89f6824d1f7405c418ef3a7e222115fb" %}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="{% static "landing/css/Abhaya Libre.css?h=ec9d10b4ecc98067da4ced3764303e5e" %}">
-    <link href="https://fonts.googleapis.com/css2?family=Fleur+De+Leah&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet"
-          href="{% static "landing/fonts/fontawesome5-overrides.min.css?h=33fe6d8f3148d10c2ff7ce3ff095dd41" %}">
-    <link rel="stylesheet" href="{% static "landing/css/bss-overrides.css?h=56f39da1bfe0d0cb9b443c76e7a55445" %}">
-    <link rel="stylesheet"
-          href="{% static "landing/css/Lightbox-Gallery-baguetteBox.min-1.css?h=3175ea2a373db4ce2aec072db96e7473" %}">
-    <link rel="stylesheet"
-          href="{% static "landing/css/Lightbox-Gallery-baguetteBox.min.css?h=469032ea778284346fc230bbba14a75a" %}">
-</head>
+{% block content %}
+    {% include "landing/include/navbar.html" %}
 
-<body style="background: #EDF5FE;">
-<nav class="navbar navbar-expand-lg fixed-top mt-0 pt-2 mb-0 pb-2 navbar">
-    <div class="container-fluid"><a class="navbar-brand align-items-center me-0 navbar-brand" href="#"><span
-            class="me-2 navbar-brand-span">O' Atelier</span></a>
-        <div class="collapse navbar-collapse navbar-collapse" id="navcol-2">
-            <ul class="navbar-nav text-end ms-auto">
-                <li class="nav-item z-1 mb-2">
-                    <div class="comms-info"><span
-                            class="d-inline d-sm-inline d-md-block d-lg-inline d-xl-inline d-xxl-block comms-status"><svg
-                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="1em" height="1em"
-                            fill="currentColor" style="width: 18px;height: 16px;margin-right: 5px;margin-bottom: 2px;"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc. -->
-                                    <path d="M256 48a208 208 0 1 1 0 416 208 208 0 1 1 0-416zm0 464A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209c9.4-9.4 9.4-24.6 0-33.9s-24.6-9.4-33.9 0l-111 111-47-47c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l64 64c9.4 9.4 24.6 9.4 33.9 0L369 209z"></path>
-                                </svg>Comms Open</span><span
-                            class="d-inline d-print-inline d-sm-inline d-md-block d-lg-inline d-xl-inline d-xxl-inline comms-slot"><svg
-                            class="bi bi-people" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
-                            fill="currentColor" viewBox="0 0 16 16" style="margin-left: 5px;">
-                                    <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1zm-7.978-1L7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002-.014.002zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4m3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0M6.936 9.28a6 6 0 0 0-1.23-.247A7 7 0 0 0 5 9c-4 0-5 3-5 4q0 1 1 1h4.216A2.24 2.24 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816M4.92 10A5.5 5.5 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0m3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4"></path>
-                                </svg>&nbsp;5 Vagas</span></div>
-                </li>
-                <li class="nav-item z-1 mb-2">
-                    <button class="btn btn-primary commission-request-btn" type="button">Pedir Commission</button>
-                </li>
-                <li class="nav-item z-1 mb-2"><a class="btn btn-primary ms-md-2 login-btn" role="button" href="#"><i
-                        class="far fa-user" style="margin-right: 8px;color: #69A7FC;"></i>Login</a></li>
-            </ul>
-        </div>
-        <button class="navbar-toggler" data-bs-target="#navcol-2" data-bs-toggle="collapse"><span
-                class="visually-hidden">Toggle navigation</span><i class="fa fa-paint-brush"
-                                                                   style="color: #69A7FC;"></i></button>
-    </div>
-</nav>
-<div class="mt-8">
-    <div class="container mw-100 mt-4 pt-4 mb-0 pb-0 py-xl-5 hero-container">
-        <div class="row gy-2">
-            <div class="col col-sm col-md-auto col-lg-auto col-xl-auto col-xxl ms-0 ps-3 pe-3 hero-columns">
-                <div class="ps-0 mx-auto profile-img-container"><img class="img-fluid profile-image" width="735"
-                                                                     height="661"
-                                                                     src="{% static "landing/img/temp-icon.jpg?h=444b7a32ef659f3ecdcd10e884bbb4e4" %}">
-                </div>
-            </div>
-            <div class="col-sm col-md col-lg col-xl col-xxl-9 ms-0 ps-3 hero-columns">
-                <div class="text-center text-sm-center text-md-center text-lg-start text-xl-start text-xxl-start d-inline-block ms-0 mt-0 pt-0 pb-0">
-                    <div class="d-inline">
-                        <h1 class="hero-h">Lírio Guinevere</h1><span class="hero-subtitle">Artista Digital&nbsp;• Ilustrador&nbsp;</span>
-                        <p class="my-3 hero-bio">Eros platea quam placerat hendrerit, sit hac magna. Pulvinar lorem ut
-                            libero hendrerit porttitor felis, ante suscipit. Leo quis elit, scelerisque quis quisque
-                            sapien ut rutrum. Arcu morbi lobortis cubilia interdum feugiat elementum, turpis class.
-                            Senectus vel auctor commodo enim, hac elementum facilisis accumsan. Pharetra ut enim erat,
-                            habitant habitasse.</p>
+    <div class="mt-8">
+        <div class="container mw-100 mt-4 pt-4 mb-0 pb-0 py-xl-5 hero-container">
+            <div class="row gy-2">
+                <div class="col col-sm col-md-auto col-lg-auto col-xl-auto col-xxl ms-0 ps-3 pe-3 hero-columns">
+                    <div class="ps-0 mx-auto profile-img-container"><img class="img-fluid profile-image" width="735"
+                                                                         height="661"
+                                                                         src="{% static "landing/img/temp-icon.jpg?h=444b7a32ef659f3ecdcd10e884bbb4e4" %}">
                     </div>
-                    <ul class="list-unstyled d-inline-block">
-                        <li class="social-network">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
-                                 fill="none" class="social-network-icon">
-                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                      d="M12 7C9.23858 7 7 9.23858 7 12C7 14.7614 9.23858 17 12 17C14.7614 17 17 14.7614 17 12C17 9.23858 14.7614 7 12 7ZM9 12C9 13.6569 10.3431 15 12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12Z"
-                                      fill="currentColor"></path>
-                                <path d="M18 5C17.4477 5 17 5.44772 17 6C17 6.55228 17.4477 7 18 7C18.5523 7 19 6.55228 19 6C19 5.44772 18.5523 5 18 5Z"
-                                      fill="currentColor"></path>
-                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                      d="M5 1C2.79086 1 1 2.79086 1 5V19C1 21.2091 2.79086 23 5 23H19C21.2091 23 23 21.2091 23 19V5C23 2.79086 21.2091 1 19 1H5ZM19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3Z"
-                                      fill="currentColor"></path>
-                            </svg>
-                            @lírio_guinevere
-                        </li>
-                        <li class="social-network">
-                            <svg class="icon icon-tabler icon-tabler-brand-twitter social-network-icon"
-                                 xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
-                                 stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
-                                 stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c0 -.249 1.51 -2.772 1.818 -4.013z"></path>
-                            </svg>
-                            @lírio_guinevere
-                        </li>
-                        <li class="social-network">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
-                                 fill="none" class="social-network-icon">
-                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                      d="M5 7H19C19.5523 7 20 7.44771 20 8V16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16V8C4 7.44772 4.44772 7 5 7ZM2 8C2 6.34315 3.34315 5 5 5H19C20.6569 5 22 6.34315 22 8V16C22 17.6569 20.6569 19 19 19H5C3.34315 19 2 17.6569 2 16V8ZM10 9L14 12L10 15V9Z"
-                                      fill="currentColor"></path>
-                            </svg>
-                            @lírio_guinevere
-                        </li>
-                        <li class="social-network">
-                            <svg class="icon icon-tabler icon-tabler-brand-tiktok social-network-icon"
-                                 xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
-                                 stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
-                                 stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path d="M21 7.917v4.034a9.948 9.948 0 0 1 -5 -1.951v4.5a6.5 6.5 0 1 1 -8 -6.326v4.326a2.5 2.5 0 1 0 4 2v-11.5h4.083a6.005 6.005 0 0 0 4.917 4.917z"></path>
-                            </svg>
-                            @lírio_guinevere
-                        </li>
-                    </ul>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-<section class="mt-0 pt-4 pb-0 py-xl-5">
-    <div class="container">
-        <div class="row mb-3">
-            <div class="col-md-8 col-xl-6 text-center mx-auto">
-                <h2 class="gallery-h">Galeria</h2>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col col-xxl">
-                <div class="mw-100 ps-0 pe-0 gallery-tag-container" style="width: 1280px;">
-                    <div class="row gy-1 gy-sm-1 gy-md-1 row-cols-2 row-cols-sm-2 row-cols-md-2 row-cols-lg-2 row-cols-xl-2">
-                        <div class="col col-sm col-md col-lg col-xl col-xxl text-center text-sm-center order-sm-first">
-                            <button class="btn btn-primary gallery-all-tag-btn" type="button">All</button>
+                <div class="col-sm col-md col-lg col-xl col-xxl-9 ms-0 ps-3 hero-columns">
+                    <div class="text-center text-sm-center text-md-center text-lg-start text-xl-start text-xxl-start d-inline-block ms-0 mt-0 pt-0 pb-0">
+                        <div class="d-inline">
+                            <h1 class="hero-h">Lírio Guinevere</h1><span class="hero-subtitle">Artista Digital&nbsp;• Ilustrador&nbsp;</span>
+                            <p class="my-3 hero-bio">Eros platea quam placerat hendrerit, sit hac magna. Pulvinar lorem
+                                ut
+                                libero hendrerit porttitor felis, ante suscipit. Leo quis elit, scelerisque quis quisque
+                                sapien ut rutrum. Arcu morbi lobortis cubilia interdum feugiat elementum, turpis class.
+                                Senectus vel auctor commodo enim, hac elementum facilisis accumsan. Pharetra ut enim
+                                erat,
+                                habitant habitasse.</p>
                         </div>
-                        <div class="col col-sm col-md col-lg col-xl col-xxl text-center text-sm-center">
-                            <button class="btn btn-primary gallery-tag" type="button">Character</button>
-                        </div>
-                        <div class="col col-sm col-md col-lg col-xl col-xxl text-center text-sm-center">
-                            <button class="btn btn-primary gallery-tag" type="button">Icon</button>
-                        </div>
-                        <div class="col col-sm col-md col-lg col-xl col-xxl text-center text-sm-center">
-                            <button class="btn btn-primary gallery-tag" type="button">Creatures</button>
-                        </div>
-                        <div class="col col-sm col-md col-lg col-xl col-xxl text-center text-sm-center">
-                            <button class="btn btn-primary gallery-tag" type="button">Fanart</button>
-                        </div>
-                        <div class="col col-sm col-md col-lg col-xl col-xxl text-center text-sm-center">
-                            <button class="btn btn-primary gallery-tag" type="button">Landscape</button>
-                        </div>
-                        <div class="col col-sm col-md col-lg col-xl col-xxl text-center text-sm-center">
-                            <button class="btn btn-primary gallery-tag" type="button">Concept</button>
-                        </div>
-                        <div class="col col-sm col-md col-lg col-xl col-xxl text-center text-sm-center">
-                            <button class="btn btn-primary gallery-tag" type="button">Webtoon</button>
-                        </div>
-                        <div class="col col-sm col-md col-lg col-xl col-xxl text-center text-sm-center">
-                            <button class="btn btn-primary gallery-tag" type="button">Buildings</button>
-                        </div>
-                        <div class="col col-sm col-md col-lg col-xl col-xxl text-center text-sm-center">
-                            <button class="btn btn-primary gallery-tag" type="button">Objects</button>
-                        </div>
+                        <ul class="list-unstyled d-inline-block">
+                            <li class="social-network">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
+                                     fill="none" class="social-network-icon">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                          d="M12 7C9.23858 7 7 9.23858 7 12C7 14.7614 9.23858 17 12 17C14.7614 17 17 14.7614 17 12C17 9.23858 14.7614 7 12 7ZM9 12C9 13.6569 10.3431 15 12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12Z"
+                                          fill="currentColor"></path>
+                                    <path d="M18 5C17.4477 5 17 5.44772 17 6C17 6.55228 17.4477 7 18 7C18.5523 7 19 6.55228 19 6C19 5.44772 18.5523 5 18 5Z"
+                                          fill="currentColor"></path>
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                          d="M5 1C2.79086 1 1 2.79086 1 5V19C1 21.2091 2.79086 23 5 23H19C21.2091 23 23 21.2091 23 19V5C23 2.79086 21.2091 1 19 1H5ZM19 3H5C3.89543 3 3 3.89543 3 5V19C3 20.1046 3.89543 21 5 21H19C20.1046 21 21 20.1046 21 19V5C21 3.89543 20.1046 3 19 3Z"
+                                          fill="currentColor"></path>
+                                </svg>
+                                @lírio_guinevere
+                            </li>
+                            <li class="social-network">
+                                <svg class="icon icon-tabler icon-tabler-brand-twitter social-network-icon"
+                                     xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
+                                     stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                                     stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M22 4.01c-1 .49 -1.98 .689 -3 .99c-1.121 -1.265 -2.783 -1.335 -4.38 -.737s-2.643 2.06 -2.62 3.737v1c-3.245 .083 -6.135 -1.395 -8 -4c0 0 -4.182 7.433 4 11c-1.872 1.247 -3.739 2.088 -6 2c3.308 1.803 6.913 2.423 10.034 1.517c3.58 -1.04 6.522 -3.723 7.651 -7.742a13.84 13.84 0 0 0 .497 -3.753c0 -.249 1.51 -2.772 1.818 -4.013z"></path>
+                                </svg>
+                                @lírio_guinevere
+                            </li>
+                            <li class="social-network">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
+                                     fill="none" class="social-network-icon">
+                                    <path fill-rule="evenodd" clip-rule="evenodd"
+                                          d="M5 7H19C19.5523 7 20 7.44771 20 8V16C20 16.5523 19.5523 17 19 17H5C4.44772 17 4 16.5523 4 16V8C4 7.44772 4.44772 7 5 7ZM2 8C2 6.34315 3.34315 5 5 5H19C20.6569 5 22 6.34315 22 8V16C22 17.6569 20.6569 19 19 19H5C3.34315 19 2 17.6569 2 16V8ZM10 9L14 12L10 15V9Z"
+                                          fill="currentColor"></path>
+                                </svg>
+                                @lírio_guinevere
+                            </li>
+                            <li class="social-network">
+                                <svg class="icon icon-tabler icon-tabler-brand-tiktok social-network-icon"
+                                     xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
+                                     stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round"
+                                     stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M21 7.917v4.034a9.948 9.948 0 0 1 -5 -1.951v4.5a6.5 6.5 0 1 1 -8 -6.326v4.326a2.5 2.5 0 1 0 4 2v-11.5h4.083a6.005 6.005 0 0 0 4.917 4.917z"></path>
+                                </svg>
+                                @lírio_guinevere
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row gx-2 gy-2 row-cols-1 row-cols-md-2 row-cols-xl-3 mt-4" data-bss-baguettebox="">
-            <div class="col"><a href="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"><img class="img-fluid"
-                                                                                                     src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"></a>
+    </div>
+    <section class="mt-0 pt-4 pb-0 py-xl-5">
+        <div class="container">
+            <div class="row mb-3">
+                <div class="col-md-8 col-xl-6 text-center mx-auto">
+                    <h2 class="gallery-h">Galeria</h2>
+                </div>
             </div>
-            <div class="col"><a href="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"><img class="img-fluid"
-                                                                                                     src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"></a>
+            <div class="row">
+                <div class="col col-xxl">
+                    <div class="mw-100 ps-0 pe-0 gallery-tag-container" style="width: 1280px;">
+                        <div class="row gy-1 gy-sm-1 gy-md-1 row-cols-2 row-cols-sm-2 row-cols-md-2 row-cols-lg-2 row-cols-xl-2">
+                            <div class="col col-sm col-md col-lg col-xl col-xxl text-center text-sm-center order-sm-first">
+                                <button class="btn btn-primary gallery-all-tag-btn" type="button">All</button>
+                            </div>
+                            <div class="col col-sm col-md col-lg col-xl col-xxl text-center text-sm-center">
+                                <button class="btn btn-primary gallery-tag" type="button">Character</button>
+                            </div>
+                            <div class="col col-sm col-md col-lg col-xl col-xxl text-center text-sm-center">
+                                <button class="btn btn-primary gallery-tag" type="button">Icon</button>
+                            </div>
+                            <div class="col col-sm col-md col-lg col-xl col-xxl text-center text-sm-center">
+                                <button class="btn btn-primary gallery-tag" type="button">Creatures</button>
+                            </div>
+                            <div class="col col-sm col-md col-lg col-xl col-xxl text-center text-sm-center">
+                                <button class="btn btn-primary gallery-tag" type="button">Fanart</button>
+                            </div>
+                            <div class="col col-sm col-md col-lg col-xl col-xxl text-center text-sm-center">
+                                <button class="btn btn-primary gallery-tag" type="button">Landscape</button>
+                            </div>
+                            <div class="col col-sm col-md col-lg col-xl col-xxl text-center text-sm-center">
+                                <button class="btn btn-primary gallery-tag" type="button">Concept</button>
+                            </div>
+                            <div class="col col-sm col-md col-lg col-xl col-xxl text-center text-sm-center">
+                                <button class="btn btn-primary gallery-tag" type="button">Webtoon</button>
+                            </div>
+                            <div class="col col-sm col-md col-lg col-xl col-xxl text-center text-sm-center">
+                                <button class="btn btn-primary gallery-tag" type="button">Buildings</button>
+                            </div>
+                            <div class="col col-sm col-md col-lg col-xl col-xxl text-center text-sm-center">
+                                <button class="btn btn-primary gallery-tag" type="button">Objects</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="col"><a href="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"><img class="img-fluid"
-                                                                                                     src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"></a>
-            </div>
-            <div class="col"><a href="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"><img class="img-fluid"
-                                                                                                     src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"></a>
-            </div>
-            <div class="col"><a href="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"><img class="img-fluid"
-                                                                                                     src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"></a>
-            </div>
-            <div class="col"><a href="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"><img class="img-fluid"
-                                                                                                     src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"></a>
+            <div class="row gx-2 gy-2 row-cols-1 row-cols-md-2 row-cols-xl-3 mt-4" data-bss-baguettebox="">
+                <div class="col"><a href="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"><img
+                        class="img-fluid"
+                        src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"></a>
+                </div>
+                <div class="col"><a href="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"><img
+                        class="img-fluid"
+                        src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"></a>
+                </div>
+                <div class="col"><a href="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"><img
+                        class="img-fluid"
+                        src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"></a>
+                </div>
+                <div class="col"><a href="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"><img
+                        class="img-fluid"
+                        src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"></a>
+                </div>
+                <div class="col"><a href="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"><img
+                        class="img-fluid"
+                        src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"></a>
+                </div>
+                <div class="col"><a href="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"><img
+                        class="img-fluid"
+                        src="https://cdn.bootstrapstudio.io/placeholders/1400x800.png"></a>
+                </div>
             </div>
         </div>
-    </div>
-</section>
-<footer class="text-center mt-0 mb-0 py-4" style="height: 50px;">
-    <div class="container">
-        <div class="row row-cols-1 row-cols-lg-3">
-            <div class="col col-sm col-md col-lg col-xl col-xxl">
-                <p class="footer-content">&nbsp;© 2026 O'Atelier&nbsp;• Lírio Guinevere&nbsp;• Todos os direitos
-                    reservados</p>
-            </div>
-        </div>
-    </div>
-</footer>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-<script src="{% static "landing/js/Lightbox-Gallery-baguetteBox.min.js?h=add865daffd8b6e10264279f48d8ac50" %}"></script>
-<script src="{% static "landing/js/Lightbox-Gallery.js?h=64eb55ccbc6ead5e91ebe308caacba6e" %}"></script>
-</body>
-
-</html>
+    </section>
+{% endblock %}
