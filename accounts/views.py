@@ -5,7 +5,18 @@ from django.shortcuts import render, redirect
 from .forms import RegisterForm, LoginForm
 
 
-# Create your views here.
+def redirect_if_logged(func):
+    def wrapper(request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect("landing-page")
+        return func(request, *args, **kwargs)
+
+    return wrapper
+
+    # Create your views here.
+
+
+@redirect_if_logged
 def login(request):
     if request.method == "POST":
         form = LoginForm(request, request.POST)
@@ -21,6 +32,7 @@ def login(request):
     return render(request, "accounts/login.html", context={"form": form})
 
 
+@redirect_if_logged
 def register(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)

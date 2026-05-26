@@ -6,15 +6,16 @@
 {% endblock %}
 
 {% block content %}
-    {% include "landing/include/../../../templates/include/navbar.html" %}
+    {% include "include/navbar.html" %}
 
     <div class="mt-8">
         <div class="container mw-100 mt-4 pt-4 mb-0 pb-0 py-xl-5 hero-container">
             <div class="row gy-2">
                 <div class="col col-sm col-md-auto col-lg-auto col-xl-auto col-xxl ms-0 ps-3 pe-3 hero-columns">
-                    <div class="ps-0 mx-auto profile-img-container"><img class="img-fluid profile-image" width="735"
-                                                                         height="661"
-                                                                         src="{% static "landing/img/temp-icon.jpg?h=444b7a32ef659f3ecdcd10e884bbb4e4" %}">
+                    <div class="ps-0 mx-auto profile-img-container">
+                        <img class="img-fluid profile-image" width="735"
+                             height="661"
+                             src="{% static "landing/img/temp-icon.jpg?h=444b7a32ef659f3ecdcd10e884bbb4e4" %}">
                     </div>
                 </div>
                 <div class="col-sm col-md col-lg col-xl col-xxl-9 ms-0 ps-3 hero-columns">
