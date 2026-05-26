@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Login
+{% endblock %}
+
+{% block content %}
+
+    {% include "include/navbar.html" %}
+    <section class="position-relative py-4 py-xl-5 login-register-form-section">
+        <div class="container">
+            <div class="row mt-8 mb-3">
+                <div class="col-md-8 col-xl-6 text-center mx-auto">
+                    <h2 class="display-6 mb-1 login-register-h">Bem-Vindo(a) de Volta</h2>
+
+                    {% if messages %}
+                        {% for message in messages %}
+                            <p class="login-register-subtitle" style="color: #029c1c">{{ message }}</p>
+                        {% endfor %}
+
+                    {% else %}
+                        <p class="login-register-subtitle">Entre na sua conta para continuar</p>
+                    {% endif %}
+
+                </div>
+            </div>
+            <div class="row d-flex justify-content-center">
+                <div class="col-md-6 col-xl-4">
+                    <div class="card mb-5 login-register-card">
+                        <div class="card-body d-flex flex-column align-items-center">
+                            <form class="text-center" method="post" novalidate>
+                                {% csrf_token %}
+                                <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
+                                    <label class="form-label login-register-labels">Nome de Usuário</label>
+                                    {{ form.username }}
+                                    {{ form.errors.username }}
+                                </div>
+                                <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
+                                    <label class="form-label login-register-labels">Senha</label>
+                                    {{ form.password }}
+                                    {{ form.errors.password }}
+                                    <div class="password-recovery-container">
+                                        <a href="#" class="password-recovery-link">
+                                            Esqueci minha senha
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <button class="btn btn-primary w-100 d-block login-register-btn" type="submit">
+                                        Login
+                                    </button>
+                                </div>
+                                <p class="text-muted form-redirect-text">
+                                    Não tem uma conta?
+                                    <a href="{% url "register" %}" class="login-register-link">
+                                        Criar Conta
+                                    </a>
+                                </p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
