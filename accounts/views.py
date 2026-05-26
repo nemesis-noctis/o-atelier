@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth import login as login_user
 from django.shortcuts import render, redirect
 
 from .forms import RegisterForm, LoginForm
@@ -6,7 +7,17 @@ from .forms import RegisterForm, LoginForm
 
 # Create your views here.
 def login(request):
-    form = LoginForm()
+    if request.method == "POST":
+        form = LoginForm(request, request.POST)
+        if form.is_valid():
+            login_user(request, form.get_user())
+            return redirect("landing-page")
+
+        else:
+            messages.error(request, "Email ou senha inválidos.")
+            return render(request, "accounts/login.html", context={"form": form})
+
+    form = LoginForm(request)
     return render(request, "accounts/login.html", context={"form": form})
 
 

@@ -15,7 +15,11 @@
 
                     {% if messages %}
                         {% for message in messages %}
-                            <p class="login-register-subtitle" style="color: #029c1c">{{ message }}</p>
+                            {% if message.level == "success" %}
+                                <p class="login-register-subtitle" style="color: #029c1c">{{ message }}</p>
+                            {% else %}
+                                <p class="login-register-subtitle" style="color: #dc3343">{{ message }}</p>
+                            {% endif %}
                         {% endfor %}
 
                     {% else %}
@@ -39,6 +43,7 @@
                                     <label class="form-label login-register-labels">Senha</label>
                                     {{ form.password }}
                                     {{ form.errors.password }}
+                                    {{ forms.non_field_errors }}
                                     <div class="password-recovery-container">
                                         <a href="#" class="password-recovery-link">
                                             Esqueci minha senha
