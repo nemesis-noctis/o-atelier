@@ -243,6 +243,19 @@ img:hover {
   font-size: 12px;
 }
 
+.errorlist {
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  color: var(--bs-form-invalid-color);
+  font-size: 12px;
+  list-style: none;
+}
+
+.errorlist li {
+  margin-top: 4px;
+}
+
 
 
 

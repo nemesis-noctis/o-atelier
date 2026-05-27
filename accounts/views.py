@@ -1,3 +1,68 @@
-from django.shortcuts import render
+import os
+
+from django.conf import settings
+from django.contrib import messages
+from django.contrib.auth import login as login_user
+from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, PasswordResetDoneView, \
+    PasswordResetCompleteView
+from django.shortcuts import render, redirect
+from dotenv import load_dotenv
+
+from core.utils import redirect_if_logged
+from .forms import RegisterForm, LoginForm, RecoverPasswordEmailForm, NewPasswordForm
+
+load_dotenv(settings.BASE_DIR / ".env")
+
 
 # Create your views here.
+
+
+@redirect_if_logged
+def login(request):
+    if request.method == "POST":
+        form = LoginForm(request, request.POST)
+        if form.is_valid():
+            login_user(request, form.get_user())
+            return redirect("landing-page")
+
+        else:
+            messages.error(request, "Email ou senha inválidos.")
+            return render(request, "accounts/login.html", context={"form": form})
+
+    form = LoginForm(request)
+    return render(request, "accounts/login.html", context={"form": form})
+
+
+@redirect_if_logged
+def register(request):
+    if request.method == "POST":
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Sua conta foi criada com sucesso, prossiga com o login.")
+            return redirect("login")
+        else:
+            return render(request, "accounts/register.html", context={"form": form})
+
+    form = RegisterForm()
+    return render(request, "accounts/register.html", context={"form": form})
+
+
+class PasswordRecoverView(PasswordResetView):
+    template_name = "accounts/password_reset.html"
+    email_template_name = "accounts/emails/password_reset_email.txt"
+    from_email = os.getenv("EMAIL_HOST")
+    form_class = RecoverPasswordEmailForm
+
+
+class PasswordRecoveryConfirmView(PasswordResetConfirmView):
+    template_name = "accounts/password_reset_confirm.html"
+    form_class = NewPasswordForm
+
+
+class PasswordRecoveryDoneView(PasswordResetDoneView):
+    template_name = "accounts/password_reset_done.html"
+
+
+class PasswordRecoveryCompleteView(PasswordResetCompleteView):
+    template_name = "accounts/password_reset_complete.html"
