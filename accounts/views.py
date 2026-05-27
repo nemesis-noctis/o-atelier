@@ -1,8 +1,16 @@
+import os
+
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as login_user
+from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, PasswordResetDoneView, \
+    PasswordResetCompleteView
 from django.shortcuts import render, redirect
+from dotenv import load_dotenv
 
-from .forms import RegisterForm, LoginForm
+from .forms import RegisterForm, LoginForm, RecoverPasswordEmailForm, NewPasswordForm
+
+load_dotenv(settings.BASE_DIR / ".env")
 
 
 def redirect_if_logged(func):
@@ -45,3 +53,23 @@ def register(request):
 
     form = RegisterForm()
     return render(request, "accounts/register.html", context={"form": form})
+
+
+class PasswordRecoverView(PasswordResetView):
+    template_name = "accounts/password_reset.html"
+    email_template_name = "accounts/emails/password_reset_email.txt"
+    from_email = os.getenv("EMAIL_HOST")
+    form_class = RecoverPasswordEmailForm
+
+
+class PasswordRecoveryConfirmView(PasswordResetConfirmView):
+    template_name = "accounts/password_reset_confirm.html"
+    form_class = NewPasswordForm
+
+
+class PasswordRecoveryDoneView(PasswordResetDoneView):
+    template_name = "accounts/password_reset_done.html"
+
+
+class PasswordRecoveryCompleteView(PasswordResetCompleteView):
+    template_name = "accounts/password_reset_complete.html"

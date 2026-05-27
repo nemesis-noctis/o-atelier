@@ -45,7 +45,7 @@
                                     {{ form.errors.password }}
                                     {{ forms.non_field_errors }}
                                     <div class="password-recovery-container">
-                                        <a href="#" class="password-recovery-link">
+                                        <a href="{% url "password-reset" %}" class="password-recovery-link">
                                             Esqueci minha senha
                                         </a>
                                     </div>
