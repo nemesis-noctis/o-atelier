@@ -8,20 +8,13 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmVie
 from django.shortcuts import render, redirect
 from dotenv import load_dotenv
 
+from core.utils import redirect_if_logged
 from .forms import RegisterForm, LoginForm, RecoverPasswordEmailForm, NewPasswordForm
 
 load_dotenv(settings.BASE_DIR / ".env")
 
 
-def redirect_if_logged(func):
-    def wrapper(request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return redirect("landing-page")
-        return func(request, *args, **kwargs)
-
-    return wrapper
-
-    # Create your views here.
+# Create your views here.
 
 
 @redirect_if_logged
