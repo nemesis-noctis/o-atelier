@@ -13,3 +13,13 @@ class LandingPage(models.Model):
     slots = models.IntegerField()
     comms_status = models.BooleanField()
     bio = models.TextField()
+
+
+class GalleryTag(models.Model):
+    tag = models.CharField(max_length=18)
+
+
+class GalleryImage(models.Model):
+    title = models.CharField(max_length=24, blank=True)
+    image = models.ImageField(upload_to="landing/gallery")
+    tag = models.ForeignKey(GalleryTag, on_delete=models.CASCADE)
