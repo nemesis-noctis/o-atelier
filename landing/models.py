@@ -14,12 +14,21 @@ class LandingPage(models.Model):
     comms_status = models.BooleanField()
     bio = models.TextField()
 
+    def __str__(self):
+        return "landing_page_info"
+
 
 class GalleryTag(models.Model):
     tag = models.CharField(max_length=18)
+
+    def __str__(self):
+        return self.tag
 
 
 class GalleryImage(models.Model):
     title = models.CharField(max_length=24, blank=True)
     image = models.ImageField(upload_to="landing/gallery")
     tag = models.ForeignKey(GalleryTag, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.title} - {self.tag}"
