@@ -118,6 +118,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
+MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = "/media/"
 AUTH_USER_MODEL = "accounts.CustomUser"
 
 load_dotenv(".env")
