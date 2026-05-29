@@ -9,7 +9,7 @@ def index(request):
     gallery_tags = GalleryTag.objects.all()
     gallery_images = GalleryImage.objects.all()
     context = {
-        "data": get_landing_data(),
+        "landing_data": get_landing_data(),
         "gallery_tags": gallery_tags,
         "gallery_images": gallery_images
     }
