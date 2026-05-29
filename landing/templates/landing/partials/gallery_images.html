@@ -1,0 +1,11 @@
+{% for image in gallery_images %}
+    <div class="col">
+
+        <a href="{{ image.image.url }}">
+            <img style="object-fit: cover; width: 100%; height: 100%"
+                 class="img-fluid"
+                 src="{{ image.image.url }}"
+                 alt="{{ image.title }}">
+        </a>
+    </div>
+{% endfor %}
