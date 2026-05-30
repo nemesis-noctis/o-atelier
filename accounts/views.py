@@ -16,6 +16,9 @@ load_dotenv(settings.BASE_DIR / ".env")
 
 # Create your views here.
 
+def user_profile(request, username):
+    return render(request, "accounts/client_profile.html")
+
 
 @redirect_if_logged
 def login(request):

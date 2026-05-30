@@ -9,5 +9,6 @@ urlpatterns = [
     path("password-recovery-confirm/<uidb64>/<token>", views.PasswordRecoveryConfirmView.as_view(),
          name="password_reset_confirm"),
     path("password-recovery-done", views.PasswordRecoveryDoneView.as_view(), name="password_reset_done"),
-    path("password-recovery-complete", views.PasswordRecoveryCompleteView.as_view(), name="password_reset_complete")
+    path("password-recovery-complete", views.PasswordRecoveryCompleteView.as_view(), name="password_reset_complete"),
+    path("<str:username>", views.user_profile, name="user_profile"),
 ]
