@@ -2,7 +2,8 @@ import os
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import login as login_user
+from django.contrib.auth import login as login_user, logout as logout_user
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, PasswordResetDoneView, \
     PasswordResetCompleteView
 from django.shortcuts import render, redirect
@@ -16,8 +17,13 @@ load_dotenv(settings.BASE_DIR / ".env")
 
 # Create your views here.
 
-def user_profile(request, username):
-    return render(request, "accounts/client_profile.html")
+@login_required
+def user_profile(request):
+    return render(request, "accounts/clients/client_profile.html", context={"landing_data": get_landing_data()})
+
+
+def change_account_data_view(request):
+    return render(request, "accounts/clients/partials/change_account_data.html")
 
 
 @redirect_if_logged
@@ -49,6 +55,11 @@ def register(request):
 
     form = RegisterForm()
     return render(request, "accounts/register.html", context={"form": form, "landing_data": get_landing_data()})
+
+
+def logout(request):
+    logout_user(request)
+    return redirect("landing-page")
 
 
 class PasswordRecoverView(PasswordResetView):
