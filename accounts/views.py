@@ -24,7 +24,7 @@ def user_profile(request):
 
 def change_account_data_view(request):
     if request.method == "POST":
-        form = forms.EditAccountInfoForm(request, request.POST)
+        form = forms.EditAccountInfoForm(request.user, request.POST)
         if form.is_valid():
             ...
 
