@@ -4,9 +4,12 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as login_user, logout as logout_user, authenticate
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, PasswordResetDoneView, \
     PasswordResetCompleteView
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
+from django.views import View
 from dotenv import load_dotenv
 
 import accounts.forms as forms
@@ -22,8 +25,10 @@ def user_profile(request):
     return render(request, "accounts/clients/client_profile.html", context={"landing_data": get_landing_data()})
 
 
-def change_account_data_view(request):
-    if request.method == "POST":
+class ChangeAccountDataView(LoginRequiredMixin, View):
+    login_url = reverse_lazy("login")
+
+    def post(self, request):
         post_data = request.POST.copy()
 
         user_current_info = {
@@ -37,6 +42,7 @@ def change_account_data_view(request):
                 post_data[key] = value
 
         post_data["new_password2"] = post_data.get("new_password1", "")
+
         form = forms.EditAccountDataForm(request.user, post_data)
         if form.is_valid():
             data = form.cleaned_data
@@ -55,13 +61,10 @@ def change_account_data_view(request):
             print(form.cleaned_data)
             return render(request, "accounts/clients/partials/change_account_data.html", context={"form": form})
 
-    form = forms.EditAccountDataForm(user=request.user,
-                                     initial={
-                                         "username": request.user.username,
-                                         "email": request.user.email
-                                     }
-                                     )
-    return render(request, "accounts/clients/partials/change_account_data.html", context={"form": form})
+    def get(self, request):
+        form = forms.EditAccountDataForm(user=request.user,
+                                         initial={"username": request.user.username, "email": request.user.email})
+        return render(request, "accounts/clients/partials/change_account_data.html", context={"form": form})
 
 
 @redirect_if_logged

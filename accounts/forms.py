@@ -50,7 +50,7 @@ class NewPasswordForm(SetPasswordForm):
 
 class EditAccountDataForm(PasswordChangeForm):
     email = forms.EmailField(required=False)
-    username = forms.CharField(max_length=150, validators=[UnicodeUsernameValidator()])
+    username = forms.CharField(required=False, max_length=150, validators=[UnicodeUsernameValidator()])
 
     class Meta:
         models = get_user_model()
