@@ -11,6 +11,6 @@ urlpatterns = [
          name="password_reset_confirm"),
     path("password-recovery-done", views.PasswordRecoveryDoneView.as_view(), name="password_reset_done"),
     path("password-recovery-complete", views.PasswordRecoveryCompleteView.as_view(), name="password_reset_complete"),
-    path("change-account-data", views.change_account_data_view, name="change_account_data"),
+    path("change-account-data", views.ChangeAccountDataView.as_view(), name="change_account_data"),
     path("profile", views.user_profile, name="user_profile"),
 ]

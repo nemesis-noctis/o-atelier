@@ -15,5 +15,6 @@ def redirect_if_logged(func):
 
 
 def get_landing_data():
+    """Get landing page and navbar data from db."""
     data = LandingPage.objects.all()[0]
     return data
