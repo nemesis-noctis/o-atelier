@@ -16,28 +16,45 @@
     </div>
     <div class="mt-3">
         <div style="width: 300px;margin-right: auto;margin-left: auto;">
-            <form class="text-center" method="post">
+            <form id="change-data-form" hx-post="{% url "change_account_data" %}"
+                  hx-trigger="submit"
+                  hx-target="#content"
+                  hx-swap="innerHTML"
+                  class="text-center"
+                  method="post"
+                  novalidate>
+                {% csrf_token %}
                 <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
-                    <label class="form-label login-register-labels">Alterar nome de
-                        usuário:</label><input class="form-control login-register-inputs"
-                                               type="text"
-                                               name="username"></div>
-                <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
-                    <label class="form-label login-register-labels">Alterar email:</label><input
-                        class="form-control login-register-inputs" type="email" name="email">
-                    <div class="password-recovery-container"></div>
+                    <label class="form-label login-register-labels">
+                        Alterar nome de usuário:
+                    </label>
+                    {{ form.username }}
+                    {{ form.errors.username }}
                 </div>
                 <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
-                    <label class="form-label login-register-labels">Alterar senha:</label><input
-                        class="form-control login-register-inputs" type="password" name="password">
-                    <div class="password-recovery-container"></div>
+                    <label class="form-label login-register-labels">
+                        Alterar email:
+                    </label>
+                    {{ form.email }}
+                    {{ form.errors.email }}
+
+                </div>
+                <span style="font-size: 11px" class="hero-subtitle">Caso não deseje alterar sua senha, insira sua senha atual.</span>
+                <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
+                    <label class="form-label login-register-labels">
+                        Alterar senha:
+                    </label>
+                    {{ form.new_password1 }}
+                    {{ form.errors.new_password1 }}
+
                 </div>
                 <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
-                    <label class="form-label login-register-labels">Insira sua senha atual abaixo
-                        para
-                        confirmar as alterações:</label><input
-                        class="form-control login-register-inputs" type="password" name="password">
-                    <div class="password-recovery-container"></div>
+                    <label class="form-label login-register-labels">
+                        Confirmar senha:
+                    </label>
+                    {{ form.new_password2 }}
+                    {{ form.errors.new_password2 }}
+
                 </div>
                 <div class="mb-3">
                     <button class="btn btn-primary w-100 d-block login-register-btn" type="submit">
