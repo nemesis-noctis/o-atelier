@@ -7,11 +7,18 @@
             {{ user.username }}
         </h1>
 
-        {% if user.email != "" %}
-            <span class="hero-subtitle">{{ user.email }}</span>
+        {% if messages %}
+            {% for message in messages %}
+                <span class="hero-subtitle" style="color: #029c1c">{{ message }}</span>
+            {% endfor %}
         {% else %}
-            <span class="hero-subtitle">Esta conta não possui um email.</span>
+            {% if user.email != "" %}
+                <span class="hero-subtitle">{{ user.email }}</span>
+            {% else %}
+                <span class="hero-subtitle">Esta conta não possui um email.</span>
+            {% endif %}
         {% endif %}
+
 
     </div>
     <div class="mt-3">
@@ -39,7 +46,8 @@
                     {{ form.errors.email }}
 
                 </div>
-                <span style="font-size: 11px" class="hero-subtitle">Caso não deseje alterar sua senha, insira sua senha atual.</span>
+                <span style="font-size: 11px"
+                      class="hero-subtitle">Deixe em branco caso não deseje alterar sua senha.</span>
                 <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
                     <label class="form-label login-register-labels">
                         Alterar senha:
@@ -50,10 +58,10 @@
                 </div>
                 <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
                     <label class="form-label login-register-labels">
-                        Confirmar senha:
+                        Digite sua senha atual:
                     </label>
-                    {{ form.new_password2 }}
-                    {{ form.errors.new_password2 }}
+                    {{ form.old_password }}
+                    {{ form.errors.old_password }}
 
                 </div>
                 <div class="mb-3">

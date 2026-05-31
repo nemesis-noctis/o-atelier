@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm, SetPasswordForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm, SetPasswordForm, \
+    PasswordChangeForm
 from django.contrib.auth.validators import UnicodeUsernameValidator
 
 
@@ -47,13 +48,12 @@ class NewPasswordForm(SetPasswordForm):
         set_fields_classes(self.fields.values())
 
 
-class EditAccountInfoForm(SetPasswordForm):
+class EditAccountDataForm(PasswordChangeForm):
     email = forms.EmailField(required=False)
     username = forms.CharField(max_length=150, validators=[UnicodeUsernameValidator()])
 
     class Meta:
         models = get_user_model()
-        fields = ("email", "username", "new_password1", "new_password2")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -63,9 +63,11 @@ class EditAccountInfoForm(SetPasswordForm):
         entered_username = self.cleaned_data["username"]
         if get_user_model().objects.filter(username=entered_username).exclude(pk=self.user.pk).exists():
             raise (forms.ValidationError("O nome de usuário já existe."))
+        return entered_username
 
     def clean_email(self):
         entered_email = self.cleaned_data["email"]
         if get_user_model().objects.filter(email=entered_email, is_active=False).exclude(
                 pk=self.user.pk).exists():
             raise (forms.ValidationError("Este email foi bloqueado e não pode mais ser usado."))
+        return entered_email
