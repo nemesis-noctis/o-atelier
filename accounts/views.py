@@ -22,7 +22,11 @@ load_dotenv(settings.BASE_DIR / ".env")
 
 @login_required
 def user_profile(request):
-    return render(request, "accounts/clients/client_profile.html", context={"landing_data": get_landing_data()})
+    if request.user.is_superuser == True:
+        return render(request, "accounts/artist/artist_profile.html", context={"landing_data": get_landing_data()})
+
+    else:
+        return render(request, "accounts/clients/client_profile.html", context={"landing_data": get_landing_data()})
 
 
 class ChangeAccountDataView(LoginRequiredMixin, View):
@@ -55,16 +59,19 @@ class ChangeAccountDataView(LoginRequiredMixin, View):
             login_user(request, user)
 
             messages.success(request, "Dados alterados com sucesso.")
-            return render(request, "accounts/clients/partials/change_account_data.html", context={"form": form})
+            return render(request, "accounts/partials/change_account_data.html",
+                          context={"form": form})
 
         else:
             print(form.cleaned_data)
-            return render(request, "accounts/clients/partials/change_account_data.html", context={"form": form})
+            return render(request, "accounts/partials/change_account_data.html",
+                          context={"form": form})
 
     def get(self, request):
         form = forms.EditAccountDataForm(user=request.user,
                                          initial={"username": request.user.username, "email": request.user.email})
-        return render(request, "accounts/clients/partials/change_account_data.html", context={"form": form})
+        return render(request, "accounts/partials/change_account_data.html",
+                      context={"form": form})
 
 
 @redirect_if_logged
