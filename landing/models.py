@@ -17,6 +17,17 @@ class LandingPage(models.Model):
     def __str__(self):
         return "landing_page_info"
 
+    def save(self, *args, **kwargs):
+        if self.pk:
+            if not self.comms_status:
+                self.slots = 0
+
+            else:
+                if self.slots == 0:
+                    self.comms_status = False
+
+        super().save()
+
 
 class GalleryTag(models.Model):
     tag = models.CharField(max_length=18)
