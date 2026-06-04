@@ -29,6 +29,11 @@ def user_profile(request):
         return render(request, "accounts/clients/client_profile.html", context={"landing_data": get_landing_data()})
 
 
+class LandingPageEditorView(LoginRequiredMixin, View):
+    def get(self, request):
+        return render(request, "accounts/artist/partials/landing_page_editor.html")
+
+
 class ChangeAccountDataView(LoginRequiredMixin, View):
     login_url = reverse_lazy("login")
 
