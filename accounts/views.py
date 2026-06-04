@@ -31,7 +31,22 @@ def user_profile(request):
 
 class LandingPageEditorView(LoginRequiredMixin, View):
     def get(self, request):
-        return render(request, "accounts/artist/partials/landing_page_editor.html")
+        landing_data = get_landing_data()
+        form = forms.LandingPageEditorForm(initial=
+        {
+            "artist_name": landing_data.artist_name,
+            "artist_icon": landing_data.artist_icon,
+            "occupation": landing_data.occupation,
+            "instagram": landing_data.instagram,
+            "twitter": landing_data.twitter,
+            "youtube": landing_data.youtube,
+            "tiktok": landing_data.tiktok,
+            "slots": landing_data.slots,
+            "comms_status": landing_data.comms_status,
+            "bio": landing_data.bio,
+        }
+        )
+        return render(request, "accounts/artist/partials/landing_page_editor.html", context={"form": form})
 
 
 class ChangeAccountDataView(LoginRequiredMixin, View):

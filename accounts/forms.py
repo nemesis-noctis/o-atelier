@@ -3,11 +3,24 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm, SetPasswordForm, \
     PasswordChangeForm
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.forms import ModelForm
+
+from landing.models import LandingPage
 
 
 def set_fields_classes(fields_values):
     for field in fields_values:
-        field.widget.attrs["class"] = "form-control login-register-inputs"
+        if isinstance(field, forms.BooleanField):
+            pass
+
+        elif isinstance(field, forms.ImageField):
+            field.widget.attrs["class"] = "form-control form-control-sm login-register-inputs"
+
+        elif isinstance(field.widget, forms.Textarea):
+            field.widget.attrs["class"] = "form-control landing-editor-textarea"
+
+        else:
+            field.widget.attrs["class"] = "form-control login-register-inputs"
 
 
 class RegisterForm(UserCreationForm):
@@ -71,3 +84,13 @@ class EditAccountDataForm(PasswordChangeForm):
                 pk=self.user.pk).exists():
             raise (forms.ValidationError("Este email foi bloqueado e não pode mais ser usado."))
         return entered_email
+
+
+class LandingPageEditorForm(ModelForm):
+    class Meta:
+        model = LandingPage
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        set_fields_classes(self.fields.values())
