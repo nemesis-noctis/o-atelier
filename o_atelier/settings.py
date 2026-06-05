@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'commissions.apps.CommissionsConfig',
     'core.apps.CoreConfig',
     'accounts.apps.AccountsConfig',
+    'django_cleanup.apps.CleanupConfig'
 ]
 
 MIDDLEWARE = [
