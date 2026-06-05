@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as login_user, logout as logout_user, authenticate
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, PasswordResetDoneView, \
     PasswordResetCompleteView
 from django.shortcuts import render, redirect
@@ -29,10 +29,13 @@ def user_profile(request):
         return render(request, "accounts/clients/client_profile.html", context={"landing_data": get_landing_data()})
 
 
-class LandingPageEditorView(LoginRequiredMixin, View):
+class LandingPageEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
     login_url = reverse_lazy("login")
 
-    def get_current_landing_data(self, landing_data):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get_current_landing_data_dict(self, landing_data) -> dict:
 
         current_data = {
             "artist_name": landing_data.artist_name,
@@ -50,7 +53,7 @@ class LandingPageEditorView(LoginRequiredMixin, View):
 
     def post(self, request):
         landing_data = get_landing_data()
-        post_data = add_current_data_to_post_if_empty(request, self.get_current_landing_data(landing_data))
+        post_data = add_current_data_to_post_if_empty(request, self.get_current_landing_data_dict(landing_data))
         form = forms.LandingPageEditorForm(post_data.POST, post_data.FILES, instance=landing_data)
 
         if form.is_valid():
@@ -67,7 +70,8 @@ class LandingPageEditorView(LoginRequiredMixin, View):
 
     def get(self, request):
         landing_data = get_landing_data()
-        form = forms.LandingPageEditorForm(initial=self.get_current_landing_data(landing_data), instance=landing_data)
+        form = forms.LandingPageEditorForm(initial=self.get_current_landing_data_dict(landing_data),
+                                           instance=landing_data)
         return render(request, "accounts/artist/partials/landing_page_editor.html", context={"form": form})
 
 
@@ -82,7 +86,7 @@ class ChangeAccountDataView(LoginRequiredMixin, View):
             "new_password1": request.POST.get("old_password", ""),
         }
 
-        post_data = add_current_data_to_post_if_empty(request, current_data)
+        post_data = add_current_data_to_post_if_empty(request, current_data).POST
         post_data["new_password2"] = post_data.get("new_password1", "")
 
         form = forms.EditAccountDataForm(request.user, post_data)
@@ -142,6 +146,7 @@ def register(request):
     return render(request, "accounts/register.html", context={"form": form, "landing_data": get_landing_data()})
 
 
+@login_required()
 def logout(request):
     logout_user(request)
     return redirect("landing-page")
