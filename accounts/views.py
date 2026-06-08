@@ -25,6 +25,16 @@ def user_profile(request):
     return render(request, "accounts/profile/profile.html", context={"landing_data": get_landing_data()})
 
 
+class GalleryEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
+    login_url = reverse_lazy("login")
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get(self, request):
+        return render(request, "accounts/artist/partials/gallery_editor.html")
+
+
 class LandingPageEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
     login_url = reverse_lazy("login")
 
