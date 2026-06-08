@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 
 import accounts.forms as forms
 from core.utils import redirect_if_logged, get_landing_data, add_current_data_to_post_if_empty
+from landing.models import GalleryTag, GalleryImage
 
 load_dotenv(settings.BASE_DIR / ".env")
 
@@ -32,7 +33,13 @@ class GalleryEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
         return self.request.user.is_superuser
 
     def get(self, request):
-        return render(request, "accounts/artist/partials/gallery_editor.html")
+        gallery_tags = GalleryTag.objects.all()
+        gallery_images = GalleryImage.objects.all()
+        context = {
+            "gallery_tags": gallery_tags,
+            "gallery_images": gallery_images
+        }
+        return render(request, "accounts/artist/partials/gallery_editor.html", context=context)
 
 
 class LandingPageEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
