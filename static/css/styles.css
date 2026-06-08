@@ -265,5 +265,41 @@ img:hover {
     font-size: 12px;
 }
 
+/* Padrão para telas menores (mobile) */
+.mt-9 {
+    margin-top: 9rem !important;
+}
+
+/* Breakpoints responsivos */
+@media (min-width: 576px) {
+    .mt-sm-9 {
+        margin-top: 9rem !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .mt-md-9 {
+        margin-top: 9rem !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .mt-lg-9 {
+        margin-top: 9rem !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .mt-xl-9 {
+        margin-top: 9rem !important;
+    }
+}
+
+@media (min-width: 1400px) {
+    .mt-xxl-10 {
+        margin-top: 10.5rem !important;
+    }
+}
+
 
 

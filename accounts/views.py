@@ -22,11 +22,7 @@ load_dotenv(settings.BASE_DIR / ".env")
 
 @login_required
 def user_profile(request):
-    if request.user.is_superuser == True:
-        return render(request, "accounts/artist/artist_profile.html", context={"landing_data": get_landing_data()})
-
-    else:
-        return render(request, "accounts/clients/client_profile.html", context={"landing_data": get_landing_data()})
+    return render(request, "accounts/profile/profile.html", context={"landing_data": get_landing_data()})
 
 
 class LandingPageEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
