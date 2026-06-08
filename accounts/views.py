@@ -13,7 +13,8 @@ from django.views import View
 from dotenv import load_dotenv
 
 import accounts.forms as forms
-from core.utils import redirect_if_logged, get_landing_data, add_current_data_to_post_if_empty
+from core.utils import redirect_if_logged, get_landing_data, add_current_data_to_post_if_empty, \
+    render_gallery_images_from_tags
 from landing.models import GalleryTag, GalleryImage
 
 load_dotenv(settings.BASE_DIR / ".env")
@@ -24,6 +25,13 @@ load_dotenv(settings.BASE_DIR / ".env")
 @login_required
 def user_profile(request):
     return render(request, "accounts/profile/profile.html", context={"landing_data": get_landing_data()})
+
+
+def gallery_editor_image_filter(request):
+    tag_name = request.GET.get("tag", "")
+    all_tags = GalleryTag.objects.all()
+    return render_gallery_images_from_tags(request, tag_name, "accounts/artist/partials/gallery_images.html",
+                                           all_tags=all_tags)
 
 
 class GalleryEditorView(LoginRequiredMixin, UserPassesTestMixin, View):

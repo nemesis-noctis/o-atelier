@@ -1,7 +1,9 @@
 from django.core.files import File
 from django.http import HttpRequest
 from django.shortcuts import redirect
+from django.shortcuts import render
 
+from landing.models import GalleryTag, GalleryImage
 from landing.models import LandingPage
 
 
@@ -40,3 +42,16 @@ def add_current_data_to_post_if_empty(request, current_data) -> HttpRequest:
 
     request.POST = post_data
     return request
+
+
+def render_gallery_images_from_tags(request, tag, html_template, all_tags=None):
+    """Render gallery imagens from db and return render with the given template."""
+    if tag == "all" or tag == "":
+        gallery_images = GalleryImage.objects.all()
+        return render(request, template_name=html_template,
+                      context={"gallery_images": gallery_images, "gallery_tags": all_tags})
+
+    else:
+        gallery_images = GalleryImage.objects.filter(tag=GalleryTag.objects.get(tag=tag))
+        return render(request, template_name=html_template,
+                      context={"gallery_images": gallery_images, "gallery_tags": all_tags})
