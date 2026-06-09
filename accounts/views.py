@@ -3,7 +3,7 @@ import os
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as login_user, logout as logout_user, authenticate
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, PasswordResetDoneView, \
     PasswordResetCompleteView
@@ -27,13 +27,6 @@ def user_profile(request):
     return render(request, "accounts/profile/profile.html", context={"landing_data": get_landing_data()})
 
 
-def gallery_editor_image_filter(request):
-    tag_name = request.GET.get("tag", "")
-    all_tags = GalleryTag.objects.all()
-    return render_gallery_images_from_tags(request, tag_name, "accounts/artist/partials/gallery_images.html",
-                                           all_tags=all_tags)
-
-
 class GalleryEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
     login_url = reverse_lazy("login")
 
@@ -48,6 +41,45 @@ class GalleryEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
             "gallery_images": gallery_images
         }
         return render(request, "accounts/artist/partials/gallery_editor.html", context=context)
+
+
+class GalleryDeleteView(LoginRequiredMixin, UserPassesTestMixin, View):
+    login_url = reverse_lazy("login")
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get(self, request, _type, pk):
+        if _type == "tag":
+            return render(request, "accounts/artist/partials/gallery_tag_delete_confirmation.html", context={"pk": pk})
+
+        elif _type == "image":
+            return render(request, "accounts/artist/partials/gallery_image_delete_confirmation.html",
+                          context={"pk": pk})
+
+        else:
+            return redirect("gallery_editor")
+
+    def post(self, request, _type, pk):
+        if _type == "tag":
+            GalleryTag.objects.get(pk=pk).delete()
+            return redirect("gallery_editor")
+
+        elif _type == "image":
+            GalleryImage.objects.get(pk=pk).delete()
+            return redirect("gallery_editor")
+
+        else:
+            return redirect("gallery_editor")
+
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def gallery_editor_image_filter(request):
+    tag_name = request.GET.get("tag", "")
+    all_tags = GalleryTag.objects.all()
+    return render_gallery_images_from_tags(request, tag_name, "accounts/artist/partials/gallery_images.html",
+                                           all_tags=all_tags)
 
 
 class LandingPageEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
@@ -136,6 +168,14 @@ class ChangeAccountDataView(LoginRequiredMixin, View):
                       context={"form": form})
 
 
+@login_required()
+def logout(request):
+    logout_user(request)
+    return redirect("landing-page")
+
+
+##################################################################
+
 @redirect_if_logged
 def login(request):
     if request.method == "POST":
@@ -167,11 +207,7 @@ def register(request):
     return render(request, "accounts/register.html", context={"form": form, "landing_data": get_landing_data()})
 
 
-@login_required()
-def logout(request):
-    logout_user(request)
-    return redirect("landing-page")
-
+#############################################################################
 
 class PasswordRecoverView(PasswordResetView):
     template_name = "accounts/password_reset.html"

@@ -4,20 +4,7 @@
             Editar galeria</h2>
         <div class="container d-flex flex-column align-items-center pe-0 pt-0 pb-4">
             <div class="row gy-2 mw-100 mt-2 mb-4">
-                <div class="col col-sm col-md col-lg col-xl col-xxl text-lg-end text-xl-end text-xxl-end"
-                     style="text-align: center;">
-                    <div class="d-inline-block" style="width: 100%; text-align: right;">
-                        <button class="btn btn-primary"
-                                type="button"
-                                hx-get="{% url 'gallery_editor_image_filter' %}?tag=all"
-                                hx-target="#gallery"
-                                hx-trigger="click"
-                                hx-swap="innerHTML"
-                                style="background: #69A7FC;color: white;padding: 5px 32px;font-size: 12px;border-radius: 18px;border-width: 1px;border-color: #69A7FC;">
-                            All
-                        </button>
-                    </div>
-                </div>
+
                 <div class="col-auto col-sm col-md col-lg col-xl col-xxl"
                      style="text-align: center;">
                     <div class="d-inline-block align-middle" style="width: 162px">
@@ -39,6 +26,19 @@
 
                     </div>
                 </div>
+                <div class="col col-sm col-md col-lg col-xl col-xxl text-lg-end text-xl-end text-xxl-end">
+                    <div class="d-inline-block" style="width: 100%; text-align: right;">
+                        <button class="btn btn-primary"
+                                type="button"
+                                hx-get="{% url 'gallery_editor_image_filter' %}?tag=all"
+                                hx-target="#gallery"
+                                hx-trigger="click"
+                                hx-swap="innerHTML"
+                                style="background: #69A7FC;color: white;padding: 5px 32px;font-size: 12px;border-radius: 18px;border-width: 1px;border-color: #69A7FC;">
+                            All
+                        </button>
+                    </div>
+                </div>
                 <div class="col-auto">
                     <div class="d-inline-flex mw-100 overflow-auto flex-row gap-2 align-middle" id="tags"
                          style="width: 600px">
@@ -53,7 +53,13 @@
                                         style="background: white;color: #69A7FC;padding: 5px 14px;font-size: 12px;border-radius: 18px;border-bottom-right-radius: 0;border-top-right-radius: 0;border-width: 1px;">
                                     {{ tag.tag }}
                                 </button>
-                                <button class="btn btn-danger" type="button"
+
+                                <button class="btn btn-danger"
+                                        hx-get="{% url "gallery_delete" _type="tag" pk=tag.pk %}"
+                                        hx-target="this"
+                                        hx-trigger="click"
+                                        hx-swap="outerHTML"
+                                        type="button"
                                         style="padding: 1px 8px;border-radius: 50%;border-top-left-radius: 0;border-bottom-left-radius: 0;">
                                     <svg class="bi bi-x-lg" xmlns="http://www.w3.org/2000/svg" width="1em"
                                          height="1em" fill="currentColor" viewBox="0 0 16 16"
@@ -61,6 +67,8 @@
                                         <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"></path>
                                     </svg>
                                 </button>
+
+
                             </div>
                         {% endfor %}
 
