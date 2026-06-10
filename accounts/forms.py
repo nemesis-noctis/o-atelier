@@ -16,9 +16,6 @@ def set_fields_classes(fields_values):
         elif isinstance(field, forms.ImageField):
             field.widget.attrs["class"] = "form-control form-control-sm login-register-inputs"
 
-        elif isinstance(field.widget, forms.Textarea):
-            field.widget.attrs["class"] = "form-control landing-editor-textarea"
-
         else:
             field.widget.attrs["class"] = "form-control login-register-inputs"
 
@@ -94,6 +91,9 @@ class LandingPageEditorForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         set_fields_classes(self.fields.values())
+        bio_field = self.fields["bio"]
+        bio_field.widget.attrs["class"] = "form-control landing-editor-textarea"
+        bio_field.widget.attrs["style"] = "height: 128px;"
 
 
 class AddImageToGalleryForm(ModelForm):
