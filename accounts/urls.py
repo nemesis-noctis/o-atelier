@@ -13,5 +13,10 @@ urlpatterns = [
     path("password-recovery-complete", views.PasswordRecoveryCompleteView.as_view(), name="password_reset_complete"),
     path("profile", views.user_profile, name="user_profile"),
     path("change-account-data", views.ChangeAccountDataView.as_view(), name="change_account_data"),
-    path("landing-page-editor", views.LandingPageEditorView.as_view(), name="landing_page_editor")
+    path("landing-page-editor", views.LandingPageEditorView.as_view(), name="landing_page_editor"),
+    path("gallery-editor", views.GalleryEditorView.as_view(), name="gallery_editor"),
+    path("gallery-editor-image-filter", views.gallery_editor_image_filter, name="gallery_editor_image_filter"),
+    path("gallery-add/<_type>", views.GalleryAddView.as_view(), name="gallery_add"),
+    path("gallery-delete/<_type>/<int:pk>", views.GalleryDeleteView.as_view(),
+         name="gallery_delete")
 ]

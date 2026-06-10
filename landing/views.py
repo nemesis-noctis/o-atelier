@@ -1,6 +1,6 @@
 from django.shortcuts import render
 
-from core.utils import get_landing_data
+from core.utils import get_landing_data, render_gallery_images_from_tags
 from .models import GalleryTag, GalleryImage
 
 
@@ -18,12 +18,5 @@ def index(request):
 
 def gallery_image_filter(request):
     tag_name = request.GET.get("tag", "")
-    if tag_name == "all" or tag_name == "":
-        gallery_images = GalleryImage.objects.all()
-        return render(request, template_name="landing/partials/gallery_images.html",
-                      context={"gallery_images": gallery_images})
-
-    else:
-        gallery_images = GalleryImage.objects.filter(tag=GalleryTag.objects.get(tag=tag_name))
-        return render(request, template_name="landing/partials/gallery_images.html",
-                      context={"gallery_images": gallery_images})
+    gallery_tags = GalleryTag.objects.all()
+    return render_gallery_images_from_tags(request, tag_name, "landing/partials/gallery_images.html")

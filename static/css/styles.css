@@ -265,5 +265,51 @@ img:hover {
     font-size: 12px;
 }
 
+/* Padrão para telas menores (mobile) */
+.mt-9 {
+    margin-top: 9rem !important;
+}
+
+/* Breakpoints responsivos */
+@media (min-width: 576px) {
+    .mt-sm-9 {
+        margin-top: 9rem !important;
+    }
+}
+
+@media (min-width: 768px) {
+    .mt-md-9 {
+        margin-top: 9rem !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .mt-lg-9 {
+        margin-top: 9rem !important;
+    }
+}
+
+@media (min-width: 1200px) {
+    .mt-xl-9 {
+        margin-top: 9rem !important;
+    }
+}
+
+@media (min-width: 1400px) {
+    .mt-xxl-10 {
+        margin-top: 14rem !important;
+    }
+}
+
+/*#id_tag {*/
+/*    display: inline-block;*/
+/*    width: 124px;*/
+/*    border-radius: 30px;*/
+/*    border-top-right-radius: 0;*/
+/*    border-bottom-right-radius: 0;*/
+/*    border: 1px inset #69A7FC;*/
+/*    padding: 1px 10px;*/
+/*}*/
+
 
 

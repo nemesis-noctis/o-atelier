@@ -23,7 +23,6 @@
             "url": "https://olimpium-atelier.com"
         }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/htmx.org@2.0.0"></script>
     <link rel="icon" type="image/png" sizes="2000x2000"
           href="{% static "landing/img/O’ Atelier icon.png?h=89f6824d1f7405c418ef3a7e222115fb" %}">
@@ -36,6 +35,7 @@
     <link rel="icon" type="image/png" sizes="2000x2000"
           href="{% static "landing/img/O’ Atelier icon.png?h=89f6824d1f7405c418ef3a7e222115fb" %}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="{% static "css/Abhaya Libre.css" %}">
     <link href="https://fonts.googleapis.com/css2?family=Fleur+De+Leah&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@400;500;600;700;800&display=swap"
@@ -48,7 +48,7 @@
           href="{% static "css/styles.css" %}">
 </head>
 
-<body style="background: #EDF5FE;">
+<body class="position-relative" style="background: #EDF5FE;">
 {% block content %}
 
 {% endblock %}
