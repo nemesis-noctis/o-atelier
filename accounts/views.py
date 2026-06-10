@@ -38,9 +38,31 @@ class GalleryEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
         gallery_images = GalleryImage.objects.all()
         context = {
             "gallery_tags": gallery_tags,
-            "gallery_images": gallery_images
+            "gallery_images": gallery_images,
+            "add_tag_form": forms.AddTagToGalleryForm,
+            "add_image_form": forms.AddImageToGalleryForm
         }
         return render(request, "accounts/artist/partials/gallery_editor.html", context=context)
+
+
+class GalleryAddView(LoginRequiredMixin, UserPassesTestMixin, View):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def post(self, request, _type):
+        form = None
+
+        if _type == "image":
+            form = forms.AddImageToGalleryForm(request.POST, request.FILES)
+
+        elif _type == "tag":
+            form = forms.AddTagToGalleryForm(request.POST)
+
+        if form is not None:
+            if form.is_valid():
+                form.save()
+
+        return redirect("gallery_editor")
 
 
 class GalleryDeleteView(LoginRequiredMixin, UserPassesTestMixin, View):
@@ -50,27 +72,20 @@ class GalleryDeleteView(LoginRequiredMixin, UserPassesTestMixin, View):
         return self.request.user.is_superuser
 
     def get(self, request, _type, pk):
-        if _type == "tag":
-            return render(request, "accounts/artist/partials/gallery_tag_delete_confirmation.html", context={"pk": pk})
-
-        elif _type == "image":
-            return render(request, "accounts/artist/partials/gallery_image_delete_confirmation.html",
+        if _type in {"image", "tag"}:
+            return render(request, f"accounts/artist/partials/gallery_{_type}_delete_confirmation.html",
                           context={"pk": pk})
-
         else:
             return redirect("gallery_editor")
 
     def post(self, request, _type, pk):
         if _type == "tag":
             GalleryTag.objects.get(pk=pk).delete()
-            return redirect("gallery_editor")
 
         elif _type == "image":
             GalleryImage.objects.get(pk=pk).delete()
-            return redirect("gallery_editor")
 
-        else:
-            return redirect("gallery_editor")
+        return redirect("gallery_editor")
 
 
 @login_required
@@ -89,7 +104,6 @@ class LandingPageEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
         return self.request.user.is_superuser
 
     def get_current_landing_data_dict(self, landing_data) -> dict:
-
         current_data = {
             "artist_name": landing_data.artist_name,
             "artist_icon": landing_data.artist_icon,
@@ -110,14 +124,12 @@ class LandingPageEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
         form = forms.LandingPageEditorForm(post_data.POST, post_data.FILES, instance=landing_data)
 
         if form.is_valid():
-            print(form.cleaned_data)
             form.save()
             messages.success(request, "Dados alterados com sucesso.")
             return render(request, "accounts/artist/partials/landing_page_editor.html",
                           context={"form": form})
 
         else:
-
             return render(request, "accounts/artist/partials/landing_page_editor.html",
                           context={"form": form})
 
@@ -132,7 +144,6 @@ class ChangeAccountDataView(LoginRequiredMixin, View):
     login_url = reverse_lazy("login")
 
     def post(self, request):
-
         current_data = {
             "username": request.user.username,
             "email": request.user.email,

@@ -9,11 +9,12 @@
                      style="text-align: center;">
                     <div class="d-inline-block align-middle" style="width: 162px">
 
-                        <form>
-                            <input type="text" class="align-middle"
-                                   style="width: 124px;border-radius: 30px;border-top-right-radius: 0;border-bottom-right-radius: 0;border: 1px inset #69A7FC;padding: 1px 10px;"
-                                   placeholder="Adicionar Tag">
-                            <button class="btn btn-primary" type="button"
+                        <form hx-post="{% url "gallery_add" _type="tag" %}"
+                              hx-trigger="submit"
+                              hx-target="#content">
+                            {% csrf_token %}
+                            {{ add_tag_form.tag }}
+                            <button class="btn btn-primary" type="submit"
                                     style="padding: 1px 4px;border-radius: 50%;border-top-left-radius: 0;border-bottom-left-radius: 0;background: #69A7FC;color: white;border-color: #69A7FC;">
                                 <svg class="bi bi-plus-lg" xmlns="http://www.w3.org/2000/svg" width="1em"
                                      height="1em" fill="currentColor" viewBox="0 0 16 16"
@@ -75,27 +76,34 @@
                     </div>
                 </div>
                 <div class="col">
-                    <form style="text-align: center;">
+                    <form hx-post="{% url "gallery_add" _type="image" %}"
+                          hx-trigger="submit"
+                          hx-target="#content"
+                          enctype="multipart/form-data"
+                          style="text-align: center;">
+                        {% csrf_token %}
                         <div class="d-inline-block mt-3" style="text-align: center;margin-right: 10px;">
                             <label class="form-label d-inline-block mb-1 pb-0"
                                    style="font-size: 14px;margin-right: 8px;">
-                                Adicionar Imagem</label>
-                            <input class="form-control form-control-sm d-inline-block" type="file"
-                                   style="width: auto;"/>
+                                Adicionar Imagem
+                            </label>
+
+                            <div style="width: auto; display:inline-block;">
+                                {{ add_image_form.image }}
+                            </div>
+
                         </div>
                         <div class="d-inline-block mt-3" style="text-align: center;margin-right: 10px;">
                             <label class="form-label d-inline-block mb-1" style="font-size: 14px;margin-right: 8px;">
                                 Tag
                             </label>
-                            <select class="form-select form-select-sm d-inline-block" style="width: 106px;">
-                                {% for tag in gallery_tags %}
-                                    <option value="{{ tag }}">{{ tag }}</option>
-                                {% endfor %}
+                            <div style="display: inline-block;">
+                                {{ add_image_form.tag }}
+                            </div>
 
-                            </select>
                         </div>
                         <div class="d-inline-block mt-3" style="text-align: center;">
-                            <button class="btn btn-primary border rounded-pill" type="button"
+                            <button class="btn btn-primary border rounded-pill" type="submit"
                                     style="font-size: 14px;background: #69A7FC;padding: 8px 16px;">
                                 Adicionar
                             </button>
