@@ -96,18 +96,18 @@
             </div>
             <hr>
         </div>
-        {% for user in users %}
+        {% for user_ in users %}
             <div class="col">
             <div class="row gx-5 gy-2 justify-content-start" style="font-size: 14px">
                 <div class="col text-center order-xxl-first">
                     <div class="overflow-auto" style="width: 106px; margin-left: auto; margin-right: auto">
-                        <span>{{ user.username }}</span>
+                        <span>{{ user_.username }}</span>
                     </div>
                 </div>
                 <div class="col text-center order-xxl-2">
                     <div class="overflow-auto" style="width: 186px; margin-right: auto; margin-left: auto">
-                        {% if user.email != "" %}
-                            <span style="font-size: 14px">{{ user.email }}</span>
+                        {% if user_.email != "" %}
+                            <span style="font-size: 14px">{{ user_.email }}</span>
                         {% else %}
                             <span class="text-nowrap" style="color: var(--bs-danger)"> Email não registrado </span>
                         {% endif %}
@@ -116,7 +116,7 @@
                 </div>
                 <div class="col col-xxl-2 text-center order-xxl-3" style="width: 130px; text-align: center">
                     <div class="d-inline-block">
-                        {% if user.is_active %}
+                        {% if user_.is_active %}
                             <span style="color: var(--bs-success);">Ativo</span>
                         {% else %}
                             <span style="color: var(--bs-danger);">Bloqueado</span>
@@ -172,18 +172,45 @@
                                 <path d="M7 14a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2"></path>
                             </svg>
                         </button>
-                        <button class="btn btn-danger btn-sm" type="button"
-                                style="border-radius: 20px;padding: 2px 4px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
-                                 viewBox="0 0 24 24" fill="none"
-                                 style="width: 20px;height: 20px;margin-bottom: 2px;">
-                                <path d="M8.46457 14.1213C8.07404 14.5118 8.07404 15.145 8.46457 15.5355C8.85509 15.926 9.48825 15.926 9.87878 15.5355L15.5356 9.87862C15.9262 9.4881 15.9262 8.85493 15.5356 8.46441C15.1451 8.07388 14.5119 8.07388 14.1214 8.46441L8.46457 14.1213Z"
-                                      fill="currentColor"></path>
-                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                      d="M6.34315 17.6569C9.46734 20.781 14.5327 20.781 17.6569 17.6569C20.781 14.5327 20.781 9.46734 17.6569 6.34315C14.5327 3.21895 9.46734 3.21895 6.34315 6.34315C3.21895 9.46734 3.21895 14.5327 6.34315 17.6569ZM16.2426 16.2426C13.8995 18.5858 10.1005 18.5858 7.75736 16.2426C5.41421 13.8995 5.41421 10.1005 7.75736 7.75736C10.1005 5.41421 13.8995 5.41421 16.2426 7.75736C18.5858 10.1005 18.5858 13.8995 16.2426 16.2426Z"
-                                      fill="currentColor"></path>
-                            </svg>
-                        </button>
+                        {% if user_.is_active %}
+                            <form hx-get="{% url "blocked_user" b_status="block" pk=user_.pk %}"
+                                  hx-trigger="submit"
+                                  hx-target="this"
+                                  hx-swap="innerHTML"
+                                  style="display: inline-block">
+                                {% csrf_token %}
+                                <button class="btn btn-danger btn-sm" type="submit"
+                                        style="border-radius: 20px;padding: 2px 4px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                         viewBox="0 0 24 24" fill="none"
+                                         style="width: 20px;height: 20px;margin-bottom: 2px;">
+                                        <path d="M8.46457 14.1213C8.07404 14.5118 8.07404 15.145 8.46457 15.5355C8.85509 15.926 9.48825 15.926 9.87878 15.5355L15.5356 9.87862C15.9262 9.4881 15.9262 8.85493 15.5356 8.46441C15.1451 8.07388 14.5119 8.07388 14.1214 8.46441L8.46457 14.1213Z"
+                                              fill="currentColor"></path>
+                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                              d="M6.34315 17.6569C9.46734 20.781 14.5327 20.781 17.6569 17.6569C20.781 14.5327 20.781 9.46734 17.6569 6.34315C14.5327 3.21895 9.46734 3.21895 6.34315 6.34315C3.21895 9.46734 3.21895 14.5327 6.34315 17.6569ZM16.2426 16.2426C13.8995 18.5858 10.1005 18.5858 7.75736 16.2426C5.41421 13.8995 5.41421 10.1005 7.75736 7.75736C10.1005 5.41421 13.8995 5.41421 16.2426 7.75736C18.5858 10.1005 18.5858 13.8995 16.2426 16.2426Z"
+                                              fill="currentColor"></path>
+                                    </svg>
+                                </button>
+                            </form>
+
+                        {% else %}
+                            <form hx-get="{% url "blocked_user" b_status="unblock" pk=user_.pk %}"
+                                  hx-trigger="submit"
+                                  hx-target="this"
+                                  hx-swap="innerHTML"
+                                  style="display: inline-block">
+                                {% csrf_token %}
+                                <button class="btn btn-success btn-sm" type="submit"
+                                        style="border-radius: 20px;padding: 2px 4px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
+                                         fill="none" style="width: 20px;height: 20px;margin-bottom: 2px;">
+                                        <path fill-rule="evenodd" clip-rule="evenodd"
+                                              d="M5.63604 18.364C9.15076 21.8787 14.8492 21.8787 18.364 18.364C21.8787 14.8492 21.8787 9.15076 18.364 5.63604C14.8492 2.12132 9.15076 2.12132 5.63604 5.63604C2.12132 9.15076 2.12132 14.8492 5.63604 18.364ZM7.80749 17.6067C10.5493 19.6623 14.4562 19.4433 16.9497 16.9497C19.4433 14.4562 19.6623 10.5493 17.6067 7.80749L14.8284 10.5858C14.4379 10.9763 13.8047 10.9763 13.4142 10.5858C13.0237 10.1953 13.0237 9.5621 13.4142 9.17157L16.1925 6.39327C13.4507 4.33767 9.54384 4.55666 7.05025 7.05025C4.55666 9.54384 4.33767 13.4507 6.39327 16.1925L9.17157 13.4142C9.5621 13.0237 10.1953 13.0237 10.5858 13.4142C10.9763 13.8047 10.9763 14.4379 10.5858 14.8284L7.80749 17.6067Z"
+                                              fill="currentColor"></path>
+                                    </svg>
+                                </button>
+                            </form>
+                        {% endif %}
                     </div>
                 </div>
             </div>

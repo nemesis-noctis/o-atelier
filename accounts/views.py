@@ -48,7 +48,7 @@ class UserManagerView(LoginRequiredMixin, UserPassesTestMixin, View):
 
     def get(self, request):
         username_search = request.GET.get("username_search", "")
-        all_users = CustomUser.objects.all().filter(username__icontains=username_search)
+        all_users = CustomUser.objects.all().filter(username__icontains=username_search, is_superuser=False)
         users_count = all_users.count()
         order_by = request.GET.get("order_by", "")
         context = {
@@ -58,6 +58,23 @@ class UserManagerView(LoginRequiredMixin, UserPassesTestMixin, View):
             "username_search": username_search,
         }
         return render(request, "accounts/artist/partials/user_manager.html", context=context)
+
+
+class BlockedUserView(LoginRequiredMixin, UserPassesTestMixin, View):
+    login_url = reverse_lazy("login")
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get(self, request, b_status, pk):
+        return render(request, f"accounts/artist/partials/user_block_confirmation.html",
+                      context={"b_status": b_status, "pk": pk})
+
+    def post(self, request, b_status, pk):
+        user = CustomUser.objects.get(pk=pk)
+        user.is_active = False if b_status == "block" else True
+        user.save()
+        return redirect("user_manager")
 
 
 class GalleryEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
