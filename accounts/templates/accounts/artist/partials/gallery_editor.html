@@ -1,127 +1,125 @@
-<div class="col ps-0">
-    <div style="width: 100%;height: 100%;">
-        <h2 style="color: rgb(76,84,92);font-family: 'Abhaya Libre', serif;text-align: center;font-size: 22px;padding-top: 15px;padding-bottom: 10px;border-bottom: 1px solid var(--bs-dark-border-subtle);">
-            Editar galeria</h2>
-        <div class="container d-flex flex-column align-items-center pe-0 pt-0 pb-4">
-            <div class="row gy-2 mw-100 mt-2 mb-4">
+<div style="width: 100%;height: 100%;">
+    <h2 style="color: rgb(76,84,92);font-family: 'Abhaya Libre', serif;text-align: center;font-size: 22px;padding-top: 15px;padding-bottom: 10px;border-bottom: 1px solid var(--bs-dark-border-subtle);">
+        Editar galeria</h2>
+    <div class="container d-flex flex-column align-items-center pe-0 pt-0 pb-4">
+        <div class="row gy-2 mw-100 mt-2 mb-4">
 
-                <div class="col-auto col-sm col-md col-lg col-xl col-xxl"
-                     style="text-align: center;">
-                    <div class="d-inline-block align-middle" style="width: 162px">
+            <div class="col-auto col-sm col-md col-lg col-xl col-xxl"
+                 style="text-align: center;">
+                <div class="d-inline-block align-middle" style="width: 162px">
 
-                        <form hx-post="{% url "gallery_add" _type="tag" %}"
-                              hx-trigger="submit"
-                              hx-target="#content">
-                            {% csrf_token %}
-                            {{ add_tag_form.tag }}
-                            <button class="btn btn-primary" type="submit"
-                                    style="padding: 1px 4px;border-radius: 50%;border-top-left-radius: 0;border-bottom-left-radius: 0;background: #69A7FC;color: white;border-color: #69A7FC;">
-                                <svg class="bi bi-plus-lg" xmlns="http://www.w3.org/2000/svg" width="1em"
+                    <form hx-post="{% url "gallery_add" _type="tag" %}"
+                          hx-trigger="submit"
+                          hx-target="#content">
+                        {% csrf_token %}
+                        {{ add_tag_form.tag }}
+                        <button class="btn btn-primary" type="submit"
+                                style="padding: 1px 4px;border-radius: 50%;border-top-left-radius: 0;border-bottom-left-radius: 0;background: #69A7FC;color: white;border-color: #69A7FC;">
+                            <svg class="bi bi-plus-lg" xmlns="http://www.w3.org/2000/svg" width="1em"
+                                 height="1em" fill="currentColor" viewBox="0 0 16 16"
+                                 style="width: 18px;height: 18px;font-size: 18px;margin-bottom: 2px;margin-right: 4px;">
+                                <path fill-rule="evenodd"
+                                      d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"></path>
+                            </svg>
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+            <div class="col col-sm col-md col-lg col-xl col-xxl text-lg-end text-xl-end text-xxl-end">
+                <div class="d-inline-block" style="width: 100%; text-align: right;">
+                    <button class="btn btn-primary"
+                            type="button"
+                            hx-get="{% url 'gallery_editor_image_filter' %}?tag=all"
+                            hx-target="#gallery"
+                            hx-trigger="click"
+                            hx-swap="innerHTML"
+                            style="background: #69A7FC;color: white;padding: 5px 32px;font-size: 12px;border-radius: 18px;border-width: 1px;border-color: #69A7FC;">
+                        All
+                    </button>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="d-inline-flex mw-100 overflow-auto flex-row gap-2 align-middle" id="tags"
+                     style="width: 600px">
+
+                    {% for tag in gallery_tags %}
+                        <div class="d-flex">
+                            <button class="btn btn-primary" type="button"
+                                    hx-get="{% url 'gallery_editor_image_filter' %}?tag={{ tag }}"
+                                    hx-target="#gallery"
+                                    hx-trigger="click"
+                                    hx-swap="innerHTML"
+                                    style="background: white;color: #69A7FC;padding: 5px 14px;font-size: 12px;border-radius: 18px;border-bottom-right-radius: 0;border-top-right-radius: 0;border-width: 1px; white-space: nowrap">
+                                {{ tag.tag }}
+                            </button>
+
+                            <button class="btn btn-danger"
+                                    hx-get="{% url "gallery_delete" _type="tag" pk=tag.pk %}"
+                                    hx-target="this"
+                                    hx-trigger="click"
+                                    hx-swap="outerHTML"
+                                    type="button"
+                                    style="padding: 1px 8px;border-radius: 50%;border-top-left-radius: 0;border-bottom-left-radius: 0;">
+                                <svg class="bi bi-x-lg" xmlns="http://www.w3.org/2000/svg" width="1em"
                                      height="1em" fill="currentColor" viewBox="0 0 16 16"
-                                     style="width: 18px;height: 18px;font-size: 18px;margin-bottom: 2px;margin-right: 4px;">
-                                    <path fill-rule="evenodd"
-                                          d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"></path>
+                                     style="width: 14px;height: 14px;margin-bottom: 2px;">
+                                    <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"></path>
                                 </svg>
                             </button>
-                        </form>
+
+
+                        </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+            <div class="col">
+                <form hx-post="{% url "gallery_add" _type="image" %}"
+                      hx-trigger="submit"
+                      hx-target="#content"
+                      enctype="multipart/form-data"
+                      style="text-align: center;">
+                    {% csrf_token %}
+                    <div class="d-inline-block mt-3" style="text-align: center;margin-right: 10px;">
+                        <label class="form-label d-inline-block mb-1 pb-0"
+                               style="font-size: 14px;margin-right: 8px;">
+                            Adicionar Imagem
+                        </label>
+
+                        <div style="width: auto; display:inline-block;">
+                            {{ add_image_form.image }}
+                        </div>
 
                     </div>
-                </div>
-                <div class="col col-sm col-md col-lg col-xl col-xxl text-lg-end text-xl-end text-xxl-end">
-                    <div class="d-inline-block" style="width: 100%; text-align: right;">
-                        <button class="btn btn-primary"
-                                type="button"
-                                hx-get="{% url 'gallery_editor_image_filter' %}?tag=all"
-                                hx-target="#gallery"
-                                hx-trigger="click"
-                                hx-swap="innerHTML"
-                                style="background: #69A7FC;color: white;padding: 5px 32px;font-size: 12px;border-radius: 18px;border-width: 1px;border-color: #69A7FC;">
-                            All
+                    <div class="d-inline-block mt-3" style="text-align: center;margin-right: 10px;">
+                        <label class="form-label d-inline-block mb-1" style="font-size: 14px;margin-right: 8px;">
+                            Tag
+                        </label>
+                        <div style="display: inline-block;">
+                            {{ add_image_form.tag }}
+                        </div>
+
+                    </div>
+                    <div class="d-inline-block mt-3" style="text-align: center;">
+                        <button class="btn btn-primary border rounded-pill" type="submit"
+                                style="font-size: 14px;background: #69A7FC;padding: 8px 16px;">
+                            Adicionar
                         </button>
                     </div>
-                </div>
-                <div class="col-auto">
-                    <div class="d-inline-flex mw-100 overflow-auto flex-row gap-2 align-middle" id="tags"
-                         style="width: 600px">
-
-                        {% for tag in gallery_tags %}
-                            <div class="d-flex">
-                                <button class="btn btn-primary" type="button"
-                                        hx-get="{% url 'gallery_editor_image_filter' %}?tag={{ tag }}"
-                                        hx-target="#gallery"
-                                        hx-trigger="click"
-                                        hx-swap="innerHTML"
-                                        style="background: white;color: #69A7FC;padding: 5px 14px;font-size: 12px;border-radius: 18px;border-bottom-right-radius: 0;border-top-right-radius: 0;border-width: 1px; white-space: nowrap">
-                                    {{ tag.tag }}
-                                </button>
-
-                                <button class="btn btn-danger"
-                                        hx-get="{% url "gallery_delete" _type="tag" pk=tag.pk %}"
-                                        hx-target="this"
-                                        hx-trigger="click"
-                                        hx-swap="outerHTML"
-                                        type="button"
-                                        style="padding: 1px 8px;border-radius: 50%;border-top-left-radius: 0;border-bottom-left-radius: 0;">
-                                    <svg class="bi bi-x-lg" xmlns="http://www.w3.org/2000/svg" width="1em"
-                                         height="1em" fill="currentColor" viewBox="0 0 16 16"
-                                         style="width: 14px;height: 14px;margin-bottom: 2px;">
-                                        <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z"></path>
-                                    </svg>
-                                </button>
-
-
-                            </div>
-                        {% endfor %}
-
-                    </div>
-                </div>
-                <div class="col">
-                    <form hx-post="{% url "gallery_add" _type="image" %}"
-                          hx-trigger="submit"
-                          hx-target="#content"
-                          enctype="multipart/form-data"
-                          style="text-align: center;">
-                        {% csrf_token %}
-                        <div class="d-inline-block mt-3" style="text-align: center;margin-right: 10px;">
-                            <label class="form-label d-inline-block mb-1 pb-0"
-                                   style="font-size: 14px;margin-right: 8px;">
-                                Adicionar Imagem
-                            </label>
-
-                            <div style="width: auto; display:inline-block;">
-                                {{ add_image_form.image }}
-                            </div>
-
-                        </div>
-                        <div class="d-inline-block mt-3" style="text-align: center;margin-right: 10px;">
-                            <label class="form-label d-inline-block mb-1" style="font-size: 14px;margin-right: 8px;">
-                                Tag
-                            </label>
-                            <div style="display: inline-block;">
-                                {{ add_image_form.tag }}
-                            </div>
-
-                        </div>
-                        <div class="d-inline-block mt-3" style="text-align: center;">
-                            <button class="btn btn-primary border rounded-pill" type="submit"
-                                    style="font-size: 14px;background: #69A7FC;padding: 8px 16px;">
-                                Adicionar
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                </form>
             </div>
-
-            <div id="gallery"
-                 class="row gy-4 row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 row-cols-xl-3 row-cols-xxl-3 w-100"
-                 style="min-height: 400px;max-width: 800px;"
-                 hx-get="{% url "gallery_editor_image_filter" %}?tag=all"
-                 hx-trigger="load"
-                 hx-target="#gallery"
-                 hx-swap="innerHTML"
-            >
-            </div>
-
         </div>
+
+        <div id="gallery"
+             class="row gy-4 row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 row-cols-xl-3 row-cols-xxl-3 w-100"
+             style="min-height: 400px;max-width: 800px;"
+             hx-get="{% url "gallery_editor_image_filter" %}?tag=all"
+             hx-trigger="load"
+             hx-target="#gallery"
+             hx-swap="innerHTML"
+        >
+        </div>
+
     </div>
 </div>

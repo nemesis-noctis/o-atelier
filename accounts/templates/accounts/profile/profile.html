@@ -70,7 +70,11 @@
                                         {% if user.is_superuser %}
                                             <li class="nav-item">
                                                 <a class="nav-link py-3 border-bottom rounded-0"
-                                                   href="#">
+                                                   href="#"
+                                                   hx-get="{% url "user_manager" %}"
+                                                   hx-target="#content"
+                                                   hx-trigger="click"
+                                                   hx-swap="innerHTML">
                                                     <svg class="bi bi-people" xmlns="http://www.w3.org/2000/svg"
                                                          width="1em"
                                                          height="1em" fill="currentColor" viewBox="0 0 16 16"
@@ -146,13 +150,11 @@
                         </div>
                     </div>
                 </div>
-                <div
-                        id="content"
-                        class="col ps-0"
-                        hx-get="{% url "change_account_data" %}"
-                        hx-trigger="load"
-                        hx-swap="innerHTML"
-                >
+                <div id="content"
+                     class="col"
+                     hx-get="{% url "change_account_data" %}"
+                     hx-trigger="load"
+                     hx-swap="innerHTML">
                 </div>
             </div>
 

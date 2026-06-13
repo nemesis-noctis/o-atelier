@@ -13,6 +13,7 @@ from django.views import View
 from dotenv import load_dotenv
 
 import accounts.forms as forms
+from accounts.models import CustomUser
 from core.utils import redirect_if_logged, get_landing_data, add_current_data_to_post_if_empty, \
     render_gallery_images_from_tags
 from landing.models import GalleryTag, GalleryImage
@@ -25,6 +26,22 @@ load_dotenv(settings.BASE_DIR / ".env")
 @login_required
 def user_profile(request):
     return render(request, "accounts/profile/profile.html", context={"landing_data": get_landing_data()})
+
+
+class UserManagerView(LoginRequiredMixin, UserPassesTestMixin, View):
+    login_url = reverse_lazy("login")
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get(self, request):
+        all_users = CustomUser.objects.all()
+        users_count = all_users.count()
+        context = {
+            "users": all_users,
+            "users_count": users_count,
+        }
+        return render(request, "accounts/artist/partials/user_manager.html", context=context)
 
 
 class GalleryEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
@@ -46,6 +63,8 @@ class GalleryEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
 
 
 class GalleryAddView(LoginRequiredMixin, UserPassesTestMixin, View):
+    login_url = reverse_lazy("login")
+
     def test_func(self):
         return self.request.user.is_superuser
 

@@ -22,7 +22,7 @@
                         <div class="d-inline">
                             <h1 class="hero-h">{{ landing_data.artist_name }}</h1>
                             <span class="hero-subtitle">{{ landing_data.occupation }}</span>
-                            <p class="my-3 hero-bio">{{ landing_data.bio }}</p>
+                            <p class="my-3 hero-bio">{{ landing_data.bio | linebreaksbr }}</p>
                         </div>
                         <ul class="list-unstyled d-inline-block">
                             <li class="social-network">
@@ -104,7 +104,9 @@
                                             hx-target="#images-container"
                                             hx-swap="innerHTML"
                                             class="btn btn-primary gallery-tag"
-                                            type="button">{{ tag.tag|title }}</button>
+                                            type="button"
+                                            style="white-space: nowrap">{{ tag.tag|title }}
+                                    </button>
                                 </div>
                             {% endfor %}
                         </div>

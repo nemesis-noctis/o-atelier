@@ -1,0 +1,169 @@
+<div style="width: 100%;height: 100%;">
+    <h2 style="color: rgb(76,84,92);font-family: 'Abhaya Libre', serif;text-align: center;font-size: 22px;padding-top: 15px;padding-bottom: 10px;border-bottom: 1px solid var(--bs-dark-border-subtle);">
+        Gerenciar Usuários
+    </h2>
+    <div class="row mw-100 gy-1" style="margin-right: auto; margin-left: auto">
+        <div class="col" style="text-align: justify;">
+            <div class="d-inline-block">
+                <input type="search" class="align-middle"
+                       style="border-top-left-radius: 30px;border-bottom-left-radius: 30px;border-color: #69A7FC;width: 294px;padding: 1px 20px;"
+                       placeholder="Nome de Usuário">
+                <button class="btn btn-primary align-middle" type="button"
+                        style="border-radius: 30px;border-top-left-radius: 0;border-bottom-left-radius: 0;font-size: 14px;border-color: #69A7FC;background: #69A7FC;height: 30px;">
+                    <svg class="bi bi-search" xmlns="http://www.w3.org/2000/svg" width="1em"
+                         height="1em" fill="currentColor" viewBox="0 0 16 16"
+                         style="margin-bottom: 10px;">
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="col-auto" style="text-align: right; margin-right: auto; margin-left: auto">
+            <div class="d-inline-block" style="margin-top: 6px;">
+                <span>
+                    Total: {{ users_count }}
+                    <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 24 24" width="1em"
+                         fill="currentColor"
+                         style="color: #69A7FC;width: 22px;height: 22px;margin-left: 4px;">
+                        <path d="M0 0h24v24H0z" fill="none"></path>
+                        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"></path>
+                    </svg>
+                </span>
+            </div>
+        </div>
+
+        <div class="col col-sm-auto col-md-auto col-lg-auto col-xl-auto col-xxl-auto text-end">
+            <div>
+                <select class="align-middle"
+                        style="height: 30px;border-radius: 30px;border-top-right-radius: 0;border-bottom-right-radius: 0;background: white;border-color: #69A7FC;padding-left: 20px;width: 120px;">
+                    <optgroup label="Ordenar">
+                        <option value="12">Ordenar</option>
+                        <option value="13">This is item 2</option>
+                        <option value="14">This is item 3</option>
+                    </optgroup>
+                </select>
+                <button class="btn btn-primary align-middle" type="button"
+                        style="background: #69A7FC;border-color: #69A7FC;border-radius: 30px;border-top-left-radius: 0;border-bottom-left-radius: 0;height: 30px;font-size: 14px;">
+                    <svg class="bi bi-filter-left" xmlns="http://www.w3.org/2000/svg" width="1em"
+                         height="1em" fill="currentColor" viewBox="0 0 16 16"
+                         style="width: 18px;height: 18px;margin-bottom: 6px;">
+                        <path d="M2 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row gy-1 row-cols-1 mw-100" style="margin-top: 28px;">
+
+        <div class="col d-none d-xxl-block">
+            <div class="row gx-5 gy-2 justify-content-start">
+                <div class="col text-center">
+                    <div class="overflow-auto" style="max-width: 280px;"><span>Nome de Usuário</span>
+                    </div>
+                </div>
+                <div class="col text-center">
+                    <div><span>Email</span></div>
+                </div>
+                <div class="col-2 text-center">
+                    <div class="d-inline-block"><span>Status</span></div>
+                </div>
+                <div class="col-1">
+                    <div class="d-inline-block"><span style="margin-left: auto;">Pedidos</span></div>
+                </div>
+                <div class="col-2 text-center" style="text-align: right;">
+                    <div class="d-inline-block"><span>Opções</span></div>
+                </div>
+            </div>
+            <hr>
+        </div>
+        {% for user in users %}
+            <div class="col">
+            <div class="row gx-5 gy-2 justify-content-start" style="font-size: 14px">
+                <div class="col text-center order-xxl-first">
+                    <div class="overflow-auto" style="width: 106px; margin-left: auto; margin-right: auto">
+                        <span>{{ user.username }}</span>
+                    </div>
+                </div>
+                <div class="col text-center order-xxl-2">
+                    <div class="overflow-auto" style="width: 186px;">
+                        {% if user.email != "" %}
+                            <span style="font-size: 14px">{{ user.email }}</span>
+                        {% else %}
+                            <span class="text-nowrap" style="color: var(--bs-danger)"> Email não registrado </span>
+                        {% endif %}
+
+                    </div>
+                </div>
+                <div class="col col-xxl-2 text-center order-xxl-3">
+                    <div class="d-inline-block">
+                        {% if user.is_active %}
+                            <span style="color: var(--bs-success);">Ativo</span>
+                        {% else %}
+                            <span style="color: var(--bs-danger);">Bloqueado</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-auto col-xxl-1 order-xxl-4">
+                    <div class="text-nowrap d-inline-block">
+                        <span><svg class="icon icon-tabler icon-tabler-brush"
+                                   xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                   viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                   stroke-linecap="round" stroke-linejoin="round">
+                                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                    <path d="M3 21v-4a4 4 0 1 1 4 4h-4"></path>
+                                                    <path d="M21 3a16 16 0 0 0 -12.8 10.2"></path>
+                                                    <path d="M21 3a16 16 0 0 1 -10.2 12.8"></path>
+                                                    <path d="M10.6 9a9 9 0 0 1 4.4 4.4"></path>
+                                                </svg>
+                            &nbsp;0
+                        </span>
+                    </div>
+                </div>
+                <div class="col-auto col-xxl-2 text-center order-xxl-last" style="text-align: right;">
+                    <div class="d-inline-block">
+                        <button class="btn btn-warning btn-sm me-2" type="button"
+                                style="border-radius: 20px;padding: 2px 4px;">
+                            <svg class="icon icon-tabler icon-tabler-password-user"
+                                 xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                 viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                 stroke-linecap="round" stroke-linejoin="round"
+                                 style="width: 20px;height: 20px;color: white;margin-bottom: 2px;">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M12 17v4"></path>
+                                <path d="M10 20l4 -2"></path>
+                                <path d="M10 18l4 2"></path>
+                                <path d="M5 17v4"></path>
+                                <path d="M3 20l4 -2"></path>
+                                <path d="M3 18l4 2"></path>
+                                <path d="M19 17v4"></path>
+                                <path d="M17 20l4 -2"></path>
+                                <path d="M17 18l4 2"></path>
+                                <path d="M9 6a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"></path>
+                                <path d="M7 14a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2"></path>
+                            </svg>
+                        </button>
+                        <button class="btn btn-danger btn-sm" type="button"
+                                style="border-radius: 20px;padding: 2px 4px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                 viewBox="0 0 24 24" fill="none"
+                                 style="width: 20px;height: 20px;margin-bottom: 2px;">
+                                <path d="M8.46457 14.1213C8.07404 14.5118 8.07404 15.145 8.46457 15.5355C8.85509 15.926 9.48825 15.926 9.87878 15.5355L15.5356 9.87862C15.9262 9.4881 15.9262 8.85493 15.5356 8.46441C15.1451 8.07388 14.5119 8.07388 14.1214 8.46441L8.46457 14.1213Z"
+                                      fill="currentColor"></path>
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                      d="M6.34315 17.6569C9.46734 20.781 14.5327 20.781 17.6569 17.6569C20.781 14.5327 20.781 9.46734 17.6569 6.34315C14.5327 3.21895 9.46734 3.21895 6.34315 6.34315C3.21895 9.46734 3.21895 14.5327 6.34315 17.6569ZM16.2426 16.2426C13.8995 18.5858 10.1005 18.5858 7.75736 16.2426C5.41421 13.8995 5.41421 10.1005 7.75736 7.75736C10.1005 5.41421 13.8995 5.41421 16.2426 7.75736C18.5858 10.1005 18.5858 13.8995 16.2426 16.2426Z"
+                                      fill="currentColor"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <hr>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+
+
