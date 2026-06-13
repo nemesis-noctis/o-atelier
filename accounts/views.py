@@ -34,12 +34,25 @@ class UserManagerView(LoginRequiredMixin, UserPassesTestMixin, View):
     def test_func(self):
         return self.request.user.is_superuser
 
+    def order_users(self, users, order_by):
+        orders = {
+            "username": "username",
+            "date": "date_joined",
+            "active": "is_active",
+            # TODO: Alterar para o valor certo quando as commissions forem adicionadas
+            "comms": "username"
+        }
+
+        return users.order_by(orders[order_by if order_by in orders else "username"])
+
     def get(self, request):
         all_users = CustomUser.objects.all()
         users_count = all_users.count()
+        order_by = request.GET.get("order_by", "")
         context = {
-            "users": all_users,
+            "users": self.order_users(all_users, order_by),
             "users_count": users_count,
+            "order_by": order_by,
         }
         return render(request, "accounts/artist/partials/user_manager.html", context=context)
 
