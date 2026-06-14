@@ -20,5 +20,6 @@ urlpatterns = [
     path("gallery-delete/<_type>/<int:pk>", views.GalleryDeleteView.as_view(),
          name="gallery_delete"),
     path("user-manager", views.UserManagerView.as_view(), name="user_manager"),
-    path("blocked-user/<b_status>/<int:pk>", views.BlockedUserView.as_view(), name="blocked_user")
+    path("blocked-user/<b_status>/<int:pk>", views.BlockedUserView.as_view(), name="blocked_user"),
+    path("change-user-password", views.ChangeUserPasswordView.as_view(), name="change_user_password")
 ]

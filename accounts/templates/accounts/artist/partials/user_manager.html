@@ -151,27 +151,35 @@
                 </div>
                 <div class="col-auto col-xxl-2 text-center order-xxl-last" style="text-align: right;">
                     <div class="d-inline-block">
-                        <button class="btn btn-warning btn-sm me-2" type="button"
-                                style="border-radius: 20px;padding: 2px 4px;">
-                            <svg class="icon icon-tabler icon-tabler-password-user"
-                                 xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
-                                 viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
-                                 stroke-linecap="round" stroke-linejoin="round"
-                                 style="width: 20px;height: 20px;color: white;margin-bottom: 2px;">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path d="M12 17v4"></path>
-                                <path d="M10 20l4 -2"></path>
-                                <path d="M10 18l4 2"></path>
-                                <path d="M5 17v4"></path>
-                                <path d="M3 20l4 -2"></path>
-                                <path d="M3 18l4 2"></path>
-                                <path d="M19 17v4"></path>
-                                <path d="M17 20l4 -2"></path>
-                                <path d="M17 18l4 2"></path>
-                                <path d="M9 6a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"></path>
-                                <path d="M7 14a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2"></path>
-                            </svg>
-                        </button>
+                        <form hx-get="{% url "change_user_password" %}"
+                              hx-trigger="submit"
+                              hx-target="#content"
+                              hx-swap="innerHTML"
+                              style="display: inline-block">
+                            <input type="hidden" name="user_pk" value="{{ user_.pk }}">
+                            <button class="btn btn-warning btn-sm me-2" type="submit"
+                                    style="border-radius: 20px;padding: 2px 4px;">
+                                <svg class="icon icon-tabler icon-tabler-password-user"
+                                     xmlns="http://www.w3.org/2000/svg" width="1em" height="1em"
+                                     viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+                                     stroke-linecap="round" stroke-linejoin="round"
+                                     style="width: 20px;height: 20px;color: white;margin-bottom: 2px;">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                    <path d="M12 17v4"></path>
+                                    <path d="M10 20l4 -2"></path>
+                                    <path d="M10 18l4 2"></path>
+                                    <path d="M5 17v4"></path>
+                                    <path d="M3 20l4 -2"></path>
+                                    <path d="M3 18l4 2"></path>
+                                    <path d="M19 17v4"></path>
+                                    <path d="M17 20l4 -2"></path>
+                                    <path d="M17 18l4 2"></path>
+                                    <path d="M9 6a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"></path>
+                                    <path d="M7 14a2 2 0 0 1 2 -2h6a2 2 0 0 1 2 2"></path>
+                                </svg>
+                            </button>
+                        </form>
+
                         {% if user_.is_active %}
                             <form hx-get="{% url "blocked_user" b_status="block" pk=user_.pk %}"
                                   hx-trigger="submit"

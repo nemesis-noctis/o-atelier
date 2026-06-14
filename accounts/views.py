@@ -60,6 +60,47 @@ class UserManagerView(LoginRequiredMixin, UserPassesTestMixin, View):
         return render(request, "accounts/artist/partials/user_manager.html", context=context)
 
 
+class ChangeUserPasswordView(LoginRequiredMixin, UserPassesTestMixin, View):
+    login_url = reverse_lazy("login")
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get_user_pk(self, request):
+        if request.method == "GET":
+            user_pk = request.GET.get("user_pk", "")
+            return CustomUser.objects.get(pk=user_pk)
+        else:
+            user_pk = request.POST.get("user_pk", "")
+            return CustomUser.objects.get(pk=user_pk)
+
+    def get(self, request):
+        user = self.get_user_pk(request)
+        context = {
+            "user_": user,
+            "form": forms.NewPasswordForm(user)
+        }
+        return render(request, "accounts/artist/partials/change_user_password.html", context=context)
+
+    def post(self, request):
+        user = self.get_user_pk(request)
+        form = forms.NewPasswordForm(user, request.POST)
+        context = {
+            "user_": user,
+            "form": form
+        }
+        if form.is_valid():
+            print("Valid")
+            form.save()
+            messages.success(request, "Senha alterada com sucesso.")
+            return render(request, "accounts/artist/partials/change_user_password.html", context=context)
+
+        else:
+            print("Invalid")
+            print(form.cleaned_data)
+            return render(request, "accounts/artist/partials/change_user_password.html", context=context)
+
+
 class BlockedUserView(LoginRequiredMixin, UserPassesTestMixin, View):
     login_url = reverse_lazy("login")
 
@@ -248,7 +289,7 @@ def login(request):
             return redirect("landing-page")
 
         else:
-            messages.error(request, "Email ou senha inválidos.")
+            messages.error(request, "Nome de usuário ou senha inválidos.")
             return render(request, "accounts/login.html", context={"form": form, "landing_data": get_landing_data()})
 
     form = forms.LoginForm(request)
