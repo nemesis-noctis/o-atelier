@@ -8,4 +8,9 @@
                  alt="{{ image.title }}">
         </a>
     </div>
+
+{% empty %}
+    <h2 class="hero-h mx-auto">
+        Nenhuma imagem encontrada.
+    </h2>
 {% endfor %}

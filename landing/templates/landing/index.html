@@ -22,7 +22,7 @@
                         <div class="d-inline">
                             <h1 class="hero-h">{{ landing_data.artist_name }}</h1>
                             <span class="hero-subtitle">{{ landing_data.occupation }}</span>
-                            <p class="my-3 hero-bio">{{ landing_data.bio }}</p>
+                            <p class="my-3 hero-bio">{{ landing_data.bio | linebreaksbr }}</p>
                         </div>
                         <ul class="list-unstyled d-inline-block">
                             <li class="social-network">
@@ -86,37 +86,49 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col col-xxl">
-                    <div class="mw-100 ps-0 pe-0 gallery-tag-container" style="width: 1280px;">
-                        <div class="row gy-1 gy-sm-1 gy-md-1 row-cols-2 row-cols-sm-2 row-cols-md-2 row-cols-lg-2 row-cols-xl-2">
-                            <div class="col col-sm col-md col-lg col-xl col-xxl text-center text-sm-center order-sm-first">
-                                <button hx-get="{% url "gallery-image-filter" %}?tag=all"
-                                        hx-trigger="click"
-                                        hx-target="#images-container"
-                                        hx-swap="innerHTML"
-                                        class="btn btn-primary gallery-all-tag-btn" type="button">All
-                                </button>
-                            </div>
-                            {% for tag in gallery_tags %}
-                                <div class="col col-sm col-md col-lg col-xl col-xxl text-center text-sm-center">
-                                    <button hx-get="{% url "gallery-image-filter" %}?tag={{ tag }}"
-                                            hx-trigger="click"
-                                            hx-target="#images-container"
-                                            hx-swap="innerHTML"
-                                            class="btn btn-primary gallery-tag"
-                                            type="button">{{ tag.tag|title }}</button>
-                                </div>
-                            {% endfor %}
+                <div class="col col-xxl" style="text-align: center">
+                    <div class="d-inline-flex overflow-auto gap-3 mw-100"
+                         style="height: 60px;">
+                        <div class="text-center text-sm-center order-sm-first">
+                            <input type="radio" class="gallery-tag-radio btn btn-primary"
+                                   name="gallery-editor-tag"
+                                   id="gallery-editor-tag-all"
+                                   checked>
+                            <label for="gallery-editor-tag-all"
+                                   hx-get="{% url "gallery-image-filter" %}?tag=all"
+                                   hx-trigger="click"
+                                   hx-target="#images-container"
+                                   hx-swap="innerHTML"
+                                   class="btn btn-primary gallery-tag" type="button"
+                                   style="padding: 6px 42px;">
+                                All
+                            </label>
+
                         </div>
+                        {% for tag in gallery_tags %}
+                            <div class="text-center text-sm-center">
+                                <input type="radio" class="gallery-tag-radio"
+                                       name="gallery-editor-tag"
+                                       id="gallery-editor-tag-{{ tag.pk }}">
+                                <label for="gallery-editor-tag-{{ tag.pk }}"
+                                       class="btn btn-primary gallery-tag"
+                                       hx-get="{% url "gallery-image-filter" %}?tag={{ tag }}"
+                                       hx-trigger="click"
+                                       hx-target="#images-container"
+                                       hx-swap="innerHTML">
+                                    {{ tag.tag|title }}
+                                </label>
+                            </div>
+                        {% endfor %}
                     </div>
+
                 </div>
             </div>
             <div hx-get="{% url "gallery-image-filter" %}?tag=all"
                  hx-trigger="load"
                  hx-swap="innerHTML"
                  id="images-container"
-                 class="row gx-2 gy-2 row-cols-1 row-cols-md-2 row-cols-xl-3 mt-4"
-                 data-bss-baguettebox="">
+                 class="row gx-2 gy-2 row-cols-1 row-cols-md-2 row-cols-xl-3 mt-4">
             </div>
         </div>
     </section>

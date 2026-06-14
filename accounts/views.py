@@ -13,6 +13,7 @@ from django.views import View
 from dotenv import load_dotenv
 
 import accounts.forms as forms
+from accounts.models import CustomUser
 from core.utils import redirect_if_logged, get_landing_data, add_current_data_to_post_if_empty, \
     render_gallery_images_from_tags
 from landing.models import GalleryTag, GalleryImage
@@ -25,6 +26,96 @@ load_dotenv(settings.BASE_DIR / ".env")
 @login_required
 def user_profile(request):
     return render(request, "accounts/profile/profile.html", context={"landing_data": get_landing_data()})
+
+
+class UserManagerView(LoginRequiredMixin, UserPassesTestMixin, View):
+    login_url = reverse_lazy("login")
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def order_users(self, users, order_by):
+        orders = {
+            "username": "username",
+            "date": "date_joined",
+            "active": "is_active",
+            # TODO: Alterar para o valor certo quando as commissions forem adicionadas
+            "comms": "username",
+            "spend": "username"
+        }
+
+        return users.order_by(orders[order_by if order_by in orders else "username"])
+
+    def get(self, request):
+        username_search = request.GET.get("username_search", "")
+        all_users = CustomUser.objects.all().filter(username__icontains=username_search, is_superuser=False)
+        users_count = all_users.count()
+        order_by = request.GET.get("order_by", "")
+        context = {
+            "users": self.order_users(all_users, order_by),
+            "users_count": users_count,
+            "order_by": order_by,
+            "username_search": username_search,
+        }
+        return render(request, "accounts/artist/partials/user_manager.html", context=context)
+
+
+class ChangeUserPasswordView(LoginRequiredMixin, UserPassesTestMixin, View):
+    login_url = reverse_lazy("login")
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get_user_pk(self, request):
+        if request.method == "GET":
+            user_pk = request.GET.get("user_pk", "")
+            return CustomUser.objects.get(pk=user_pk)
+        else:
+            user_pk = request.POST.get("user_pk", "")
+            return CustomUser.objects.get(pk=user_pk)
+
+    def get(self, request):
+        user = self.get_user_pk(request)
+        context = {
+            "user_": user,
+            "form": forms.NewPasswordForm(user)
+        }
+        return render(request, "accounts/artist/partials/change_user_password.html", context=context)
+
+    def post(self, request):
+        user = self.get_user_pk(request)
+        form = forms.NewPasswordForm(user, request.POST)
+        context = {
+            "user_": user,
+            "form": form
+        }
+        if form.is_valid():
+            print("Valid")
+            form.save()
+            messages.success(request, "Senha alterada com sucesso.")
+            return render(request, "accounts/artist/partials/change_user_password.html", context=context)
+
+        else:
+            print("Invalid")
+            print(form.cleaned_data)
+            return render(request, "accounts/artist/partials/change_user_password.html", context=context)
+
+
+class BlockedUserView(LoginRequiredMixin, UserPassesTestMixin, View):
+    login_url = reverse_lazy("login")
+
+    def test_func(self):
+        return self.request.user.is_superuser
+
+    def get(self, request, b_status, pk):
+        return render(request, f"accounts/artist/partials/user_block_confirmation.html",
+                      context={"b_status": b_status, "pk": pk})
+
+    def post(self, request, b_status, pk):
+        user = CustomUser.objects.get(pk=pk)
+        user.is_active = False if b_status == "block" else True
+        user.save()
+        return redirect("user_manager")
 
 
 class GalleryEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
@@ -46,6 +137,8 @@ class GalleryEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
 
 
 class GalleryAddView(LoginRequiredMixin, UserPassesTestMixin, View):
+    login_url = reverse_lazy("login")
+
     def test_func(self):
         return self.request.user.is_superuser
 
@@ -196,7 +289,7 @@ def login(request):
             return redirect("landing-page")
 
         else:
-            messages.error(request, "Email ou senha inválidos.")
+            messages.error(request, "Nome de usuário ou senha inválidos.")
             return render(request, "accounts/login.html", context={"form": form, "landing_data": get_landing_data()})
 
     form = forms.LoginForm(request)
