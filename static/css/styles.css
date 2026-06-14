@@ -176,20 +176,6 @@ img:hover {
     font-size: 30px;
 }
 
-.gallery-tag-container {
-    width: 1230px;
-    margin: auto;
-}
-
-.gallery-all-tag-btn {
-    background: linear-gradient(90deg, #69A7FC, var(--bs-primary-border-subtle));
-    padding: 6px 42px;
-    border-radius: 18px;
-    color: var(--bs-primary-bg-subtle);
-    font-size: 14px;
-    border-color: var(--bs-primary-bg-subtle);
-}
-
 .login-register-card {
     border-radius: 30px;
     background: rgb(255, 255, 255);
@@ -203,15 +189,6 @@ img:hover {
 
 .login-register-email-disclaimer {
     font-size: 12px;
-}
-
-.gallery-tag {
-    color: #69A7FC;
-    border-radius: 18px;
-    font-size: 14px;
-    border-color: #69A7FC;
-    background: rgb(255, 255, 255);
-    padding: 6px 24px;
 }
 
 .login-register-labels {
@@ -263,6 +240,42 @@ img:hover {
 #artist-icon-input {
     display: inline-block;
     font-size: 12px;
+}
+
+.sidebar-radio, .gallery-editor-tag-radio, .gallery-tag-radio {
+    display: none;
+}
+
+.sidebar-label {
+    cursor: pointer;
+}
+
+.sidebar-label svg {
+    color: #69A7FC;
+    font-size: 20px;
+}
+
+.sidebar-radio:checked + .sidebar-label {
+    background-color: #69A7FC;
+}
+
+.sidebar-radio:checked + .sidebar-label svg {
+    color: white;
+}
+
+.gallery-tag {
+    color: #69A7FC;
+    border-radius: 18px;
+    font-size: 14px;
+    border-color: #69A7FC;
+    background: rgb(255, 255, 255);
+    padding: 6px 24px;
+    white-space: nowrap;
+}
+
+.gallery-tag-radio:checked + .gallery-tag {
+    background: linear-gradient(90deg, #69A7FC, var(--bs-primary-border-subtle));
+    color: white;
 }
 
 .mt-9 {

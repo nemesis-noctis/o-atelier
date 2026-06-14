@@ -28,15 +28,19 @@
             </div>
             <div class="col col-sm col-md col-lg col-xl col-xxl text-lg-end text-xl-end text-xxl-end">
                 <div class="d-inline-block" style="width: 100%; text-align: right;">
-                    <button class="btn btn-primary"
-                            type="button"
-                            hx-get="{% url 'gallery_editor_image_filter' %}?tag=all"
-                            hx-target="#gallery"
-                            hx-trigger="click"
-                            hx-swap="innerHTML"
-                            style="background: #69A7FC;color: white;padding: 5px 32px;font-size: 12px;border-radius: 18px;border-width: 1px;border-color: #69A7FC;">
+                    <input type="radio" class="gallery-tag-radio"
+                           name="gallery-tag"
+                           id="gallery-tag-all"
+                           checked>
+                    <label for="gallery-tag-all"
+                           class="gallery-tag btn btn-primary"
+                           hx-get="{% url 'gallery_editor_image_filter' %}?tag=all"
+                           hx-target="#gallery"
+                           hx-trigger="click"
+                           hx-swap="innerHTML"
+                           style="padding: 5px 32px; font-size: 12px;">
                         All
-                    </button>
+                    </label>
                 </div>
             </div>
             <div class="col-auto">
@@ -45,14 +49,18 @@
 
                     {% for tag in gallery_tags %}
                         <div class="d-flex">
-                            <button class="btn btn-primary" type="button"
-                                    hx-get="{% url 'gallery_editor_image_filter' %}?tag={{ tag }}"
-                                    hx-target="#gallery"
-                                    hx-trigger="click"
-                                    hx-swap="innerHTML"
-                                    style="background: white;color: #69A7FC;padding: 5px 14px;font-size: 12px;border-radius: 18px;border-bottom-right-radius: 0;border-top-right-radius: 0;border-width: 1px; white-space: nowrap">
+                            <input type="radio" class="gallery-tag-radio"
+                                   name="gallery-tag"
+                                   id="gallery-tag-{{ tag.pk }}">
+                            <label for="gallery-tag-{{ tag.pk }}"
+                                   class="gallery-tag btn btn-primary"
+                                   hx-get="{% url 'gallery_editor_image_filter' %}?tag={{ tag }}"
+                                   hx-target="#gallery"
+                                   hx-trigger="click"
+                                   hx-swap="innerHTML"
+                                   style="padding: 5px 14px;font-size: 12px;border-radius: 18px;border-bottom-right-radius: 0;border-top-right-radius: 0;">
                                 {{ tag.tag }}
-                            </button>
+                            </label>
 
                             <button class="btn btn-danger"
                                     hx-get="{% url "gallery_delete" _type="tag" pk=tag.pk %}"
