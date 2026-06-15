@@ -14,7 +14,6 @@ from dotenv import load_dotenv
 
 import accounts.forms as forms
 from accounts.models import CustomUser
-from core.models import Notification
 from core.notifications import render_notification
 from core.utils import redirect_if_logged, get_landing_data, add_current_data_to_post_if_empty, \
     render_gallery_images_from_tags
@@ -58,12 +57,12 @@ class NotificationsView(LoginRequiredMixin, View):
 
         notification_pk = request.POST.get("pk", "")
         if not notification_pk == "":
-            notification = Notification.objects.get(pk=notification_pk)
-            notification.is_read = False
+            notification = request.user.notifications.get(pk=notification_pk)
+            notification.is_read = True
             notification.save()
 
         # notification icon reloader
-        messages.success(request, message="")
+        messages.success(request, message="None")
         return redirect("notifications")
 
 
