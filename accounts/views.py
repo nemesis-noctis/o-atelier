@@ -9,6 +9,7 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmVie
     PasswordResetCompleteView
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from django.utils.translation import gettext as _
 from django.views import View
 from dotenv import load_dotenv
 
@@ -128,14 +129,11 @@ class ChangeUserPasswordView(LoginRequiredMixin, UserPassesTestMixin, View):
             "form": form
         }
         if form.is_valid():
-            print("Valid")
             form.save()
-            messages.success(request, "Senha alterada com sucesso.")
+            messages.success(request, _("Senha alterada com sucesso."))
             return render(request, "accounts/artist/partials/change_user_password.html", context=context)
 
         else:
-            print("Invalid")
-            print(form.cleaned_data)
             return render(request, "accounts/artist/partials/change_user_password.html", context=context)
 
 
@@ -256,7 +254,7 @@ class LandingPageEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
 
         if form.is_valid():
             form.save()
-            messages.success(request, "Dados alterados com sucesso.")
+            messages.success(request, _("Dados alterados com sucesso."))
             return render(request, "accounts/artist/partials/landing_page_editor.html",
                           context={"form": form})
 
@@ -295,7 +293,7 @@ class ChangeAccountDataView(LoginRequiredMixin, View):
             user = authenticate(request, username=data["username"], password=data["new_password1"])
             login_user(request, user)
 
-            messages.success(request, "Dados alterados com sucesso.")
+            messages.success(request, _("Dados alterados com sucesso."))
             return render(request, "accounts/partials/change_account_data.html",
                           context={"form": form})
 
@@ -327,7 +325,7 @@ def login(request):
             return redirect("landing-page")
 
         else:
-            messages.error(request, "Nome de usuário ou senha inválidos.")
+            messages.error(request, _("Nome de usuário ou senha inválidos."))
             return render(request, "accounts/login.html", context={"form": form, "landing_data": get_landing_data()})
 
     form = forms.LoginForm(request)
@@ -340,7 +338,7 @@ def register(request):
         form = forms.RegisterForm(request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, "Sua conta foi criada com sucesso, prossiga com o login.")
+            messages.success(request, _("Sua conta foi criada com sucesso, prossiga com o login."))
             return redirect("login")
         else:
             return render(request, "accounts/register.html", context={"form": form, "landing_data": get_landing_data()})

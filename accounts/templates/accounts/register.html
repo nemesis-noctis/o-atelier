@@ -1,7 +1,8 @@
+{% load i18n %}
 {% extends "base.html" %}
 
 {% block title %}
-    Register
+    {% translate 'Register' %}
 {% endblock %}
 
 
@@ -12,9 +13,9 @@
         <div class="container">
             <div class="row mt-8 mb-3">
                 <div class="col-md-8 col-xl-6 text-center mx-auto">
-                    <h2 class="display-6 mb-1 login-register-h">Criar uma conta</h2>
+                    <h2 class="display-6 mb-1 login-register-h">{% translate 'Criar uma conta' %}</h2>
                     <p class="login-register-subtitle">
-                        Crie uma conta para pedir commissions e acompanhar seus status.
+                        {% translate 'Crie uma conta para pedir commissions e acompanhar seus status.' %}
                     </p>
                 </div>
             </div>
@@ -25,35 +26,35 @@
                             <form class="text-center" method="post" novalidate>
                                 {% csrf_token %}
                                 <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
-                                    <label class="form-label login-register-labels">Nome de Usuário</label>
-                                    {{ form.username }}
-                                    {{ form.errors.username }}
+                                    <label class="form-label login-register-labels">{% translate 'Nome de Usuário<' %}/label>
+                                        {{ form.username }}
+                                        {{ form.errors.username }}
                                 </div>
                                 <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
-                                    <label class="form-label login-register-labels">Senha</label>
+                                    <label class="form-label login-register-labels">{% translate 'Senha' %}</label>
                                     {{ form.password1 }}
                                     {{ form.errors.password1 }}
                                 </div>
                                 <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
-                                    <label class="form-label login-register-labels">Confirme sua senha</label>
+                                    <label class="form-label login-register-labels">{% translate 'Confirme sua senha' %}</label>
                                     {{ form.password2 }}
                                     {{ form.errors.password2 }}
                                 </div>
                                 <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
-                                    <label class="form-label login-register-labels">Email (opcional)</label>
+                                    <label class="form-label login-register-labels">{% translate 'Email (opcional)' %}</label>
                                     {{ form.email }}
                                     {{ form.errors.email }}
                                     <span class="login-register-email-disclaimer">
-                                        <span style="color: rgb(100, 116, 139); text-align: center">Opcional — usado apenas para recuperação de senha.</span>
+                                        <span style="color: rgb(100, 116, 139); text-align: center">{% translate 'Opcional — usado apenas para recuperação de senha.' %}</span>
                                     </span>
                                 </div>
                                 <div class="mb-3">
                                     <button class="btn btn-primary w-100 d-block login-register-btn" type="submit">
-                                        Criar Conta
+                                        {% translate 'Criar Conta' %}
                                     </button>
                                 </div>
-                                <p class="text-muted form-redirect-text">Já tem uma conta?
-                                    <a href="{% url "login" %}" class="login-register-link">Entrar</a>
+                                <p class="text-muted form-redirect-text">{% translate 'Já tem uma conta?' %}
+                                    <a href="{% url "login" %}" class="login-register-link">{% translate 'Entrar' %}</a>
                                 </p>
                             </form>
                         </div>

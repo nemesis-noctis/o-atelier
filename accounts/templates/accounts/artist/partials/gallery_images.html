@@ -1,3 +1,4 @@
+{% load i18n %}
 {% for image in gallery_images %}
 
     <div class="col">
@@ -37,6 +38,6 @@
     </div>
 {% empty %}
     <h2 class="hero-h mx-auto" style="font-size: 28px; white-space: nowrap">
-        Nenhuma imagem encontrada.
+        {% translate 'Nenhuma imagem encontrada.' %}
     </h2>
 {% endfor %}

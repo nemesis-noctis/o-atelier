@@ -8,6 +8,7 @@ NOTIFICATION_TEMPLATES = {
 
 
 def render_notification(notification: Notification):
+    # TODO: Ajustar quando adicionar o idioma inglês pro site.
     template = NOTIFICATION_TEMPLATES.get(notification.template_key,
                                           _noop("Ocorreu um erro e esta mensagem não pode ser processada."))
     message = template.format(**notification.context)
