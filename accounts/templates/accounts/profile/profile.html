@@ -35,6 +35,10 @@
                                             <input type="radio" id="sidebar-option-1" name="sidebar-option"
                                                    class="sidebar-radio">
                                             <label class="sidebar-label nav-link py-3 border-bottom rounded-0"
+                                                   hx-get="{% url "notifications" %}"
+                                                   hx-target="#content"
+                                                   hx-trigger="click"
+                                                   hx-swap="innerHTML"
                                                    for="sidebar-option-1">
                                                 <svg xmlns="http://www.w3.org/2000/svg" height="1em"
                                                      viewBox="0 0 24 24" width="1em" fill="currentColor">

@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 
 import accounts.forms as forms
 from accounts.models import CustomUser
+from core.notifications import render_notification
 from core.utils import redirect_if_logged, get_landing_data, add_current_data_to_post_if_empty, \
     render_gallery_images_from_tags
 from landing.models import GalleryTag, GalleryImage
@@ -26,6 +27,25 @@ load_dotenv(settings.BASE_DIR / ".env")
 @login_required
 def user_profile(request):
     return render(request, "accounts/profile/profile.html", context={"landing_data": get_landing_data()})
+
+
+class NotificationsView(LoginRequiredMixin, View):
+    login_url = reverse_lazy("login")
+
+    def get(self, request):
+        notifications = request.user.notifications.all().order_by("-created_at")
+        rendered_notifications = []
+        if len(notifications) == 0:
+            pass
+        else:
+            for notification in notifications:
+                rendered_notification = render_notification(notification)
+                rendered_notifications.append(rendered_notification)
+
+        context = {
+            "notifications": rendered_notifications
+        }
+        return render(request, "accounts/profile/notifications.html", context=context)
 
 
 class UserManagerView(LoginRequiredMixin, UserPassesTestMixin, View):
