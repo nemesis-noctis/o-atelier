@@ -9,12 +9,13 @@ NOTIFICATION_TEMPLATES = {
 
 def render_notification(notification: Notification):
     template = NOTIFICATION_TEMPLATES.get(notification.template_key,
-                                          _noop("Ocorreu um erro e esta mensagem não pude ser processada."))
+                                          _noop("Ocorreu um erro e esta mensagem não pode ser processada."))
     message = template.format(**notification.context)
     notification_data = {
         "message": message,
+        "level": notification.level,
         "is_read": notification.is_read,
-        "created_at": notification.created_at
+        "created_at": notification.created_at,
     }
 
     return notification_data

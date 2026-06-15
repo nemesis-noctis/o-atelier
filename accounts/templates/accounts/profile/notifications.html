@@ -7,14 +7,30 @@
             <div class="col">
                 <div class="mw-100"
                      style="background: #EDF5FE;border-radius: 18px;padding: 20px 20px;text-align: right;padding-top: 10px;width: 600px;margin-right: auto;margin-left: auto;">
-                
+
                     <div style="text-align: left;height: 26px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 24 24" width="1em"
-                             fill="currentColor"
-                             style="width: 26px;height: 26px;margin-right: 10px;color: var(--bs-yellow);">
-                            <path d="M0 0h24v24H0z" fill="none"></path>
-                            <path d="m23 12-2.44-2.78.34-3.68-3.61-.82-1.89-3.18L12 3 8.6 1.54 6.71 4.72l-3.61.81.34 3.68L1 12l2.44 2.78-.34 3.69 3.61.82 1.89 3.18L12 21l3.4 1.46 1.89-3.18 3.61-.82-.34-3.68L23 12zm-10 5h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
-                        </svg>
+                        {% if notification.level|upper == "ALERT" %}
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 24 24" width="1em"
+                                 fill="currentColor" style="color: var(--bs-red);width: 26px;height: 26px;">
+                                <path d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"></path>
+                            </svg>
+
+                        {% elif notification.level|upper == "SUCCESS" %}
+                            <svg class="bi bi-patch-check-fll" xmlns="http://www.w3.org/2000/svg" width="1em"
+                                 height="1em" viewBox="0 0 16 16" fill="currentColor"
+                                 style="color: rgb(2,156,28);width: 26px;height: 26px;">
+                                <path fill-rule="evenodd"
+                                      d="M10.067.87a2.89 2.89 0 0 0-4.134 0l-.622.638-.89-.011a2.89 2.89 0 0 0-2.924 2.924l.01.89-.636.622a2.89 2.89 0 0 0 0 4.134l.637.622-.011.89a2.89 2.89 0 0 0 2.924 2.924l.89-.01.622.636a2.89 2.89 0 0 0 4.134 0l.622-.637.89.011a2.89 2.89 0 0 0 2.924-2.924l-.01-.89.636-.622a2.89 2.89 0 0 0 0-4.134l-.637-.622.011-.89a2.89 2.89 0 0 0-2.924-2.924l-.89.01-.622-.636zm.287 5.984a.5.5 0 0 0-.708-.708L7 8.793 5.854 7.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z"></path>
+                            </svg>
+                        {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 24 24" width="1em"
+                                 fill="currentColor"
+                                 style="width: 26px;height: 26px;margin-right: 10px;color: var(--bs-yellow);">
+                                <path d="M0 0h24v24H0z" fill="none"></path>
+                                <path d="m23 12-2.44-2.78.34-3.68-3.61-.82-1.89-3.18L12 3 8.6 1.54 6.71 4.72l-3.61.81.34 3.68L1 12l2.44 2.78-.34 3.69 3.61.82 1.89 3.18L12 21l3.4 1.46 1.89-3.18 3.61-.82-.34-3.68L23 12zm-10 5h-2v-2h2v2zm0-4h-2V7h2v6z"></path>
+                            </svg>
+                        {% endif %}
                     </div>
 
 
