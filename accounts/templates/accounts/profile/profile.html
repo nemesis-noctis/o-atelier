@@ -12,10 +12,7 @@
         <div class="mw-100 overflow-auto pe-0"
              style="width: 1000px;margin: auto;background: #ffffff;border-radius: 30px;border: 1px solid var(--bs-dark-border-subtle);height: 600px;">
             <div class="row mw-100" style="height: 100%;">
-
-
                 <div class="me-0 z-1 position-absolute" style="width: auto;height: auto;">
-
                     <div class=" top-0 bottom-0 flex-column flex-shrink-0 me-0"
                          style="width: 4.5rem;">
                         <div>
@@ -178,7 +175,8 @@
                      class="col"
                      hx-get="{% url "change_account_data" %}"
                      hx-trigger="load"
-                     hx-swap="innerHTML">
+                     hx-swap="innerHTML"
+                     style="padding-right: 0">
                 </div>
             </div>
 

@@ -40,7 +40,6 @@ img:hover {
     color: #029c1c;
     font-family: 'B612 Mono', monospace;
     font-size: 14px;
-    border-color: #abfeb8;
 }
 
 .comms-slot {
@@ -242,6 +241,13 @@ img:hover {
     font-size: 12px;
 }
 
+#artist-icon-input a {
+    display: inline-block;
+    width: 360px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
 .sidebar-radio, .gallery-editor-tag-radio, .gallery-tag-radio {
     display: none;
 }
@@ -277,6 +283,7 @@ img:hover {
     background: linear-gradient(90deg, #69A7FC, var(--bs-primary-border-subtle));
     color: white;
 }
+
 
 .mt-9 {
     margin-top: 9rem !important;
