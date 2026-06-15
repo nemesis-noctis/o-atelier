@@ -12,6 +12,7 @@ def render_notification(notification: Notification):
                                           _noop("Ocorreu um erro e esta mensagem não pode ser processada."))
     message = template.format(**notification.context)
     notification_data = {
+        "pk": notification.pk,
         "message": message,
         "level": notification.level,
         "is_read": notification.is_read,

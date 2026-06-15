@@ -14,6 +14,7 @@ from dotenv import load_dotenv
 
 import accounts.forms as forms
 from accounts.models import CustomUser
+from core.models import Notification
 from core.notifications import render_notification
 from core.utils import redirect_if_logged, get_landing_data, add_current_data_to_post_if_empty, \
     render_gallery_images_from_tags
@@ -46,6 +47,19 @@ class NotificationsView(LoginRequiredMixin, View):
             "notifications": rendered_notifications
         }
         return render(request, "accounts/profile/notifications.html", context=context)
+
+    def post(self, request):
+        read_all = request.POST.get("read_all", "")
+        if not read_all == "":
+            request.user.notifications.all().update(is_read=True)
+
+        notification_pk = request.POST.get("pk", "")
+        if not notification_pk == "":
+            notification = Notification.objects.get(pk=notification_pk)
+            notification.is_read = True
+            notification.save()
+
+        return redirect("notifications")
 
 
 class UserManagerView(LoginRequiredMixin, UserPassesTestMixin, View):
