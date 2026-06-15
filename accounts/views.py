@@ -27,7 +27,12 @@ load_dotenv(settings.BASE_DIR / ".env")
 
 @login_required
 def user_profile(request):
-    return render(request, "accounts/profile/profile.html", context={"landing_data": get_landing_data()})
+    new_notifications = False
+    if request.user.notifications.filter(is_read=False).exists():
+        new_notifications = True
+
+    return render(request, "accounts/profile/profile.html",
+                  context={"landing_data": get_landing_data(), "new_notifications": new_notifications})
 
 
 class NotificationsView(LoginRequiredMixin, View):
@@ -36,9 +41,7 @@ class NotificationsView(LoginRequiredMixin, View):
     def get(self, request):
         notifications = request.user.notifications.all().order_by("-created_at")
         rendered_notifications = []
-        if len(notifications) == 0:
-            pass
-        else:
+        if notifications:
             for notification in notifications:
                 rendered_notification = render_notification(notification)
                 rendered_notifications.append(rendered_notification)
@@ -51,14 +54,16 @@ class NotificationsView(LoginRequiredMixin, View):
     def post(self, request):
         read_all = request.POST.get("read_all", "")
         if not read_all == "":
-            request.user.notifications.all().update(is_read=True)
+            request.user.notifications.all().update(is_read=False)
 
         notification_pk = request.POST.get("pk", "")
         if not notification_pk == "":
             notification = Notification.objects.get(pk=notification_pk)
-            notification.is_read = True
+            notification.is_read = False
             notification.save()
 
+        # notification icon reloader
+        messages.success(request, message="")
         return redirect("notifications")
 
 

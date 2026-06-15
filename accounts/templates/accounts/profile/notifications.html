@@ -3,6 +3,15 @@
         Notificações
     </h2>
     <div style="text-align: right;">
+        {% if messages %}
+            {% for message in messages %}
+                <span id="notification-icon-reloader" style="display: none"
+                      hx-get=""
+                      hx-target=".notification-navbar"
+                      hx-select=".notification-navbar"
+                      hx-trigger="load"></span>
+            {% endfor %}
+        {% endif %}
         <form hx-post="{% url "notifications" %}"
               hx-trigger="submit"
               hx-target="#content"
