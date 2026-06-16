@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, Pass
     PasswordChangeForm
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.forms import ModelForm
+from django.utils.translation import gettext as _
 
 from landing.models import LandingPage, GalleryTag, GalleryImage
 
@@ -34,7 +35,7 @@ class RegisterForm(UserCreationForm):
     def clean_email(self):
         entered_email = self.cleaned_data["email"]
         if get_user_model().objects.filter(email=entered_email, is_active=False).exists():
-            raise (forms.ValidationError("Este email foi bloqueado e não pode mais ser usado."))
+            raise (forms.ValidationError(_("Este email foi bloqueado e não pode mais ser usado.")))
 
 
 class LoginForm(AuthenticationForm):
@@ -72,14 +73,14 @@ class EditAccountDataForm(PasswordChangeForm):
     def clean_username(self):
         entered_username = self.cleaned_data["username"]
         if get_user_model().objects.filter(username=entered_username).exclude(pk=self.user.pk).exists():
-            raise (forms.ValidationError("O nome de usuário já existe."))
+            raise (forms.ValidationError(_("O nome de usuário já existe.")))
         return entered_username
 
     def clean_email(self):
         entered_email = self.cleaned_data["email"]
         if get_user_model().objects.filter(email=entered_email, is_active=False).exclude(
                 pk=self.user.pk).exists():
-            raise (forms.ValidationError("Este email foi bloqueado e não pode mais ser usado."))
+            raise (forms.ValidationError(_("Este email foi bloqueado e não pode mais ser usado.")))
         return entered_email
 
 
@@ -116,4 +117,4 @@ class AddTagToGalleryForm(ModelForm):
         for field in self.fields.values():
             field.widget.attrs = {"class": "align-middle",
                                   "style": "width: 124px;border-radius: 30px;border-top-right-radius: 0;border-bottom-right-radius: 0;border: 1px inset #69A7FC;padding: 1px 10px;",
-                                  "placeholder": "Adicionar Tag"}
+                                  "placeholder": _("Adicionar Tag")}

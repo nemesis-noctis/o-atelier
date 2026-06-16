@@ -1,6 +1,8 @@
+{% load i18n %}
+
 <div style="width: 100%;height: 100%;">
     <h2 style="color: rgb(76,84,92);font-family: 'Abhaya Libre', serif;text-align: center;font-size: 22px;padding-top: 15px;padding-bottom: 10px;border-bottom: 1px solid var(--bs-dark-border-subtle);">
-        Editar página inicial</h2>
+        {% translate 'Editar página inicial' %}</h2>
     <form method="post"
           hx-post="{% url "landing_page_editor" %}"
           hx-trigger="submit"
@@ -15,42 +17,42 @@
                     <div style="width: 300px;margin-right: auto;margin-left: auto;">
                         <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
                             <label class="form-label login-register-labels">
-                                Commissions Abertas:
+                                {% translate 'Commissions Abertas:' %}
                                 {{ form.comms_status }}
                                 {{ form.errors.comms_status }}
                             </label>
                         </div>
                         <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
                             <label class="form-label login-register-labels">
-                                Alterar quantidade de vagas:
+                                {% translate 'Alterar quantidade de vagas:' %}
                             </label>
                             {{ form.slots }}
                             {{ form.errors.slots }}
                         </div>
                         <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
                             <label class="form-label login-register-labels">
-                                Alterar instagram:
+                                {% translate 'Alterar instagram:' %}
                             </label>
                             {{ form.instagram }}
                             {{ form.errors.instagram }}
                         </div>
                         <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
                             <label class="form-label login-register-labels">
-                                Alterar twitter:
+                                {% translate 'Alterar twitter:' %}
                             </label>
                             {{ form.twitter }}
                             {{ form.errors.twitter }}
                         </div>
                         <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
                             <label class="form-label login-register-labels">
-                                Alterar youtube:
+                                {% translate 'Alterar youtube:' %}
                             </label>
                             {{ form.youtube }}
                             {{ form.errors.youtube }}
                         </div>
                         <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
                             <label class="form-label login-register-labels">
-                                Alterar tiktok:</label>
+                                {% translate 'Alterar tiktok:' %}</label>
                             {{ form.tiktok }}
                             {{ form.errors.tiktok }}
                         </div>
@@ -76,7 +78,7 @@
                              class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
                             <label class="form-label login-register-labels"
                                    style="margin-bottom: 0; font-size: 14px;">
-                                Icone:
+                                {% translate 'Icone:' %}
                             </label>
                             <br>
                             {{ form.artist_icon }}
@@ -84,21 +86,21 @@
                         </div>
                         <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
                             <label class="form-label login-register-labels">
-                                Alterar nome:
+                                {% translate 'Alterar nome:' %}
                             </label>
                             {{ form.artist_name }}
                             {{ form.errors.artist_name }}
                         </div>
                         <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
                             <label class="form-label login-register-labels">
-                                Alterar ocupação:
+                                {% translate 'Alterar ocupação:' %}
                             </label>
                             {{ form.occupation }}
                             {{ form.errors.occupation }}
                         </div>
                         <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
                             <label class="form-label login-register-labels">
-                                Alterar bio:
+                                {% translate 'Alterar bio:' %}
                             </label>
                             {{ form.bio }}
                             {{ form.errors.bio }}
@@ -107,7 +109,7 @@
                             <button
                                     class="btn btn-primary w-100 d-block login-register-btn"
                                     type="submit">
-                                Atualizar Dados
+                                {% translate 'Atualizar Dados' %}
                             </button>
                         </div>
                     </div>

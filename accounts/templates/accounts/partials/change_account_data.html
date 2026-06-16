@@ -1,6 +1,8 @@
+{% load i18n %}
+
 <div style="width: 100%;height: 100%;">
     <h2 style="color: rgb(76,84,92);font-family: 'Abhaya Libre', serif;text-align: center;font-size: 22px;padding-top: 15px;padding-bottom: 10px;border-bottom: 1px solid var(--bs-dark-border-subtle);">
-        Alterar dados da conta
+        {% translate 'Alterar dados da conta' %}
     </h2>
     <div class="mt-4" style="margin-top: 60px;text-align: center;">
         <h1 class="hero-h" style="color: rgb(86, 99, 112);">
@@ -15,7 +17,7 @@
             {% if user.email != "" %}
                 <span class="hero-subtitle">{{ user.email }}</span>
             {% else %}
-                <span class="hero-subtitle">Esta conta não possui um email.</span>
+                <span class="hero-subtitle">{% translate 'Esta conta não possui um email.' %}</span>
             {% endif %}
         {% endif %}
 
@@ -33,7 +35,7 @@
                 {% csrf_token %}
                 <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
                     <label class="form-label login-register-labels">
-                        Alterar nome de usuário:
+                        {% translate 'Alterar nome de usuário:' %}
                     </label>
                     {{ form.username }}
                     {{ form.errors.username }}
@@ -41,7 +43,7 @@
                 </div>
                 <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
                     <label class="form-label login-register-labels">
-                        Alterar email:
+                        {% translate 'Alterar email:' %}
                     </label>
                     {{ form.email }}
                     {{ form.errors.email }}
@@ -49,17 +51,17 @@
                 </div>
                 <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
                     <label class="form-label login-register-labels">
-                        Alterar senha:
+                        {% translate 'Alterar senha:' %}
                     </label>
                     {{ form.new_password1 }}
                     <span style="font-size: 11px"
-                          class="hero-subtitle">Deixe em branco caso não deseje alterar sua senha.</span>
+                          class="hero-subtitle">{% translate 'Deixe em branco caso não deseje alterar sua senha.' %}</span>
                     {{ form.errors.new_password1 }}
 
                 </div>
                 <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
                     <label class="form-label login-register-labels">
-                        Digite sua senha atual:
+                        {% translate 'Digite sua senha atual:' %}
                     </label>
                     {{ form.old_password }}
                     {{ form.errors.old_password }}
@@ -67,7 +69,7 @@
                 </div>
                 <div class="mb-3">
                     <button class="btn btn-primary w-100 d-block login-register-btn" type="submit">
-                        Atualizar Dados
+                        {% translate 'Atualizar Dados' %}
                     </button>
                 </div>
             </form>

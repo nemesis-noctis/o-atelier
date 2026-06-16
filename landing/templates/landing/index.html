@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load i18n %}
 
 {% block title %}
     O' Atelier
@@ -82,7 +83,7 @@
         <div class="container">
             <div class="row mb-3">
                 <div class="col-md-8 col-xl-6 text-center mx-auto">
-                    <h2 class="gallery-h">Galeria</h2>
+                    <h2 class="gallery-h">{% translate 'Galeria' %}</h2>
                 </div>
             </div>
             <div class="row">
@@ -101,7 +102,7 @@
                                    hx-swap="innerHTML"
                                    class="btn btn-primary gallery-tag" type="button"
                                    style="padding: 6px 42px;">
-                                All
+                                {% translate 'All' %}
                             </label>
 
                         </div>

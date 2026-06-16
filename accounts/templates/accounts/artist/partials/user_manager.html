@@ -1,6 +1,8 @@
+{% load i18n %}
+
 <div style="width: 100%;height: 100%;">
     <h2 style="color: rgb(76,84,92);font-family: 'Abhaya Libre', serif;text-align: center;font-size: 22px;padding-top: 15px;padding-bottom: 10px;border-bottom: 1px solid var(--bs-dark-border-subtle);">
-        Gerenciar Usuários
+        {% translate 'Gerenciar Usuários' %}
     </h2>
     <div class="row mw-100 gy-1" style="margin-right: auto; margin-left: auto">
         <div class="col" style="text-align: justify;">
@@ -12,7 +14,7 @@
                     <input type="search" class="align-middle" name="username_search"
                            value="{{ username_search }}"
                            style="border-top-left-radius: 30px;border-bottom-left-radius: 30px;border-color: #69A7FC;width: 294px;padding: 1px 20px;"
-                           placeholder="Nome de Usuário">
+                           placeholder="{% translate 'Nome de Usuário' %}">
                     <button class="btn btn-primary align-middle" type="submit"
                             style="border-radius: 30px;border-top-left-radius: 0;border-bottom-left-radius: 0;font-size: 14px;border-color: #69A7FC;background: #69A7FC;height: 30px;">
                         <svg class="bi bi-search" xmlns="http://www.w3.org/2000/svg" width="1em"
@@ -28,7 +30,7 @@
         <div class="col-auto" style="text-align: right; margin-right: auto; margin-left: auto">
             <div class="d-inline-block" style="margin-top: 6px;">
                 <span>
-                    Total: {{ users_count }}
+                    {% translate 'Total:' %} {{ users_count }}
                     <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 24 24" width="1em"
                          fill="currentColor"
                          style="color: #69A7FC;width: 22px;height: 22px;margin-left: 4px;">
@@ -50,12 +52,12 @@
                             style="height: 30px;border-radius: 30px;border-top-right-radius: 0;border-bottom-right-radius: 0; padding-left: 10px;background: white;border-color: #69A7FC;width: 120px;">
                         <optgroup label="Ordenar">
                             <option {% if order_by == "username" or order_by == "" %}selected {% endif %}value="username">
-                                Nome
+                                {% translate 'Nome' %}
                             </option>
-                            <option {% if order_by == "comms" %}selected {% endif %}value="comms">Pedidos</option>
-                            <option {% if order_by == "spend" %}selected {% endif %}value="comms">Gasto</option>
-                            <option {% if order_by == "date" %}selected {% endif %}value="date">Criado em</option>
-                            <option {% if order_by == "active" %}selected {% endif %}value="active">Bloqueado</option>
+                            <option {% if order_by == "comms" %}selected {% endif %}value="comms">{% translate 'Pedidos' %}</option>
+                            <option {% if order_by == "spend" %}selected {% endif %}value="comms">{% translate 'Gasto' %}</option>
+                            <option {% if order_by == "date" %}selected {% endif %}value="date">{% translate 'Criado em' %}</option>
+                            <option {% if order_by == "active" %}selected {% endif %}value="active">{% translate 'Bloqueado' %}</option>
                         </optgroup>
                     </select>
                     <button class="btn btn-primary align-middle"
@@ -78,20 +80,20 @@
         <div class="col d-none d-xxl-block">
             <div class="row gx-5 gy-2 justify-content-start">
                 <div class="col text-center">
-                    <div class="overflow-auto" style="max-width: 280px;"><span>Nome de Usuário</span>
+                    <div class="overflow-auto" style="max-width: 280px;"><span>{% translate 'Nome de Usuário' %}</span>
                     </div>
                 </div>
                 <div class="col text-center">
-                    <div><span>Email</span></div>
+                    <div><span>{% translate 'Email' %}</span></div>
                 </div>
                 <div class="col-2 text-center">
-                    <div class="d-inline-block"><span>Status</span></div>
+                    <div class="d-inline-block"><span>{% translate 'Status' %}</span></div>
                 </div>
                 <div class="col-1">
-                    <div class="d-inline-block"><span style="margin-left: auto;">Pedidos</span></div>
+                    <div class="d-inline-block"><span style="margin-left: auto;">{% translate 'Pedidos' %}</span></div>
                 </div>
                 <div class="col-2 text-center" style="text-align: right;">
-                    <div class="d-inline-block"><span>Opções</span></div>
+                    <div class="d-inline-block"><span>{% translate 'Opções' %}</span></div>
                 </div>
             </div>
             <hr>
@@ -109,7 +111,8 @@
                         {% if user_.email != "" %}
                             <span style="font-size: 14px">{{ user_.email }}</span>
                         {% else %}
-                            <span class="text-nowrap" style="color: var(--bs-danger)"> Email não registrado </span>
+                            <span class="text-nowrap"
+                                  style="color: var(--bs-danger)"> {% translate 'Email não registrado' %} </span>
                         {% endif %}
 
                     </div>
@@ -117,9 +120,9 @@
                 <div class="col col-xxl-2 text-center order-xxl-3" style="width: 130px; text-align: center">
                     <div class="d-inline-block">
                         {% if user_.is_active %}
-                            <span style="color: var(--bs-success);">Ativo</span>
+                            <span style="color: var(--bs-success);">{% translate 'Ativo' %}</span>
                         {% else %}
-                            <span style="color: var(--bs-danger);">Bloqueado</span>
+                            <span style="color: var(--bs-danger);">{% translate 'Bloqueado' %}</span>
                         {% endif %}
                     </div>
                 </div>

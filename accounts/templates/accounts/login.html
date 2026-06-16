@@ -1,7 +1,8 @@
+{% load i18n %}
 {% extends "base.html" %}
 
 {% block title %}
-    Login
+    {% translate 'Login' %}
 {% endblock %}
 
 {% block content %}
@@ -11,7 +12,7 @@
         <div class="container">
             <div class="row mt-8 mb-3">
                 <div class="col-md-8 col-xl-6 text-center mx-auto">
-                    <h2 class="display-6 mb-1 login-register-h">Bem-Vindo(a) de Volta</h2>
+                    <h2 class="display-6 mb-1 login-register-h">{% translate 'Bem-Vindo(a) de Volta' %}</h2>
 
                     {% if messages %}
                         {% for message in messages %}
@@ -23,7 +24,7 @@
                         {% endfor %}
 
                     {% else %}
-                        <p class="login-register-subtitle">Entre na sua conta para continuar</p>
+                        <p class="login-register-subtitle">{% translate 'Entre na sua conta para continuar' %}</p>
                     {% endif %}
 
                 </div>
@@ -35,30 +36,30 @@
                             <form class="text-center" method="post" novalidate>
                                 {% csrf_token %}
                                 <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
-                                    <label class="form-label login-register-labels">Nome de Usuário</label>
+                                    <label class="form-label login-register-labels">{% translate 'Nome de Usuário' %}</label>
                                     {{ form.username }}
                                     {{ form.errors.username }}
                                 </div>
                                 <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
-                                    <label class="form-label login-register-labels">Senha</label>
+                                    <label class="form-label login-register-labels">{% translate 'Senha' %}</label>
                                     {{ form.password }}
                                     {{ form.errors.password }}
                                     {{ forms.non_field_errors }}
                                     <div class="password-recovery-container">
                                         <a href="{% url "password-reset" %}" class="password-recovery-link">
-                                            Esqueci minha senha
+                                            {% translate 'Esqueci minha senha' %}
                                         </a>
                                     </div>
                                 </div>
                                 <div class="mb-3">
                                     <button class="btn btn-primary w-100 d-block login-register-btn" type="submit">
-                                        Login
+                                        {% translate 'Login' %}
                                     </button>
                                 </div>
                                 <p class="text-muted form-redirect-text">
-                                    Não tem uma conta?
+                                    {% translate 'Não tem uma conta?' %}
                                     <a href="{% url "register" %}" class="login-register-link">
-                                        Criar Conta
+                                        {% translate 'Criar Conta' %}
                                     </a>
                                 </p>
                             </form>
