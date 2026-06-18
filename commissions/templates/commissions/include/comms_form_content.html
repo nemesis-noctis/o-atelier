@@ -1,0 +1,786 @@
+{% load i18n %}
+{% load static %}
+
+<form class="mw-100" style="margin-top: 40px;width: 1000px;margin-right: auto;margin-left: auto;">
+    <div class="row gy-5 row-cols-1 justify-content-center">
+
+        {% if type == "character" %}
+            <div class="col">
+                <div>
+                    <h5 style="color: rgb(90,92,94);font-size: 18px;">
+                        {% translate 'Tipo de Personagem:' %}
+                    </h5>
+                    <div class="carousel slide mw-100" data-bs-ride="false" id="carousel-1"
+                         style="width: 600px;height: auto;margin-right: auto;margin-left: auto;">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img class="img-fluid w-100 d-block"
+                                     src="{% static "images/image-placeholder-500x500.jpeg" %}"
+                                     alt="Slide Image"
+                                     style="border-radius: 30px; max-height: 340px; object-fit: cover">
+                            </div>
+                        </div>
+                        <div>
+                            <a class="carousel-control-prev" role="button" data-bs-slide="prev"
+                               href="#carousel-1">
+                                    <span class="carousel-control-prev-icon">
+
+                                    </span>
+                                <span class="visually-hidden">
+                                        Previous
+                                    </span>
+                            </a>
+                            <a class="carousel-control-next" role="button" data-bs-slide="next"
+                               href="#carousel-1">
+                                    <span class="carousel-control-next-icon">
+
+                                    </span>
+                                <span class="visually-hidden">
+                                        Next
+                                    </span>
+                            </a>
+                        </div>
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carousel-1" data-bs-slide-to="0"
+                                    class="active"></button>
+                            <button type="button" data-bs-target="#carousel-1"
+                                    data-bs-slide-to="1"></button>
+                            <button type="button" data-bs-target="#carousel-1"
+                                    data-bs-slide-to="2"></button>
+                        </div>
+                    </div>
+                    <div class="row row-cols-2 row-cols-sm-4 row-cols-xxl-4 mw-100 justify-content-center"
+                         style="width: 500px;margin-right: auto;margin-left: auto;margin-top: 12px;">
+                        <div class="col" style="text-align: left;">
+                            <div class="form-check d-inline-block">
+                                <input class="form-check-input" type="radio" id="formCheck-1">
+                                <label class="form-check-label" for="formCheck-1"
+                                       style="color: #6476a0;">{% translate 'Humano' %}</label>
+                            </div>
+                        </div>
+                        <div class="col" style="text-align: left;">
+                            <div class="form-check d-inline-block">
+                                <input class="form-check-input" type="radio" id="formCheck-4">
+                                <label class="form-check-label" for="formCheck-4"
+                                       style="color: #6476a0;">{% translate 'Chibi' %}</label>
+                            </div>
+                        </div>
+                        <div class="col" style="text-align: left;">
+                            <div class="form-check d-inline-block">
+                                <input class="form-check-input" type="radio" id="formCheck-3">
+                                <label class="form-check-label" for="formCheck-3"
+                                       style="color: #6476a0;">{% translate 'Furry' %}</label>
+                            </div>
+                        </div>
+                        <div class="col" style="text-align: left;">
+                            <div class="form-check d-inline-block">
+                                <input class="form-check-input" type="radio" id="formCheck-2">
+                                <label class="form-check-label" for="formCheck-2"
+                                       style="color: #6476a0;">{% translate 'Criatura' %}</label>
+                            </div>
+                        </div>
+                        <div class="col" style="text-align: left;width: 200px;">
+                            <label class="form-label" style="font-size: 14px;color: rgb(90,92,94);">
+                                {% translate 'Número de Personagens' %}
+                            </label>
+                            <input class="form-control" type="number">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if type == "object" %}
+            <div class="col">
+                <div>
+                    <h5 style="color: rgb(90,92,94);font-size: 18px;">
+                        {% translate 'Complexidade:' %}
+                    </h5>
+                    <div class="carousel slide mw-100" data-bs-ride="false" id="carousel-1"
+                         style="width: 600px;height: auto;margin-right: auto;margin-left: auto;">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img class="img-fluid w-100 d-block"
+                                     src="{% static "images/image-placeholder-500x500.jpeg" %}"
+                                     alt="Slide Image"
+                                     style="border-radius: 30px; max-height: 340px; object-fit: cover">
+                            </div>
+                        </div>
+                        <div>
+                            <a class="carousel-control-prev" role="button" data-bs-slide="prev"
+                               href="#carousel-1">
+                                        <span class="carousel-control-prev-icon">
+
+                                        </span>
+                                <span class="visually-hidden">
+                                            Previous
+                                        </span>
+                            </a>
+                            <a class="carousel-control-next" role="button" data-bs-slide="next"
+                               href="#carousel-1">
+                                        <span class="carousel-control-next-icon">
+
+                                        </span>
+                                <span class="visually-hidden">
+                                            Next</span>
+                            </a>
+                        </div>
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carousel-1" data-bs-slide-to="0"
+                                    class="active"></button>
+                            <button type="button" data-bs-target="#carousel-1"
+                                    data-bs-slide-to="1"></button>
+                            <button type="button" data-bs-target="#carousel-1"
+                                    data-bs-slide-to="2"></button>
+                        </div>
+                    </div>
+                    <div class="row row-cols-2 row-cols-sm-3 row-cols-xxl-3 mw-100 justify-content-center"
+                         style="width: 500px;margin-right: auto;margin-left: auto;margin-top: 12px;">
+                        <div class="col" style="text-align: left;">
+                            <div class="form-check d-inline-block">
+                                <input class="form-check-input" type="radio" id="formCheck-1">
+                                <label class="form-check-label" for="formCheck-1"
+                                       style="color: #6476a0;">{% translate 'Simples' %}</label>
+                            </div>
+                        </div>
+                        <div class="col" style="text-align: left;">
+                            <div class="form-check d-inline-block">
+                                <input class="form-check-input" type="radio" id="formCheck-4">
+                                <label class="form-check-label" for="formCheck-4"
+                                       style="color: #6476a0;">{% translate 'Complexo' %}</label>
+                            </div>
+                        </div>
+                        <div class="col" style="text-align: center;width: 200px;">
+                            <label class="form-label" style="font-size: 14px;color: rgb(90,92,94);">
+                                {% translate 'Número de Objetos' %}
+                            </label>
+                            <input class="form-control" type="number">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% if type == "character" or type == "object" %}
+            <div class="col">
+                <div>
+                    <h5 style="color: rgb(90,92,94);font-size: 18px;">
+                        {% translate 'Tipo de Arte:' %}
+                    </h5>
+                    <div class="carousel slide mw-100" data-bs-ride="false" id="carousel-2"
+                         style="width: 600px;height: auto;margin-right: auto;margin-left: auto;">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img class="img-fluid w-100 d-block"
+                                     src="{% static "images/image-placeholder-500x500.jpeg" %}"
+                                     alt="Slide Image"
+                                     style="border-radius: 30px; max-height: 340px; object-fit: cover">
+                            </div>
+                        </div>
+                        <div><a class="carousel-control-prev" role="button" data-bs-slide="prev"
+                                href="#carousel-2">
+                                    <span class="carousel-control-prev-icon">
+
+                                    </span>
+                            <span class="visually-hidden">
+                                        Previous
+                                    </span>
+                        </a>
+                            <a class="carousel-control-next" role="button" data-bs-slide="next"
+                               href="#carousel-2">
+                                        <span class="carousel-control-next-icon">
+
+                                        </span>
+                                <span class="visually-hidden">
+                                            Next
+                                        </span>
+                            </a>
+                        </div>
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carousel-2" data-bs-slide-to="0"
+                                    class="active"></button>
+                            <button type="button" data-bs-target="#carousel-2"
+                                    data-bs-slide-to="1"></button>
+                            <button type="button" data-bs-target="#carousel-2"
+                                    data-bs-slide-to="2"></button>
+                            <button type="button" data-bs-target="#carousel-2"
+                                    data-bs-slide-to="3"></button>
+                        </div>
+                    </div>
+                    <div class="row row-cols-2 row-cols-sm-3 mw-100 justify-content-center"
+                         style="width: 500px;margin-right: auto;margin-left: auto;margin-top: 12px;">
+                        <div class="col" style="text-align: center;">
+                            <div class="form-check d-inline-block">
+                                <input class="form-check-input"
+                                       type="radio" id="formCheck-5">
+                                <label class="form-check-label" for="formCheck-5"
+                                       style="color: #6476a0;">{% translate 'Ilustração' %}</label>
+                            </div>
+                        </div>
+                        <div class="col" style="text-align: center;">
+                            <div class="form-check d-inline-block">
+                                <input class="form-check-input" type="radio" id="formCheck-6">
+                                <label class="form-check-label" for="formCheck-6"
+                                       style="color: #6476a0;">{% translate 'Cena' %}</label>
+                            </div>
+                        </div>
+                        <div class="col" style="text-align: center;">
+                            <div class="form-check d-inline-block">
+                                <input class="form-check-input" type="radio" id="formCheck-7">
+                                <label class="form-check-label" for="formCheck-7"
+                                       style="color: #6476a0;">{% translate 'Sheet' %}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if type == "character" %}
+            <div class="col">
+                <div>
+                    <h5 style="color: rgb(90,92,94);font-size: 18px;">
+                        {% translate 'Tipo de Vestimenta:' %}
+                    </h5>
+                    <div class="carousel slide mw-100" data-bs-ride="false" id="carousel-3"
+                         style="width: 600px;height: auto;margin-right: auto;margin-left: auto;">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img class="img-fluid w-100 d-block"
+                                     src="{% static "images/image-placeholder-500x500.jpeg" %}"
+                                     alt="Slide Image"
+                                     style="border-radius: 30px; max-height: 340px; object-fit: cover">
+                            </div>
+                        </div>
+                        <div>
+                            <a class="carousel-control-prev" role="button" data-bs-slide="prev"
+                               href="#carousel-3">
+                                        <span class="carousel-control-prev-icon">
+
+                                        </span>
+                                <span class="visually-hidden">
+                                            Previous
+                                        </span>
+                            </a>
+                            <a class="carousel-control-next" role="button" data-bs-slide="next"
+                               href="#carousel-3">
+                                        <span class="carousel-control-next-icon">
+
+                                        </span>
+                                <span class="visually-hidden">
+                                            Next
+                                        </span>
+                            </a>
+                        </div>
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carousel-3" data-bs-slide-to="0"
+                                    class="active"></button>
+                            <button type="button" data-bs-target="#carousel-3"
+                                    data-bs-slide-to="1"></button>
+                            <button type="button" data-bs-target="#carousel-3"
+                                    data-bs-slide-to="2"></button>
+                            <button type="button" data-bs-target="#carousel-3"
+                                    data-bs-slide-to="3"></button>
+                        </div>
+                    </div>
+                    <div class="row row-cols-2 row-cols-sm-4 mw-100 justify-content-center"
+                         style="width: 500px;margin-right: auto;margin-left: auto;margin-top: 12px;">
+                        <div class="col" style="text-align: left;">
+                            <div class="form-check d-inline-block">
+                                <input class="form-check-input" type="radio" id="formCheck-8">
+                                <label class="form-check-label" for="formCheck-8"
+                                       style="color: #6476a0;">{% translate 'Manequim' %}</label>
+                            </div>
+                        </div>
+                        <div class="col" style="text-align: left;">
+                            <div class="form-check d-inline-block">
+                                <input class="form-check-input" type="radio" id="formCheck-9">
+                                <label class="form-check-label" for="formCheck-9"
+                                       style="color: #6476a0;">{% translate 'Simples' %}</label>
+                            </div>
+                        </div>
+                        <div class="col" style="text-align: left;">
+                            <div class="form-check d-inline-block">
+                                <input class="form-check-input"
+                                       type="radio"
+                                       id="formCheck-10">
+                                <label class="form-check-label" for="formCheck-10"
+                                       style="color: #6476a0;">{% translate 'Complexa' %}</label>
+                            </div>
+                        </div>
+                        <div class="col" style="text-align: left;">
+                            <div class="form-check d-inline-block">
+                                <input class="form-check-input"
+                                       type="radio"
+                                       id="formCheck-11">
+                                <label class="form-check-label" for="formCheck-11" style="color: #6476a0;">
+                                    {% translate '+ Objetos' %}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% if type == "character" %}
+
+
+            <div class="col">
+                <div>
+                    <h5 style="color: rgb(90,92,94);font-size: 18px;">
+                        {% translate 'Tipo de Corpo:' %}
+                    </h5>
+                    <div class="carousel slide mw-100" data-bs-ride="false" id="carousel-6"
+                         style="width: 600px;height: auto;margin-right: auto;margin-left: auto;">
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img class="img-fluid w-100 d-block"
+                                     src="{% static "images/image-placeholder-500x500.jpeg" %}"
+                                     alt="Slide Image"
+                                     style="border-radius: 30px; max-height: 340px; object-fit: cover">
+                            </div>
+                        </div>
+                        <div><a class="carousel-control-prev" role="button" data-bs-slide="prev"
+                                href="#carousel-6">
+                                    <span class="carousel-control-prev-icon">
+
+                                    </span>
+                            <span class="visually-hidden">
+                                        Previous
+                                    </span>
+                        </a>
+                            <a class="carousel-control-next" role="button" data-bs-slide="next"
+                               href="#carousel-6">
+                                        <span class="carousel-control-next-icon">
+
+                                        </span>
+                                <span class="visually-hidden">
+                                            Next
+                                        </span>
+                            </a>
+                        </div>
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carousel-6" data-bs-slide-to="0"
+                                    class="active"></button>
+                            <button type="button" data-bs-target="#carousel-6"
+                                    data-bs-slide-to="1"></button>
+                            <button type="button" data-bs-target="#carousel-6"
+                                    data-bs-slide-to="2"></button>
+                            <button type="button" data-bs-target="#carousel-6"
+                                    data-bs-slide-to="3"></button>
+                        </div>
+                    </div>
+                    <div class="row row-cols-2 row-cols-sm-3 mw-100 justify-content-center"
+                         style="width: 500px;margin-right: auto;margin-left: auto;margin-top: 12px;">
+                        <div class="col" style="text-align: center;">
+                            <div class="form-check d-inline-block">
+                                <input class="form-check-input"
+                                       type="radio"
+                                       id="formCheck-20">
+                                <label class="form-check-label" for="formCheck-20"
+                                       style="color: #6476a0;">{% translate 'Busto' %}</label>
+                            </div>
+                        </div>
+                        <div class="col" style="text-align: center;">
+                            <div class="form-check d-inline-block">
+                                <input class="form-check-input"
+                                       type="radio"
+                                       id="formCheck-21">
+                                <label class="form-check-label" for="formCheck-21"
+                                       style="color: #6476a0;">{% translate 'Quadril' %}</label>
+                            </div>
+                        </div>
+                        <div class="col" style="text-align: center;">
+                            <div class="form-check d-inline-block">
+                                <input class="form-check-input"
+                                       type="radio"
+                                       id="formCheck-22">
+                                <label class="form-check-label" for="formCheck-22"
+                                       style="color: #6476a0;">{% translate 'Inteiro' %}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="col">
+            <div>
+                <h5 style="color: rgb(90,92,94);font-size: 18px;">
+                    {% translate 'Etapas:' %}
+                </h5>
+                <div class="carousel slide mw-100" data-bs-ride="false" id="carousel-5"
+                     style="width: 600px;height: auto;margin-right: auto;margin-left: auto;">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img class="img-fluid w-100 d-block"
+                                 src="{% static "images/image-placeholder-500x500.jpeg" %}"
+                                 alt="Slide Image"
+                                 style="border-radius: 30px; max-height: 340px; object-fit: cover">
+                        </div>
+                    </div>
+                    <div>
+                        <a class="carousel-control-prev" role="button" data-bs-slide="prev"
+                           href="#carousel-5">
+                                    <span class="carousel-control-prev-icon">
+
+                                    </span>
+                            <span class="visually-hidden">
+                                        Previous
+                                    </span>
+                        </a>
+                        <a class="carousel-control-next" role="button" data-bs-slide="next"
+                           href="#carousel-5">
+                                    <span class="carousel-control-next-icon">
+
+                                    </span>
+                            <span class="visually-hidden">
+                                        Next
+                                    </span>
+                        </a>
+                    </div>
+                    <div class="carousel-indicators">
+                        <button type="button" data-bs-target="#carousel-5" data-bs-slide-to="0"
+                                class="active"></button>
+                        <button type="button" data-bs-target="#carousel-5"
+                                data-bs-slide-to="1"></button>
+                        <button type="button" data-bs-target="#carousel-5"
+                                data-bs-slide-to="2"></button>
+                        <button type="button" data-bs-target="#carousel-5"
+                                data-bs-slide-to="3"></button>
+                    </div>
+                </div>
+                <div class="row row-cols-2 row-cols-sm-4 mw-100 justify-content-center"
+                     style="width: 500px;margin-right: auto;margin-left: auto;margin-top: 12px;">
+                    <div class="col" style="text-align: left;">
+                        <div class="form-check d-inline-block">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   id="formCheck-16">
+                            <label
+                                    class="form-check-label" for="formCheck-16"
+                                    style="color: #6476a0;">{% translate 'Concept' %}</label>
+                        </div>
+                    </div>
+                    <div class="col" style="text-align: left;">
+                        <div class="form-check d-inline-block">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   id="formCheck-17">
+                            <label class="form-check-label" for="formCheck-17"
+                                   style="color: #6476a0;">{% translate 'Lineart' %}</label>
+                        </div>
+                    </div>
+                    <div class="col" style="text-align: left;">
+                        <div class="form-check d-inline-block">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   id="formCheck-18">
+                            <label class="form-check-label" for="formCheck-18" style="color: #6476a0;">
+                                {% translate 'Cor Flat' %}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col" style="text-align: left;">
+                        <div class="form-check d-inline-block">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   id="formCheck-19">
+                            <label
+                                    class="form-check-label" for="formCheck-19"
+                                    style="color: #6476a0;">{% translate 'Render' %}</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div>
+                <h5 style="color: rgb(90,92,94);font-size: 18px;">
+                    {% translate 'Tipo de Fundo:' %}
+                </h5>
+                <div class="carousel slide mw-100" data-bs-ride="false" id="carousel-4"
+                     style="width: 600px;height: auto;margin-right: auto;margin-left: auto;">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img class="img-fluid w-100 d-block"
+                                 src="{% static "images/image-placeholder-500x500.jpeg" %}"
+                                 alt="Slide Image"
+                                 style="border-radius: 30px; max-height: 340px; object-fit: cover">
+                        </div>
+                    </div>
+                    <div>
+                        <a class="carousel-control-prev" role="button" data-bs-slide="prev"
+                           href="#carousel-4">
+                                <span class="carousel-control-prev-icon">
+
+                                </span>
+                            <span class="visually-hidden">
+                                    Previous
+                                    </span>
+                        </a>
+                        <a class="carousel-control-next" role="button" data-bs-slide="next"
+                           href="#carousel-4">
+                                    <span class="carousel-control-next-icon">
+
+                                    </span>
+                            <span class="visually-hidden">
+                                        Next
+                                    </span>
+                        </a>
+                    </div>
+                    <div class="carousel-indicators">
+                        <button type="button" data-bs-target="#carousel-4" data-bs-slide-to="0"
+                                class="active"></button>
+                        <button type="button" data-bs-target="#carousel-4"
+                                data-bs-slide-to="1"></button>
+                        <button type="button" data-bs-target="#carousel-4"
+                                data-bs-slide-to="2"></button>
+                        <button type="button" data-bs-target="#carousel-4"
+                                data-bs-slide-to="3"></button>
+                    </div>
+                </div>
+                <div class="row row-cols-2 row-cols-sm-3 mw-100 justify-content-center"
+                     style="width: 500px;margin-right: auto;margin-left: auto;margin-top: 12px;">
+                    <div class="col" style="text-align: center;">
+                        <div class="form-check d-inline-block">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   id="formCheck-12">
+                            <label class="form-check-label" for="formCheck-12"
+                                   style="color: #6476a0;">{% translate 'Preset' %}</label>
+                        </div>
+                    </div>
+                    <div class="col" style="text-align: center;">
+                        <div class="form-check d-inline-block">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   id="formCheck-13">
+                            <label class="form-check-label" for="formCheck-13"
+                                   style="color: #6476a0;">{% translate 'Simples' %}</label>
+                        </div>
+                    </div>
+                    <div class="col" style="text-align: center;">
+                        <div class="form-check d-inline-block">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   id="formCheck-14">
+                            <label class="form-check-label" for="formCheck-14"
+                                   style="color: #6476a0;">{% translate 'Complexa' %}</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div>
+                <h5 style="color: rgb(90,92,94);font-size: 18px;">
+                    {% translate 'Proporção da Tela:' %}
+                </h5>
+                <div class="carousel slide mw-100" data-bs-ride="false" id="carousel-7"
+                     style="width: 600px;height: auto;margin-right: auto;margin-left: auto;">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img class="img-fluid w-100 d-block"
+                                 src="{% static "images/image-placeholder-500x500.jpeg" %}"
+                                 alt="Slide Image"
+                                 style="border-radius: 30px; max-height: 340px; object-fit: cover">
+                        </div>
+                    </div>
+                    <div><a class="carousel-control-prev" role="button" data-bs-slide="prev"
+                            href="#carousel-7">
+                                <span class="carousel-control-prev-icon">
+
+                                </span>
+                        <span class="visually-hidden">
+                                    Previous
+                                </span>
+                    </a>
+                        <a class="carousel-control-next" role="button" data-bs-slide="next"
+                           href="#carousel-7">
+                                    <span class="carousel-control-next-icon">
+
+                                    </span>
+                            <span class="visually-hidden">
+                                        Next
+                                    </span>
+                        </a>
+                    </div>
+                    <div class="carousel-indicators">
+                        <button type="button" data-bs-target="#carousel-7" data-bs-slide-to="0"
+                                class="active"></button>
+                        <button type="button" data-bs-target="#carousel-7"
+                                data-bs-slide-to="1"></button>
+                        <button type="button" data-bs-target="#carousel-7"
+                                data-bs-slide-to="2"></button>
+                        <button type="button" data-bs-target="#carousel-7"
+                                data-bs-slide-to="3"></button>
+                    </div>
+                </div>
+                <div class="row row-cols-2 row-cols-sm-4 mw-100 justify-content-center"
+                     style="width: 500px;margin-right: auto;margin-left: auto;margin-top: 12px;">
+                    <div class="col" style="text-align: left;">
+                        <div class="form-check d-inline-block">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   id="formCheck-15">
+                            <label class="form-check-label" for="formCheck-15"
+                                   style="color: #6476a0;">1:1</label>
+                        </div>
+                    </div>
+                    <div class="col" style="text-align: left;">
+                        <div class="form-check d-inline-block">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   id="formCheck-23">
+                            <label class="form-check-label" for="formCheck-23"
+                                   style="color: #6476a0;">3:2</label>
+                        </div>
+                    </div>
+                    <div class="col" style="text-align: left;">
+                        <div class="form-check d-inline-block">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   id="formCheck-24">
+                            <label class="form-check-label" for="formCheck-24"
+                                   style="color: #6476a0;">16:9</label>
+                        </div>
+                    </div>
+                    <div class="col" style="text-align: left;">
+                        <div class="form-check d-inline-block">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   id="formCheck-25">
+                            <label class="form-check-label" for="formCheck-25"
+                                   style="color: #6476a0;">1.85.1</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div>
+                <h5 style="color: rgb(90,92,94);font-size: 18px;">
+                    {% translate 'Efeitos:' %}
+                </h5>
+                <div class="carousel slide mw-100" data-bs-ride="false" id="carousel-8"
+                     style="width: 600px;height: auto;margin-right: auto;margin-left: auto;">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img class="img-fluid w-100 d-block"
+                                 src="{% static "images/image-placeholder-500x500.jpeg" %}"
+                                 alt="Slide Image"
+                                 style="border-radius: 30px;max-height: 340px; object-fit: cover">
+                        </div>
+                    </div>
+                    <div><a class="carousel-control-prev" role="button" data-bs-slide="prev"
+                            href="#carousel-8">
+                                <span class="carousel-control-prev-icon">
+
+                                </span>
+                        <span class="visually-hidden">
+                                    Previous
+                                </span>
+                    </a>
+                        <a class="carousel-control-next" role="button" data-bs-slide="next"
+                           href="#carousel-8">
+                                    <span class="carousel-control-next-icon">
+
+                                    </span>
+                            <span class="visually-hidden">
+                                        Next
+                                    </span>
+                        </a>
+                    </div>
+                    <div class="carousel-indicators">
+                        <button type="button" data-bs-target="#carousel-8" data-bs-slide-to="0"
+                                class="active"></button>
+                        <button type="button" data-bs-target="#carousel-8"
+                                data-bs-slide-to="1"></button>
+                        <button type="button" data-bs-target="#carousel-8"
+                                data-bs-slide-to="2"></button>
+                        <button type="button" data-bs-target="#carousel-8"
+                                data-bs-slide-to="3"></button>
+                    </div>
+                </div>
+                <div class="row row-cols-2 row-cols-sm-4 mw-100 justify-content-center"
+                     style="width: 500px;margin-right: auto;margin-left: auto;margin-top: 12px;">
+                    <div class="col" style="text-align: left;">
+                        <div class="form-check d-inline-block">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   id="formCheck-26">
+                            <label class="form-check-label" for="formCheck-26"
+                                   style="color: #6476a0;">{% translate 'Sim' %}</label>
+                        </div>
+                    </div>
+                    <div class="col" style="text-align: left;">
+                        <div class="form-check d-inline-block">
+                            <input class="form-check-input"
+                                   type="radio"
+                                   id="formCheck-27">
+                            <label class="form-check-label" for="formCheck-27"
+                                   style="color: #6476a0;">{% translate 'Não' %}</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mw-100" style="margin-top: 34px;width: 800px;margin-right: auto;margin-left: auto;">
+        <div class="row gy-4 row-cols-1 justify-content-center">
+            <div class="col">
+                <h6 style="color: rgb(90,92,94);">
+                    {% translate 'Descrição' %}
+                </h6>
+                <textarea class="form-control" style="height: 200px;"></textarea>
+            </div>
+            <div class="col" style="text-align: left;">
+                <div>
+                    <h6 style="color: rgb(90,92,94);">
+                        {% translate 'Imagens de Referência' %}
+                    </h6>
+                    <input class="form-control" type="file" multiple="">
+                </div>
+            </div>
+            <div class="col" style="text-align: left;">
+                <div>
+                    <label class="form-label" style="color: rgb(90,92,94);">
+                        {% translate 'Rede social para contato:' %}
+                    </label>
+                    <input class="form-control" type="text" placeholder="">
+                    <label class="form-label" style="color: rgb(90,92,94);">
+                        {% translate 'Nome na rede social:' %}
+                    </label>
+                    <input class="form-control" type="text">
+                </div>
+            </div>
+            <div class="col" style="text-align: left;">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox"
+                           id="formCheck-28">
+                    <label class="form-check-label"
+                           for="formCheck-28"
+                           style="color: rgb(90,92,94);">
+                        {% translate 'Irei fazer uso comercial da arte.' %}
+                    </label>
+                </div>
+            </div>
+            <div class="col" style="text-align: left;">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox"
+                           id="formCheck-29">
+                    <label class="form-check-label"
+                           for="formCheck-29"
+                           style="color: rgb(90,92,94);">
+                        {% translate 'Permito que meu pedido seja divulgado nas redes sociais e portfólio do artista.' %}
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
