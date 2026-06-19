@@ -7,10 +7,9 @@
 
 {% block content %}
     {% include "include/navbar.html" %}
-    <section class="mt-9 mt-sm-9 mt-md-9 mt-lg-9 mt-xl-9 mt-xxl-10"
+    <section class="mt-8 mt-sm-9 mt-md-9 mt-lg-9 mt-xl-9 mt-xxl-9"
              style="width: 100%;height: 100%;color: rgb(33, 37, 41);">
         <div class="row gx-4 gy-2 mw-100" style="width: 1800px;margin-left: auto;margin-right: auto;">
-
             <div class="col-auto col-sm-auto col-md-auto col-lg-6 col-xl-7 col-xxl-8">
                 <div class="card" style="border-radius: 30px;padding: 36px 10px;border-color: rgba(105,167,252,0.36);">
                     <div class="card-body" style="text-align: center;">
@@ -27,7 +26,7 @@
                         <p class="card-text" style="color: rgb(90,92,94);">
                             {% translate 'Preencha as informações pedidas abaixo para consultar uma estimativa do valor final e prosseguir com o pedido.' %}
                         </p>
-                        {% include 'commissions/include/comms_form_content.html' %}
+                        {% include 'commissions/include/comms_form_content.html' with form=form %}
                     </div>
                 </div>
             </div>
@@ -47,7 +46,8 @@
                         <p class="mw-100 card-text" style="margin-top: 20px;font-size: 15px;">
                             {% translate 'Clique no botão abaixo para calcular o valor estimado do pedido antes de prosseguir.' %}
                         </p>
-                        <button class="btn btn-primary d-block commission-request-btn" type="button"
+                        <button class="btn btn-primary d-block commission-request-btn" type="submit"
+                                form="commission-form"
                                 style="margin: 12px auto;">
                             {% translate 'Calcular Valor' %}
                         </button>
@@ -60,7 +60,8 @@
                         <a class="card-link" href="#" style="color: #69A7FC;">
                             {% translate 'Termos e Condições' %}
                         </a>
-                        <button class="btn btn-primary d-block commission-request-btn" type="button"
+                        <button class="btn btn-primary d-block commission-request-btn" type="submit"
+                                form="commission-form"
                                 style="margin: 12px auto;">
                             {% translate 'Prosseguir com o pedido' %}
                         </button>

@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.views.generic import View
 
 from core.utils import get_landing_data
+from . import forms
 
 
 # Create your views here.
@@ -14,8 +15,10 @@ def commission_choice(request):
 
 class CommissionFormView(LoginRequiredMixin, View):
     def get(self, request, _type):
+        form = forms.CommissionForm()
         context = {
             "type": _type,
-            "landing_data": get_landing_data()
+            "landing_data": get_landing_data(),
+            "form": form
         }
         return render(request, "commissions/comms_form_base.html", context=context)

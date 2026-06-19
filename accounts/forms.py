@@ -6,19 +6,8 @@ from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.forms import ModelForm
 from django.utils.translation import gettext as _
 
+from core.utils import set_form_field_classes
 from landing.models import LandingPage, GalleryTag, GalleryImage
-
-
-def set_fields_classes(fields_values):
-    for field in fields_values:
-        if isinstance(field, forms.BooleanField):
-            pass
-
-        elif isinstance(field, forms.ImageField):
-            field.widget.attrs["class"] = "form-control form-control-sm login-register-inputs"
-
-        else:
-            field.widget.attrs["class"] = "form-control login-register-inputs"
 
 
 class RegisterForm(UserCreationForm):
@@ -30,7 +19,7 @@ class RegisterForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        set_fields_classes(self.fields.values())
+        set_form_field_classes(self.fields.values())
 
     def clean_email(self):
         entered_email = self.cleaned_data["email"]
@@ -44,19 +33,19 @@ class LoginForm(AuthenticationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        set_fields_classes(self.fields.values())
+        set_form_field_classes(self.fields.values())
 
 
 class RecoverPasswordEmailForm(PasswordResetForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        set_fields_classes(self.fields.values())
+        set_form_field_classes(self.fields.values())
 
 
 class NewPasswordForm(SetPasswordForm):
     def __init__(self, user, *args, **kwargs):
         super().__init__(user, *args, **kwargs)
-        set_fields_classes(self.fields.values())
+        set_form_field_classes(self.fields.values())
 
 
 class EditAccountDataForm(PasswordChangeForm):
@@ -68,7 +57,7 @@ class EditAccountDataForm(PasswordChangeForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        set_fields_classes(self.fields.values())
+        set_form_field_classes(self.fields.values())
 
     def clean_username(self):
         entered_username = self.cleaned_data["username"]
@@ -91,7 +80,7 @@ class LandingPageEditorForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        set_fields_classes(self.fields.values())
+        set_form_field_classes(self.fields.values())
         bio_field = self.fields["bio"]
         bio_field.widget.attrs["class"] = "form-control landing-editor-textarea"
         bio_field.widget.attrs["style"] = "height: 128px;"
@@ -104,7 +93,7 @@ class AddImageToGalleryForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        set_fields_classes(self.fields.values())
+        set_form_field_classes(self.fields.values())
 
 
 class AddTagToGalleryForm(ModelForm):
