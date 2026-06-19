@@ -77,14 +77,15 @@ class Commission(models.Model):
     stage = models.CharField(max_length=24, choices=stage_choices)
     category = models.CharField(max_length=24, choices=category_choices, default="character")
     final_stage = models.CharField(max_length=24, choices=final_stage_choices, default="render")
-    character_type = models.CharField(max_length=24, choices=character_type_choices, null=True,
+    character_type = models.CharField(max_length=24, choices=character_type_choices, blank=True, null=True,
                                       default="human")
-    count = models.IntegerField(default=1, validators=[MinValueValidator(1), MaxValueValidator(10)])
-    complexity = models.CharField(max_length=12, choices=complexity_choices, null=True, default="simple")
-    art_type = models.CharField(max_length=24, choices=art_type_choices, null=True, default="illustration")
-    clothing = models.CharField(max_length=24, choices=clothing_choices, null=True, default="mannequin")
-    body_type = models.CharField(max_length=12, choices=body_type_choices, null=True, default="bust")
-    background = models.CharField(max_length=12, choices=background_choices, null=True, default="preset")
+    count = models.IntegerField(default=1, blank=True, null=True,
+                                validators=[MinValueValidator(1), MaxValueValidator(10)])
+    complexity = models.CharField(max_length=12, choices=complexity_choices, blank=True, null=True, default="simple")
+    art_type = models.CharField(max_length=24, choices=art_type_choices, blank=True, null=True, default="illustration")
+    clothing = models.CharField(max_length=24, choices=clothing_choices, blank=True, null=True, default="mannequin")
+    body_type = models.CharField(max_length=12, choices=body_type_choices, blank=True, null=True, default="bust")
+    background = models.CharField(max_length=12, choices=background_choices, blank=True, null=True, default="preset")
     aspect_ratio = models.CharField(max_length=12, choices=aspect_ratio_choices, default="1:1")
     fx = models.BooleanField(default=False, choices=fx_choices)
     description = models.TextField(max_length=3000)

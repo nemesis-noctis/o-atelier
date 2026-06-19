@@ -1,7 +1,7 @@
 {% load i18n %}
 {% load static %}
 
-<form id="commission-form" class="mw-100" novalidate
+<form id="commission-form" class="mw-100" novalidate enctype="multipart/form-data"
       style="margin-top: 40px;width: 1000px;margin-right: auto;margin-left: auto;">
     <div class="row gy-5 row-cols-1 justify-content-center">
         {% csrf_token %}

@@ -10,7 +10,7 @@ class MultipleFileField(forms.FileInput):
 
 
 class CommissionForm(forms.ModelForm):
-    reference_images = forms.ImageField(widget=MultipleFileField(attrs={'multiple': True}))
+    # reference_images = forms.ImageField(widget=MultipleFileField(attrs={'multiple': True}))
 
     class Meta:
         model = models.Commission
@@ -31,6 +31,13 @@ class CommissionForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         fields = self.fields.values()
         set_form_field_classes(fields)
+        for field in fields:
+            if isinstance(field.widget, forms.RadioSelect):
+                field.choices = [
+                    (key, value) for key, value in field.choices
+                    if key is not None and key != ''
+                ]
+
         self.fields["description"].widget.attrs["placeholder"] = _noop(
             "Ex: Gostaria de uma fanart do Satoru Gojo de jujutsu kaisen.")
         self.fields["contact_social"].widget.attrs["placeholder"] = _noop("Ex: Whatsapp, Twitter, Instagram")

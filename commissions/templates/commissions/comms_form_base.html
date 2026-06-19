@@ -46,25 +46,34 @@
                         <p class="mw-100 card-text" style="margin-top: 20px;font-size: 15px;">
                             {% translate 'Clique no botão abaixo para calcular o valor estimado do pedido antes de prosseguir.' %}
                         </p>
-                        <button class="btn btn-primary d-block commission-request-btn" type="submit"
-                                form="commission-form"
+                        <button class="btn btn-primary d-block commission-request-btn"
+                                hx-post="{% url "comms_form" _type=type %}"
+                                hx-target="body"
+                                hx-include="#commission-form"
+                                type="button"
                                 style="margin: 12px auto;">
                             {% translate 'Calcular Valor' %}
                         </button>
-                        <span class="d-block" style="margin-bottom: 12px;color: #69A7FC;font-weight: bold;">
-                            {% translate 'Valor estimado:' %} 30 R$
-                        </span>
+                        {% if calculated_price %}
+                            <span class="d-block" style="margin-bottom: 12px;color: #69A7FC;font-weight: bold;">
+                                {% translate 'Valor estimado:' %} {{ calculated_price }} R$
+                            </span>
+                        {% endif %}
+
                         <span style="font-size: 15px;">
                             {% translate 'Ao prosseguir com o pedido, você concorda com os termos e condições, por favor, acesse o link para conferir antes de prosseguir.' %}
                         </span>
                         <a class="card-link" href="#" style="color: #69A7FC;">
                             {% translate 'Termos e Condições' %}
                         </a>
-                        <button class="btn btn-primary d-block commission-request-btn" type="submit"
-                                form="commission-form"
-                                style="margin: 12px auto;">
-                            {% translate 'Prosseguir com o pedido' %}
-                        </button>
+                        {% if calculated_price %}
+                            <button class="btn btn-primary d-block commission-request-btn"
+                                    type="button"
+                                    style="margin: 12px auto;">
+                                {% translate 'Prosseguir com o pedido' %}
+                            </button>
+                        {% endif %}
+
                     </div>
                 </div>
             </div>
