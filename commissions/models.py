@@ -58,9 +58,9 @@ class Commission(models.Model):
         "full": _noop("full")
     }
     background_choices = {
-        "preset": _noop("preset"),
         "simple": _noop("simples"),
-        "complex": _noop("complexo")
+        "complex": _noop("complexo"),
+        "preset": _noop("preset")
     }
     aspect_ratio_choices = {
         "1:1": "1:1",
@@ -85,7 +85,7 @@ class Commission(models.Model):
     art_type = models.CharField(max_length=24, choices=art_type_choices, blank=True, null=True, default="illustration")
     clothing = models.CharField(max_length=24, choices=clothing_choices, blank=True, null=True, default="simple")
     body_type = models.CharField(max_length=12, choices=body_type_choices, blank=True, null=True, default="full")
-    background = models.CharField(max_length=12, choices=background_choices, blank=True, null=True, default="preset")
+    background = models.CharField(max_length=12, choices=background_choices, blank=True, null=True, default="simple")
     aspect_ratio = models.CharField(max_length=12, choices=aspect_ratio_choices, default="3:2")
     fx = models.BooleanField(default=False, choices=fx_choices)
     description = models.TextField(max_length=3000)
