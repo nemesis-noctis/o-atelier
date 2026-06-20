@@ -69,7 +69,9 @@
                         </a>
                         {% if calculated_price and landing_data.comms_status %}
                             <button class="btn btn-primary d-block commission-request-btn"
-                                    type="button"
+                                    type="submit"
+                                    form="commission-form"
+                                    formaction="{% url 'comms-confirmation' _type=type %}"
                                     style="margin: 12px auto;">
                                 {% translate 'Prosseguir com o pedido' %}
                             </button>

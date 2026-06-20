@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.forms import HiddenInput, RadioSelect
 from django.shortcuts import render
 from django.views.generic import View
 
@@ -45,3 +46,27 @@ class CommissionFormView(LoginRequiredMixin, View):
 
         else:
             return render(request, "commissions/comms_form_base.html", context=context)
+
+
+def commission_confirmation(request, _type):
+    if request.method == "POST":
+        form = forms.CommissionForm(request.POST, request.FILES)
+        if form.is_valid():
+            form_data = form.cleaned_data
+            form_labels = {}
+            for field, data in zip(form.fields.values(), form_data):
+                if isinstance(field.widget, RadioSelect):
+                    form_labels[data] = dict(field.choices).get(form_data[data])
+                else:
+                    form_labels[data] = form_data[data]
+
+                field.widget = HiddenInput()
+                field.initial = form_data[data]
+
+            context = {
+                "landing_data": get_landing_data(),
+                "form": form,
+                "form_labels": form_labels,
+                "type": _type
+            }
+            return render(request, "commissions/comms_confirmation.html", context=context)
