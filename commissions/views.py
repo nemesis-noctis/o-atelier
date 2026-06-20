@@ -5,7 +5,7 @@ from django.views.generic import View
 
 from core.utils import get_landing_data
 from . import forms
-from .price_calculator import calculate_character_price
+from . import price_calculator
 
 
 # Create your views here.
@@ -33,12 +33,15 @@ class CommissionFormView(LoginRequiredMixin, View):
         }
         if form.is_valid():
             form_data = form.cleaned_data
-            if _type == "character":
-                price = calculate_character_price(form_data)
+            calculators = {
+                "character": price_calculator.calculate_character_price,
+                "landscape": price_calculator.calculate_landscape_price,
+                "object": price_calculator.calculate_object_price
+            }
+            if _type in calculators:
+                price = calculators[_type](form_data)
                 context["calculated_price"] = price
-                return render(request, "commissions/comms_form_base.html", context=context)
+            return render(request, "commissions/comms_form_base.html", context=context)
+
         else:
-            print(False)
-            print(form.cleaned_data)
-            print(form.errors)
             return render(request, "commissions/comms_form_base.html", context=context)

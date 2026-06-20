@@ -49,6 +49,7 @@
                         <button class="btn btn-primary d-block commission-request-btn"
                                 hx-post="{% url "comms_form" _type=type %}"
                                 hx-target="body"
+                                hx-encoding="multipart/form-data"
                                 hx-include="#commission-form"
                                 type="button"
                                 style="margin: 12px auto;">
@@ -56,7 +57,7 @@
                         </button>
                         {% if calculated_price %}
                             <span class="d-block" style="margin-bottom: 12px;color: #69A7FC;font-weight: bold;">
-                                {% translate 'Valor estimado:' %} {{ calculated_price }} R$
+                                {% translate 'Valor estimado:' %} {{ calculated_price|floatformat:2 }} R$
                             </span>
                         {% endif %}
 
@@ -66,7 +67,7 @@
                         <a class="card-link" href="#" style="color: #69A7FC;">
                             {% translate 'Termos e Condições' %}
                         </a>
-                        {% if calculated_price %}
+                        {% if calculated_price and landing_data.comms_status %}
                             <button class="btn btn-primary d-block commission-request-btn"
                                     type="button"
                                     style="margin: 12px auto;">

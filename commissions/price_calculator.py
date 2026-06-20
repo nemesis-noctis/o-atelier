@@ -26,7 +26,6 @@ def calculate_character_price(commission_data):
             character_type_price += (commission_data["count"] - 1) * character_type_price * 0.8
             clothing_price += (commission_data["count"] - 1) * clothing_price * 0.8
 
-
         elif commission_data["count"] > 4:
             character_type_price += (commission_data["count"] - 1) * character_type_price * 0.9
             clothing_price += (commission_data["count"] - 1) * clothing_price * 0.9
@@ -35,9 +34,9 @@ def calculate_character_price(commission_data):
             clothing_price /= 2
             background_price /= 2
 
-        price = character_type_price + clothing_price + background_price
+        base_price = character_type_price + clothing_price + background_price
 
-        return price + 20 if commission_data["fx"] == True else price + 0
+        return base_price + 20 if commission_data["fx"] == True else base_price
 
     def calculate_discount_price(base_price):
         # Subtract prices
@@ -60,15 +59,13 @@ def calculate_character_price(commission_data):
         elif commission_data["character_type"] == "chibi" and commission_data["body_type"] == "waist":
             body_type_price *= 1.2
 
-        final_stage_price = body_type_price - body_type_price * prices_percent_final_stage[
-            commission_data["final_stage"]]
-        return final_stage_price
+        return body_type_price - body_type_price * prices_percent_final_stage[commission_data["final_stage"]]
 
     def calculate_final_price(discount_price):
         prices_percent_art_type = {
             "illustration": 0,
             "scene": 0.4,
-            "sheet": 0.5
+            "sheet": 1
         }
         prices_percent_aspect_ratio = {
             "1:1": 0,
@@ -77,9 +74,7 @@ def calculate_character_price(commission_data):
             "1.85:1": 0.4
         }
         art_type_price = discount_price + discount_price * prices_percent_art_type[commission_data["art_type"]]
-        aspect_ratio_price = art_type_price + art_type_price * prices_percent_aspect_ratio[
-            commission_data["aspect_ratio"]]
-        return aspect_ratio_price
+        return art_type_price + art_type_price * prices_percent_aspect_ratio[commission_data["aspect_ratio"]]
 
     base_price = calculate_base_price()
     discount_price = calculate_discount_price(base_price)
@@ -87,23 +82,104 @@ def calculate_character_price(commission_data):
     if final_price < 15:
         final_price = 15
 
-    return final_price
+    return round(final_price, 2)
 
 
-def calculate_landscape_price(self, commission_data):
-    prices_complexity = {
-        "simple": 60,
-        "complex": 90
-    }
+########################################################################################################################
+def calculate_landscape_price(commission_data):
+    def calculate_base_price():
+        prices_complexity = {
+            "simple": 60,
+            "complex": 100
+        }
+
+        base_price = prices_complexity[commission_data["complexity"]]
+        return base_price + 30 if commission_data["fx"] == True else base_price
+
+    def calculate_discount_price(base_price):
+        # Subtract prices
+        prices_percent_final_stage = {
+            "sketch": 0.5,
+            "lineart": 0.3,
+            "flat_colour": 0.2,
+            "render": 0
+        }
+
+        return base_price - base_price * prices_percent_final_stage[commission_data["final_stage"]]
+
+    def calculate_final_price(discount_price):
+        prices_percent_aspect_ratio = {
+            "1:1": 0,
+            "3:2": 0.2,
+            "16:9": 0.4,
+            "1.85:1": 0.6
+        }
+
+        return discount_price + discount_price * prices_percent_aspect_ratio[commission_data["aspect_ratio"]]
+
+    base_price = calculate_base_price()
+    discount_price = calculate_discount_price(base_price)
+    final_price = calculate_final_price(discount_price)
+
+    return round(final_price, 2)
 
 
-def calculate_object_price(self, commission_data):
-    prices_complexity = {
-        "simple": 30,
-        "complex": 60
-    }
-    prices_background = {
-        "preset": 0,
-        "simple": 10,
-        "complex": 30
-    }
+########################################################################################################################
+def calculate_object_price(commission_data):
+    def calculate_base_price():
+        prices_complexity = {
+            "simple": 30,
+            "complex": 60
+        }
+        prices_background = {
+            "preset": 0,
+            "simple": 10,
+            "complex": 30
+        }
+
+        complexity_price = prices_complexity[commission_data["complexity"]]
+        background_price = prices_background[commission_data["background"]]
+
+        if commission_data["count"] > 1:
+            complexity_price += (commission_data["count"] - 1) * complexity_price * 0.8
+
+        elif commission_data["count"] > 4:
+            complexity_price += (commission_data["count"] - 1) * complexity_price * 0.9
+
+        base_price = complexity_price + background_price
+
+        return base_price + 20 if commission_data["fx"] == True else base_price
+
+    def calculate_discount_price(base_price):
+        # Subtract prices
+        prices_percent_final_stage = {
+            "sketch": 0.5,
+            "lineart": 0.3,
+            "flat_colour": 0.2,
+            "render": 0
+        }
+
+        return base_price - base_price * prices_percent_final_stage[commission_data["final_stage"]]
+
+    def calculate_final_price(discount_price):
+        prices_percent_aspect_ratio = {
+            "1:1": 0,
+            "3:2": 0.2,
+            "16:9": 0.4,
+            "1.85:1": 0.6
+        }
+        prices_percent_art_type = {
+            "illustration": 0,
+            "scene": 0.4,
+            "sheet": 1
+        }
+
+        aspect_ratio_price = discount_price + discount_price * prices_percent_aspect_ratio[
+            commission_data["aspect_ratio"]]
+        return aspect_ratio_price + aspect_ratio_price * prices_percent_art_type[commission_data["art_type"]]
+
+    base_price = calculate_base_price()
+    discount_price = calculate_discount_price(base_price)
+    final_price = calculate_final_price(discount_price)
+
+    return round(final_price, 2)
