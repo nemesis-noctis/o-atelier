@@ -34,8 +34,9 @@ class CommissionForm(forms.ModelForm):
 
     class Meta:
         model = models.Commission
-        exclude = ["uuid", "user", "stage", "category", "price_brl", "price_usd", "created_at", 'finished_at']
+        exclude = ["uuid", "user", "stage", "price_brl", "price_usd", "created_at", 'finished_at']
         widgets = {
+            "category": forms.HiddenInput,
             "final_stage": forms.RadioSelect,
             "character_type": forms.RadioSelect,
             "complexity": forms.RadioSelect,

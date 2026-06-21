@@ -24,7 +24,7 @@
                 <div class="col">
                     <div class="card border-0 shadow-none" style="border-radius: 80px;padding: 30px ;">
                         <div class="card-body align-items-center p-0" style="text-align: center;">
-                            <a class="text-decoration-none" href="{% url 'comms_form' _type="character" %}">
+                            <a class="text-decoration-none" href="{% url 'comms_form' %}?category=character">
                                 <img class="object-fit-cover rounded-circle d-inline-block flex-shrink-0 me-3"
                                      width="320"
                                      height="320" src="{% static "images/image-placeholder-500x500.jpeg" %}">
@@ -43,7 +43,7 @@
                 <div class="col">
                     <div class="card border-0 shadow-none" style="padding: 30px;border-radius: 80px;">
                         <div class="card-body align-items-center p-0" style="text-align: center;">
-                            <a class="text-decoration-none" href="{% url 'comms_form' _type="landscape" %}">
+                            <a class="text-decoration-none" href="{% url 'comms_form' %}?category=landscape">
                                 <img class="object-fit-cover rounded-circle d-inline-block flex-shrink-0 me-3"
                                      width="320"
                                      height="320" src="{% static "images/image-placeholder-500x500.jpeg" %}">
@@ -63,7 +63,7 @@
                     <div class="card border-0 shadow-none"
                          style="border-radius: 80px;padding: 30px;border-color: #69A7FC;">
                         <div class="card-body align-items-center p-0" style="text-align: center;">
-                            <a class="text-decoration-none" href="{% url 'comms_form' _type="object" %}">
+                            <a class="text-decoration-none" href="{% url 'comms_form' %}?category=object">
                                 <img class="object-fit-cover rounded-circle d-inline-block flex-shrink-0 me-3"
                                      width="320"
                                      height="320" src="{% static "images/image-placeholder-500x500.jpeg" %}">

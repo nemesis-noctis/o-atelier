@@ -21,7 +21,6 @@ class Commission(models.Model):
         "canceled": _noop("cancelado"),
     }
     final_stage_choices = {
-        "sketch": _noop("esboço"),
         "lineart": _noop("lineart"),
         "flat_colour": _noop("cor flat"),
         "render": _noop("render")
@@ -29,7 +28,7 @@ class Commission(models.Model):
     category_choices = {
         "character": _noop("personagem"),
         "landscape": _noop("cenário"),
-        "objects": _noop("objetos")
+        "object": _noop("objetos")
     }
     character_type_choices = {
         "human": _noop("humano"),
@@ -80,7 +79,7 @@ class Commission(models.Model):
     character_type = models.CharField(max_length=24, choices=character_type_choices, blank=True, null=True,
                                       default="human")
     count = models.IntegerField(default=1, blank=True, null=True,
-                                validators=[MinValueValidator(1), MaxValueValidator(10)])
+                                validators=[MinValueValidator(1), MaxValueValidator(5)])
     complexity = models.CharField(max_length=12, choices=complexity_choices, blank=True, null=True, default="simple")
     art_type = models.CharField(max_length=24, choices=art_type_choices, blank=True, null=True, default="illustration")
     clothing = models.CharField(max_length=24, choices=clothing_choices, blank=True, null=True, default="simple")

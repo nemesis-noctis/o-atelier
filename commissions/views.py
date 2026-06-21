@@ -1,7 +1,12 @@
+from urllib.parse import urlencode
+
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import HiddenInput, RadioSelect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
+from django.utils.translation import gettext as _
 from django.views.generic import View
 
 from core.utils import get_landing_data
@@ -10,25 +15,39 @@ from . import price_calculator
 
 
 # Create your views here.
-@login_required(login_url="login")
+@login_required()
 def commission_choice(request):
     return render(request, "commissions/comms_choice.html", context={"landing_data": get_landing_data()})
 
 
 class CommissionFormView(LoginRequiredMixin, View):
-    def get(self, request, _type):
+    def get(self, request):
         form = forms.CommissionForm()
+        form_data = request.session.pop("form_data", None)
+        if form_data:
+            form = forms.CommissionForm(form_data)
+
+        category = request.GET.get("category", "")
+        if category not in ["character", "landscape", "object"]:
+            return redirect("comms_choice")
+
+        form["category"].initial = category
         context = {
-            "type": _type,
+            "type": category,
             "landing_data": get_landing_data(),
             "form": form
         }
         return render(request, "commissions/comms_form_base.html", context=context)
 
-    def post(self, request, _type):
+    def post(self, request):
         form = forms.CommissionForm(request.POST, request.FILES)
+        category = request.POST.get("category", "none")
+        
+        if category not in ["character", "landscape", "object"]:
+            return redirect("comms_choice")
+
         context = {
-            "type": _type,
+            "type": category,
             "landing_data": get_landing_data(),
             "form": form
         }
@@ -39,34 +58,66 @@ class CommissionFormView(LoginRequiredMixin, View):
                 "landscape": price_calculator.calculate_landscape_price,
                 "object": price_calculator.calculate_object_price
             }
-            if _type in calculators:
-                price = calculators[_type](form_data)
+
+            if category in calculators:
+                price = calculators[category](form_data)
                 context["calculated_price"] = price
+
             return render(request, "commissions/comms_form_base.html", context=context)
 
         else:
+            messages.error(request,
+                           _("Ocorreu um erro com a sua solicitação, por favor verifique os campos do formulário e tente novamente"))
             return render(request, "commissions/comms_form_base.html", context=context)
 
 
-def commission_confirmation(request, _type):
-    if request.method == "POST":
+@login_required()
+def commission_confirmation(request):
+    if request.method == "POST" and get_landing_data().comms_status == True:
         form = forms.CommissionForm(request.POST, request.FILES)
+        category = request.POST.get("category", "none")
+
+        if category not in ["character", "landscape", "object"]:
+            return redirect("comms_choice")
+
+        context = {
+            "landing_data": get_landing_data(),
+            "form": form,
+        }
         if form.is_valid():
             form_data = form.cleaned_data
-            form_labels = {}
+            form_readable_names = {}
             for field, data in zip(form.fields.values(), form_data):
                 if isinstance(field.widget, RadioSelect):
-                    form_labels[data] = dict(field.choices).get(form_data[data])
+                    form_readable_names[data] = dict(field.choices).get(form_data[data])
                 else:
-                    form_labels[data] = form_data[data]
+                    form_readable_names[data] = form_data[data]
 
                 field.widget = HiddenInput()
                 field.initial = form_data[data]
 
-            context = {
-                "landing_data": get_landing_data(),
-                "form": form,
-                "form_labels": form_labels,
-                "type": _type
+            calculators = {
+                "character": price_calculator.calculate_character_price,
+                "landscape": price_calculator.calculate_landscape_price,
+                "object": price_calculator.calculate_object_price
             }
+            if category in calculators:
+                price = calculators[form_data["category"]](form_data)
+                context["calculated_price"] = price
+
+            context["form_readable_names"] = form_readable_names
+            context["type"] = category
+
             return render(request, "commissions/comms_confirmation.html", context=context)
+
+        else:
+            form_data = form.cleaned_data
+            request.session["form_data"] = request.POST.dict()
+            message = _(
+                "Ocorreu um erro com a sua solicitação, por favor verifique os campos do formulário e tente novamente"
+            )
+
+            messages.error(request, message)
+            return redirect(f"{reverse_lazy("comms_form")}?{urlencode({"category": category})}")
+    else:
+        return redirect("comms_choice")

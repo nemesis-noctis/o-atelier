@@ -35,17 +35,17 @@
                                 {% if type == "character" %}
                                     <li>{% translate 'Tipo de Personagem:' %}
                                         <span style="color: var(--bs-secondary);">
-                                        {{ form_labels.character_type|title }}
+                                        {{ form_readable_names.character_type|title }}
                                     </span>
                                     </li>
                                     <li>{% translate 'Tipo de Vestimenta:' %}
                                         <span style="color: var(--bs-secondary);">
-                                        {{ form_labels.clothing|title }}
+                                        {{ form_readable_names.clothing|title }}
                                     </span>
                                     </li>
                                     <li>{% translate 'Tipo de Corpo:' %}
                                         <span style="color: var(--bs-secondary);">
-                                        {{ form_labels.body_type|title }}
+                                        {{ form_readable_names.body_type|title }}
                                     </span>
                                     </li>
                                 {% endif %}
@@ -53,7 +53,7 @@
                                 {% if type == "landscape" or type == "object" %}
                                     <li>{% translate 'Complexidade:' %}
                                         <span style="color: var(--bs-secondary);">
-                                        {{ form_labels.complexity|title }}
+                                        {{ form_readable_names.complexity|title }}
                                         </span>
                                     </li>
                                 {% endif %}
@@ -61,34 +61,34 @@
                                 {% if type == "character" or type == "object" %}
                                     <li>{% translate 'Quantidade:' %}
                                         <span style="color: var(--bs-secondary);">
-                                        {{ form_labels.count }}
+                                        {{ form_readable_names.count }}
                                     </span>
                                     </li>
                                     <li>{% translate 'Tipo de Arte:' %}
                                         <span style="color: var(--bs-secondary);">
-                                        {{ form_labels.art_type|title }}
+                                        {{ form_readable_names.art_type|title }}
                                     </span>
                                     </li>
                                     <li>{% translate 'Tipo de Fundo:' %}
                                         <span style="color: var(--bs-secondary);">
-                                        {{ form_labels.background|title }}
+                                        {{ form_readable_names.background|title }}
                                     </span>
                                     </li>
                                 {% endif %}
 
                                 <li>{% translate 'Etapa Final:' %}
                                     <span style="color: var(--bs-secondary);">
-                                        {{ form_labels.final_stage|title }}
+                                        {{ form_readable_names.final_stage|title }}
                                     </span>
                                 </li>
                                 <li>{% translate 'Proporção da Tela:' %}
                                     <span style="color: var(--bs-secondary);">
-                                        {{ form_labels.aspect_ratio|title }}
+                                        {{ form_readable_names.aspect_ratio|title }}
                                     </span>
                                 </li>
                                 <li>{% translate 'Efeitos:' %}
                                     <span style="color: var(--bs-secondary);">
-                                        {% if form_labels.fx == True %}
+                                        {% if form_readable_names.fx == True %}
                                             Sim
                                         {% else %}
                                             Não
@@ -98,17 +98,17 @@
                                 </li>
                                 <li>{% translate 'Rede Social para Contato:' %}
                                     <span style="color: var(--bs-secondary);">
-                                        {{ form_labels.contact_social }}
+                                        {{ form_readable_names.contact_social }}
                                     </span>
                                 </li>
                                 <li>{% translate 'Nome na rede social:' %}
                                     <span style="color: var(--bs-secondary);">
-                                        {{ form_labels.contact_username }}
+                                        {{ form_readable_names.contact_username }}
                                     </span>
                                 </li>
                                 <li>{% translate 'Uso comercial:' %}
                                     <span style="color: var(--bs-secondary);">
-                                        {% if form_labels.commercial == True %}
+                                        {% if form_readable_names.commercial == True %}
                                             Sim
                                         {% else %}
                                             Não
@@ -117,7 +117,7 @@
                                 </li>
                                 <li>{% translate 'Permissão de postagem:' %}
                                     <span style="color: var(--bs-secondary);">
-                                        {% if form_labels.share_permission == True %}
+                                        {% if form_readable_names.share_permission == True %}
                                             Sim
                                         {% else %}
                                             Não
@@ -139,7 +139,7 @@
                             <div class="overflow-auto"
                                  style="background: #EDF5FE;border-radius: 18px;padding: 20px 10px;height: 200px;">
                                 <span style="font-size: 15px;">
-                                    {{ form_labels.description }}
+                                    {{ form_readable_names.description }}
                                 </span>
                             </div>
                         </div>
@@ -148,7 +148,7 @@
                             {{ form }}
                         </form>
                         <span class="d-block"
-                              style="margin-bottom: 12px;color: var(--bs-secondary);font-weight: bold;">{% translate 'Preço estimado:' %} 130R$</span>
+                              style="margin-bottom: 12px;color: var(--bs-secondary);font-weight: bold;">{% translate 'Preço estimado:' %} <br> {{ calculated_price.brl|floatformat:2 }} BRL$ | {{ calculated_price.usd|floatformat:2 }} USD$</span>
                         <button class="btn btn-primary d-block commission-request-btn" type="button"
                                 style="margin: 12px auto;">
                             {% translate 'Confirmar pedido' %}
