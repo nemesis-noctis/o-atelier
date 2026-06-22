@@ -31,8 +31,7 @@ def commission_choice(request):
 class CommissionFormView(View):
     def comms_form_details_required_inverter(self, form, set_status):
         for field_name, field_obj in zip(form.fields, form.fields.values()):
-            if field_name in ["description", "reference_images", "contact_social", "contact_username", "commercial",
-                              "share_permission"]:
+            if field_name in ["description", "reference_images", "contact_social", "contact_username"]:
                 field_obj.required = set_status
         return form
 
@@ -42,6 +41,7 @@ class CommissionFormView(View):
 
         category = request.GET.get("category", "")
         redirect_if_invalid_category(category)
+        form["category"].initial = category
 
         context = {
             "type": category,
@@ -50,14 +50,10 @@ class CommissionFormView(View):
 
         if form_data:
             form = forms.CommissionForm(form_data)
-            if category in CALCULATORS:
-                form.full_clean()
-                price = CALCULATORS[category](form.cleaned_data)
-                required_details_form = self.comms_form_details_required_inverter(form, True)
-                context["calculated_price"] = price
-                context["form"] = required_details_form
+            required_details_form = self.comms_form_details_required_inverter(form, True)
+            context["form"] = required_details_form
+            context["calculated_price"] = request.session.pop("calculated_price", None)
 
-        form["category"].initial = category
         context["form"] = form
 
         return render(request, "commissions/comms_form_base.html", context=context)
@@ -82,6 +78,8 @@ class CommissionFormView(View):
             if category in CALCULATORS:
                 price = CALCULATORS[category](form_data)
                 context["calculated_price"] = price
+                request.session["calculated_price"] = price
+
                 required_details_form = self.comms_form_details_required_inverter(form, True)
                 context["form"] = required_details_form
 
@@ -100,9 +98,10 @@ def commission_confirmation(request):
         category = request.POST.get("category", "none")
         redirect_if_invalid_category(category)
 
+        request.session["form_data"] = request.POST.dict()
+
         context = {
-            "landing_data": get_landing_data(),
-            "form": form,
+            "landing_data": get_landing_data()
         }
 
         if form.is_valid():
@@ -118,16 +117,15 @@ def commission_confirmation(request):
                 field.initial = form_data[data]
 
             if category in CALCULATORS:
-                price = CALCULATORS[form_data["category"]](form_data)
+                price = CALCULATORS[category](form_data)
                 context["calculated_price"] = price
+                request.session.delete("calculated_price")
 
             context["form_readable_names"] = form_readable_names
             context["type"] = category
             return render(request, "commissions/comms_confirmation.html", context=context)
 
         else:
-            form_data = form.cleaned_data
-            request.session["form_data"] = request.POST.dict()
             message = _(
                 "Ocorreu um erro com a sua solicitação, por favor verifique os campos do formulário e tente novamente"
             )

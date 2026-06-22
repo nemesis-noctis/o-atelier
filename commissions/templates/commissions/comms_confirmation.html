@@ -143,10 +143,6 @@
                                 </span>
                             </div>
                         </div>
-                        <form>
-                            {% csrf_token %}
-                            {{ form }}
-                        </form>
                         <span class="d-block"
                               style="margin-bottom: 12px;color: var(--bs-secondary);font-weight: bold;">{% translate 'Preço estimado:' %} <br> {{ calculated_price.brl|floatformat:2 }} BRL$ | {{ calculated_price.usd|floatformat:2 }} USD$</span>
                         <button class="btn btn-primary d-block commission-request-btn" type="button"

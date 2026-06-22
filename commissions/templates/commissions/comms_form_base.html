@@ -25,10 +25,12 @@
                         </h4>
                         {% if messages %}
                             {% for message in messages %}
-                                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-                                    <p class="card-text" style="color: #029c1c">{{ message }}</p>
-                                {% else %}
-                                    <p class="card-text" style="color: #dc3343">{{ message }}</p>
+                                {% if calculated_price %}
+                                    {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                                        <p class="card-text" style="color: #029c1c">{{ message }}</p>
+                                    {% else %}
+                                        <p class="card-text" style="color: #dc3343">{{ message }}</p>
+                                    {% endif %}
                                 {% endif %}
                             {% endfor %}
 
@@ -64,34 +66,43 @@
                                 style="margin: 12px auto;">
                             {% translate 'Calcular Valor Estimado' %}
                         </button>
-                        <p class="mw-100 card-text"
-                           style="color: rgb(130 115 222); margin-top: 20px;font-size: 15px; text-decoration: underline ">
-                            {% translate 'Após calcular o valor, preencha os detalhes do pedido ao final do formulário para prosseguir.' %}
-                        </p>
+
                         {% if calculated_price %}
                             <span class="d-block" style="margin-bottom: 12px;color: #69A7FC;font-weight: bold;">
                                 {% translate 'Valor estimado:' %} <br>{{ calculated_price.brl|floatformat:2 }} BRL$ | {{ calculated_price.usd|floatformat:2 }} USD$
                             </span>
                         {% endif %}
                         {% if calculated_price and landing_data.comms_status and user.is_superuser == False %}
+                            <p class="mw-100 card-text"
+                               style="color: rgb(130 115 222); font-weight: bold; margin-top: 20px;font-size: 18px; text-decoration: underline ">
+                                {% translate 'Preencha os detalhes do pedido para prosseguir:' %}
+                            </p>
+                            {% include 'commissions/include/comms_form_details.html' %}
+
+                            <button class="btn btn-primary d-block commission-request-btn"
+                                    type="submit"
+                                    form="commission-form"
+                                    formaction="{% url 'comms-confirmation' %}"
+                                    style="margin: 12px auto; margin-top: 12px">
+                                {% translate 'Prosseguir com o pedido' %}
+                            </button>
                             <span style="font-size: 15px;">
                             {% translate 'Ao prosseguir com o pedido, você concorda com os termos e condições, por favor, acesse o link para conferir antes de prosseguir.' %}
                             </span>
                             <a class="card-link" href="#" style="color: #69A7FC;">
                                 {% translate 'Termos e Condições' %}
                             </a>
-                            <button class="btn btn-primary d-block commission-request-btn"
-                                    type="submit"
-                                    form="commission-form"
-                                    formaction="{% url 'comms-confirmation' %}"
-                                    style="margin: 12px auto;">
-                                {% translate 'Prosseguir com o pedido' %}
-                            </button>
+
                         {% endif %}
 
                     </div>
                 </div>
             </div>
+
+
+            <div class="col col-sm col-md col-lg-6 col-xl-5 col-xxl-4">
+            </div>
+
         </div>
         <a id="scroll-to-top" title="Scroll to top" href="#" style="background: #69A7FC;">
             <i class="fas fa-angle-up"></i>

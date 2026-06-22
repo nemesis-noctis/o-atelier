@@ -64,6 +64,10 @@ class CommissionForm(forms.ModelForm):
         self.fields["contact_social"].widget.attrs["placeholder"] = _noop("Ex: Whatsapp, Twitter, Instagram")
         self.fields["contact_username"].widget.attrs["placeholder"] = _noop("Ex: @lirio_guinevere, (00)0000-0000")
 
+        for field_name in ["description", "reference_images", "contact_social", "contact_username", "commercial",
+                           "share_permission"]:
+            self.fields[field_name].widget.attrs["form"] = "commission-form"
+
     def clean_reference_images(self):
         images = self.cleaned_data.get("reference_images")
         if len(images) > 10:
