@@ -55,9 +55,6 @@
                             <br>
                             {% translate 'Caso tenha algum problema ou dúvida sinta-se a vontade para entrar em contato comigo pelas minhas redes sociais.' %}
                         </p>
-                        <p class="mw-100 card-text" style="margin-top: 20px;font-size: 15px;">
-                            {% translate 'Clique no botão abaixo para calcular o valor estimado do pedido antes de prosseguir.' %}
-                        </p>
                         <button class="btn btn-primary d-block commission-request-btn"
                                 hx-post="{% url "comms_form" %}"
                                 hx-target="body"
@@ -65,21 +62,24 @@
                                 hx-include="#commission-form"
                                 type="button"
                                 style="margin: 12px auto;">
-                            {% translate 'Calcular Valor' %}
+                            {% translate 'Calcular Valor Estimado' %}
                         </button>
+                        <p class="mw-100 card-text"
+                           style="color: rgb(130 115 222); margin-top: 20px;font-size: 15px; text-decoration: underline ">
+                            {% translate 'Após calcular o valor, preencha os detalhes do pedido ao final do formulário para prosseguir.' %}
+                        </p>
                         {% if calculated_price %}
                             <span class="d-block" style="margin-bottom: 12px;color: #69A7FC;font-weight: bold;">
                                 {% translate 'Valor estimado:' %} <br>{{ calculated_price.brl|floatformat:2 }} BRL$ | {{ calculated_price.usd|floatformat:2 }} USD$
                             </span>
                         {% endif %}
-
-                        <span style="font-size: 15px;">
-                            {% translate 'Ao prosseguir com o pedido, você concorda com os termos e condições, por favor, acesse o link para conferir antes de prosseguir.' %}
-                        </span>
-                        <a class="card-link" href="#" style="color: #69A7FC;">
-                            {% translate 'Termos e Condições' %}
-                        </a>
                         {% if calculated_price and landing_data.comms_status and user.is_superuser == False %}
+                            <span style="font-size: 15px;">
+                            {% translate 'Ao prosseguir com o pedido, você concorda com os termos e condições, por favor, acesse o link para conferir antes de prosseguir.' %}
+                            </span>
+                            <a class="card-link" href="#" style="color: #69A7FC;">
+                                {% translate 'Termos e Condições' %}
+                            </a>
                             <button class="btn btn-primary d-block commission-request-btn"
                                     type="submit"
                                     form="commission-form"

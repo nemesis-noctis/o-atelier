@@ -12,10 +12,10 @@ from core.utils import get_landing_data
 from . import forms
 from . import price_calculator
 
-
-# Create your views here.
-def commission_choice(request):
-    return render(request, "commissions/comms_choice.html", context={"landing_data": get_landing_data()})
+CALCULATORS = {"character": price_calculator.calculate_character_price,
+               "landscape": price_calculator.calculate_landscape_price,
+               "object": price_calculator.calculate_object_price
+               }
 
 
 def redirect_if_invalid_category(category):
@@ -23,47 +23,67 @@ def redirect_if_invalid_category(category):
         return redirect("comms_choice")
 
 
+# Create your views here.
+def commission_choice(request):
+    return render(request, "commissions/comms_choice.html", context={"landing_data": get_landing_data()})
+
+
 class CommissionFormView(View):
+    def comms_form_details_required_inverter(self, form, set_status):
+        for field_name, field_obj in zip(form.fields, form.fields.values()):
+            if field_name in ["description", "reference_images", "contact_social", "contact_username", "commercial",
+                              "share_permission"]:
+                field_obj.required = set_status
+        return form
+
     def get(self, request):
         form = forms.CommissionForm()
         form_data = request.session.pop("form_data", None)
-        if form_data:
-            form = forms.CommissionForm(form_data)
 
         category = request.GET.get("category", "")
         redirect_if_invalid_category(category)
 
-        form["category"].initial = category
         context = {
             "type": category,
             "landing_data": get_landing_data(),
-            "form": form
         }
+
+        if form_data:
+            form = forms.CommissionForm(form_data)
+            if category in CALCULATORS:
+                form.full_clean()
+                price = CALCULATORS[category](form.cleaned_data)
+                required_details_form = self.comms_form_details_required_inverter(form, True)
+                context["calculated_price"] = price
+                context["form"] = required_details_form
+
+        form["category"].initial = category
+        context["form"] = form
+
         return render(request, "commissions/comms_form_base.html", context=context)
 
     def post(self, request):
         form = forms.CommissionForm(request.POST, request.FILES)
-        category = request.POST.get("category", "none")
+        non_required_details_form = self.comms_form_details_required_inverter(form, False)
+        form = non_required_details_form
 
+        category = request.POST.get("category", "none")
         redirect_if_invalid_category(category)
 
         context = {
             "type": category,
             "landing_data": get_landing_data(),
-            "form": form
+            "form": form,
         }
 
         if form.is_valid():
             form_data = form.cleaned_data
-            calculators = {
-                "character": price_calculator.calculate_character_price,
-                "landscape": price_calculator.calculate_landscape_price,
-                "object": price_calculator.calculate_object_price
-            }
 
-            if category in calculators:
-                price = calculators[category](form_data)
+            if category in CALCULATORS:
+                price = CALCULATORS[category](form_data)
                 context["calculated_price"] = price
+                required_details_form = self.comms_form_details_required_inverter(form, True)
+                context["form"] = required_details_form
 
             return render(request, "commissions/comms_form_base.html", context=context)
 
@@ -78,7 +98,6 @@ def commission_confirmation(request):
     if request.method == "POST" and get_landing_data().comms_status == True:
         form = forms.CommissionForm(request.POST, request.FILES)
         category = request.POST.get("category", "none")
-
         redirect_if_invalid_category(category)
 
         context = {
@@ -98,19 +117,12 @@ def commission_confirmation(request):
                 field.widget = HiddenInput()
                 field.initial = form_data[data]
 
-            calculators = {
-                "character": price_calculator.calculate_character_price,
-                "landscape": price_calculator.calculate_landscape_price,
-                "object": price_calculator.calculate_object_price
-            }
-
-            if category in calculators:
-                price = calculators[form_data["category"]](form_data)
+            if category in CALCULATORS:
+                price = CALCULATORS[form_data["category"]](form_data)
                 context["calculated_price"] = price
 
             context["form_readable_names"] = form_readable_names
             context["type"] = category
-
             return render(request, "commissions/comms_confirmation.html", context=context)
 
         else:
