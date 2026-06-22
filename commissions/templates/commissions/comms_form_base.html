@@ -79,7 +79,7 @@
                         <a class="card-link" href="#" style="color: #69A7FC;">
                             {% translate 'Termos e Condições' %}
                         </a>
-                        {% if calculated_price and landing_data.comms_status %}
+                        {% if calculated_price and landing_data.comms_status and user.is_superuser == False %}
                             <button class="btn btn-primary d-block commission-request-btn"
                                     type="submit"
                                     form="commission-form"

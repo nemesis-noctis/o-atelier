@@ -2,7 +2,6 @@ from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.forms import HiddenInput, RadioSelect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -15,12 +14,16 @@ from . import price_calculator
 
 
 # Create your views here.
-@login_required()
 def commission_choice(request):
     return render(request, "commissions/comms_choice.html", context={"landing_data": get_landing_data()})
 
 
-class CommissionFormView(LoginRequiredMixin, View):
+def redirect_if_invalid_category(category):
+    if category not in ["character", "landscape", "object"]:
+        return redirect("comms_choice")
+
+
+class CommissionFormView(View):
     def get(self, request):
         form = forms.CommissionForm()
         form_data = request.session.pop("form_data", None)
@@ -28,8 +31,7 @@ class CommissionFormView(LoginRequiredMixin, View):
             form = forms.CommissionForm(form_data)
 
         category = request.GET.get("category", "")
-        if category not in ["character", "landscape", "object"]:
-            return redirect("comms_choice")
+        redirect_if_invalid_category(category)
 
         form["category"].initial = category
         context = {
@@ -42,15 +44,15 @@ class CommissionFormView(LoginRequiredMixin, View):
     def post(self, request):
         form = forms.CommissionForm(request.POST, request.FILES)
         category = request.POST.get("category", "none")
-        
-        if category not in ["character", "landscape", "object"]:
-            return redirect("comms_choice")
+
+        redirect_if_invalid_category(category)
 
         context = {
             "type": category,
             "landing_data": get_landing_data(),
             "form": form
         }
+
         if form.is_valid():
             form_data = form.cleaned_data
             calculators = {
@@ -77,13 +79,13 @@ def commission_confirmation(request):
         form = forms.CommissionForm(request.POST, request.FILES)
         category = request.POST.get("category", "none")
 
-        if category not in ["character", "landscape", "object"]:
-            return redirect("comms_choice")
+        redirect_if_invalid_category(category)
 
         context = {
             "landing_data": get_landing_data(),
             "form": form,
         }
+
         if form.is_valid():
             form_data = form.cleaned_data
             form_readable_names = {}
@@ -101,6 +103,7 @@ def commission_confirmation(request):
                 "landscape": price_calculator.calculate_landscape_price,
                 "object": price_calculator.calculate_object_price
             }
+
             if category in calculators:
                 price = calculators[form_data["category"]](form_data)
                 context["calculated_price"] = price
