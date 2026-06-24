@@ -71,7 +71,7 @@ class Commission(models.Model):
         True: "sim",
         False: "não"
     }
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid7(), editable=False)
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid7, editable=False)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     stage = models.CharField(max_length=24, choices=stage_choices)
     category = models.CharField(max_length=24, choices=category_choices, default="character")
@@ -99,6 +99,8 @@ class Commission(models.Model):
 
 
 class ReferenceImage(models.Model):
-    commission = models.ForeignKey(Commission, on_delete=models.CASCADE)
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid7, editable=False)
+    commission = models.ForeignKey(Commission, on_delete=models.CASCADE, null=True)
+    is_temp = models.BooleanField(default=True)
     image = models.ImageField(upload_to="commission/reference")
     created_at = models.DateTimeField(auto_now_add=True)

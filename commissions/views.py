@@ -2,7 +2,7 @@ from urllib.parse import urlencode
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.forms import HiddenInput, RadioSelect
+from django.forms import RadioSelect
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
@@ -10,6 +10,7 @@ from django.views.generic import View
 
 from core.utils import get_landing_data
 from . import forms
+from . import models
 from . import price_calculator
 
 CALCULATORS = {"character": price_calculator.calculate_character_price,
@@ -113,15 +114,20 @@ def commission_confirmation(request):
                 else:
                     form_readable_names[data] = form_data[data]
 
-                field.widget = HiddenInput()
-                field.initial = form_data[data]
-
             if category in CALCULATORS:
                 price = CALCULATORS[category](form_data)
                 context["calculated_price"] = price
                 request.session.delete("calculated_price")
 
+            images = request.FILES.getlist("reference_images", [])
+            images_uuids = []
+            for image in images:
+                temp_image = models.ReferenceImage(image=image, is_temp=True)
+                images_uuids.append(str(temp_image.uuid))
+                temp_image.save()
+
             context["form_readable_names"] = form_readable_names
+            context["images_uuids"] = request.session["images_uuids"] = images_uuids
             context["type"] = category
             return render(request, "commissions/comms_confirmation.html", context=context)
 
