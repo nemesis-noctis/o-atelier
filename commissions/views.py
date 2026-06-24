@@ -127,7 +127,7 @@ def commission_confirmation(request):
                 temp_image.save()
 
             context["form_readable_names"] = form_readable_names
-            context["images_uuids"] = request.session["images_uuids"] = images_uuids
+            context["reference_images_uuids"] = request.session["reference_images_uuids"] = images_uuids
             context["type"] = category
             return render(request, "commissions/comms_confirmation.html", context=context)
 
@@ -138,5 +138,22 @@ def commission_confirmation(request):
 
             messages.error(request, message)
             return redirect(f"{reverse_lazy("comms_form")}?{urlencode({"category": category})}")
+    else:
+        return redirect("comms_choice")
+
+
+@login_required
+def commission_success(request):
+    if request.method == "POST" and get_landing_data().comms_status == True and (
+            request.session.get("form_data", None) is not None):
+
+        form = forms.CommissionForm(request.session.pop("form_data", None))
+        reference_images_uuids = request.session.pop("reference_images_uuids", [])
+
+        if form.is_valid():
+            return render(request, "commissions/comms_success.html", context={"landing_data": get_landing_data()})
+        
+        else:
+            return redirect("comms_choice")
     else:
         return redirect("comms_choice")
