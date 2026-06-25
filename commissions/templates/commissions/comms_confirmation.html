@@ -22,17 +22,17 @@
                             <ul class="list-unstyled text-start" style="font-size: 14px;">
                                 <li>{% translate 'Categoria:' %}
                                     <span style="color: var(--bs-secondary);">
-                                        {% if type == "character" %}
+                                        {% if category == "character" %}
                                             {% translate 'Personagem' %}
-                                        {% elif type == "landscape" %}
+                                        {% elif category == "landscape" %}
                                             {% translate 'Cenário' %}
-                                        {% elif type == "object" %}
+                                        {% elif category == "object" %}
                                             {% translate 'Objeto' %}
                                         {% endif %}
 
                                     </span>
                                 </li>
-                                {% if type == "character" %}
+                                {% if category == "character" %}
                                     <li>{% translate 'Tipo de Personagem:' %}
                                         <span style="color: var(--bs-secondary);">
                                         {{ form_readable_names.character_type|title }}
@@ -50,7 +50,7 @@
                                     </li>
                                 {% endif %}
 
-                                {% if type == "landscape" or type == "object" %}
+                                {% if category == "landscape" or category == "object" %}
                                     <li>{% translate 'Complexidade:' %}
                                         <span style="color: var(--bs-secondary);">
                                         {{ form_readable_names.complexity|title }}
@@ -58,7 +58,7 @@
                                     </li>
                                 {% endif %}
 
-                                {% if type == "character" or type == "object" %}
+                                {% if category == "character" or category == "object" %}
                                     <li>{% translate 'Quantidade:' %}
                                         <span style="color: var(--bs-secondary);">
                                         {{ form_readable_names.count }}
@@ -144,7 +144,7 @@
                             </div>
                         </div>
                         <span class="d-block"
-                              style="margin-bottom: 12px;color: var(--bs-secondary);font-weight: bold;">{% translate 'Preço estimado:' %} <br> {{ calculated_price.brl|floatformat:2 }} BRL$ | {{ calculated_price.usd|floatformat:2 }} USD$</span>
+                              style="margin-bottom: 12px;color: var(--bs-secondary);font-weight: bold;">{% translate 'Preço estimado:' %} <br> BRL: {{ calculated_price.brl|floatformat:2 }}$ | USD: {{ calculated_price.usd|floatformat:2 }}$</span>
                         <form method="post" action="{% url 'comms_success' %}">
                             {% csrf_token %}
                             <button type="submit"

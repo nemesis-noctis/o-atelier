@@ -74,7 +74,7 @@ def calculate_character_price(commission_data):
         }
         art_type_price = discount_price + discount_price * prices_percent_art_type[commission_data["art_type"]]
         return art_type_price + art_type_price * prices_percent_aspect_ratio[commission_data["aspect_ratio"]]
-
+    
     base_price = calculate_base_price()
     discount_price = calculate_discount_price(base_price)
     final_price = calculate_final_price(discount_price)
@@ -182,5 +182,5 @@ def calculate_object_price(commission_data):
     final_price = calculate_final_price(discount_price)
     if final_price < 15:
         final_price = 15
-        
+
     return {"brl": round(final_price, 2), "usd": round(final_price - final_price * 0.6, 2)}

@@ -7,7 +7,7 @@
     <div class="row gy-5 row-cols-1 justify-content-center">
         {% csrf_token %}
         {{ form.category }}
-        {% if type == "character" %}
+        {% if category == "character" %}
             <div class="col">
                 <div>
                     <h5 style="color: rgb(90,92,94);font-size: 18px;">
@@ -64,7 +64,7 @@
                                     data-bs-slide-to="3"></button>
                         </div>
                     </div>
-                    <div class="row row-cols-2 row-cols-sm-4 row-cols-xxl-4 mw-100 justify-content-center"
+                    <div class="row row-cols-2 row-cols-sm-4 row-cols-xxl-3 mw-100 justify-content-left"
                          style="width: 500px;margin-right: auto;margin-left: auto;margin-top: 12px;">
                         {% for choice in form.character_type %}
                             <div class="col" style="text-align: left;">
@@ -76,21 +76,20 @@
                                 </div>
                             </div>
                         {% endfor %}
-                        {{ form.errors.character_type }}
-
-                        <div class="col" style="text-align: left;width: 200px;">
-                            <label class="form-label" style="font-size: 14px;color: rgb(90,92,94);">
-                                {% translate 'Número de Personagens' %}
-                            </label>
-                            {{ form.count }}
-                        </div>
+                    </div>
+                    {{ form.errors.character_type }}
+                    <div style="text-align: left;width: 200px; margin: 0 auto;">
+                        <label class="form-label" style="font-size: 14px;color: rgb(90,92,94);">
+                            {% translate 'Número de Personagens' %}
+                        </label>
+                        {{ form.count }}
                         {{ form.errors.count }}
                     </div>
                 </div>
             </div>
         {% endif %}
 
-        {% if type == "object" %}
+        {% if category == "object" %}
             <div class="col">
                 <div>
                     <h5 style="color: rgb(90,92,94);font-size: 18px;">
@@ -142,19 +141,21 @@
                                 </div>
                             </div>
                         {% endfor %}
-                        {{ form.errors.complexity }}
-                        <div class="col" style="text-align: center;width: 200px;">
-                            <label class="form-label" style="font-size: 14px;color: rgb(90,92,94);">
-                                {% translate 'Número de Objetos' %}
-                            </label>
-                            {{ form.count }}
-                        </div>
+                    </div>
+                    {{ form.errors.complexity }}
+
+                    <div style="text-align: center;width: 200px; margin:0 auto;">
+                        <label class="form-label" style="font-size: 14px;color: rgb(90,92,94);">
+                            {% translate 'Número de Objetos' %}
+                        </label>
+                        {{ form.count }}
                         {{ form.errors.count }}
                     </div>
+
                 </div>
             </div>
         {% endif %}
-        {% if type == "character" or type == "object" %}
+        {% if category == "character" or category == "object" %}
             <div class="col">
                 <div>
                     <h5 style="color: rgb(90,92,94);font-size: 18px;">
@@ -214,13 +215,13 @@
                                 </div>
                             </div>
                         {% endfor %}
-                        {{ form.errors.art_type }}
                     </div>
+                    {{ form.errors.art_type }}
                 </div>
             </div>
         {% endif %}
 
-        {% if type == "character" %}
+        {% if category == "character" %}
             <div class="col">
                 <div>
                     <h5 style="color: rgb(90,92,94);font-size: 18px;">
@@ -288,13 +289,13 @@
                                 </div>
                             </div>
                         {% endfor %}
-                        {{ form.errors.clothing }}
                     </div>
+                    {{ form.errors.clothing }}
                 </div>
             </div>
         {% endif %}
 
-        {% if type == "character" %}
+        {% if category == "character" %}
             <div class="col">
                 <div>
                     <h5 style="color: rgb(90,92,94);font-size: 18px;">
@@ -353,8 +354,8 @@
                                 </div>
                             </div>
                         {% endfor %}
-                        {{ form.errors.body_type }}
                     </div>
+                    {{ form.errors.body_type }}
                 </div>
             </div>
         {% endif %}
@@ -418,8 +419,8 @@
                             </div>
                         </div>
                     {% endfor %}
-                    {{ form.errors.final_stage }}
                 </div>
+                {{ form.errors.final_stage }}
             </div>
         </div>
 
@@ -443,7 +444,7 @@
                                  alt="Slide Image"
                                  style="border-radius: 30px; max-height: 340px; object-fit: cover">
                         </div>
-                        {% if type == "character" or type == "object" %}
+                        {% if category == "character" or category == "object" %}
                             <div class="carousel-item">
                                 <img class="img-fluid w-100 d-block"
                                      src="{% static "images/image-placeholder-500x500.jpeg" %}"
@@ -469,7 +470,7 @@
                                 class="active"></button>
                         <button type="button" data-bs-target="#carousel-4"
                                 data-bs-slide-to="1"></button>
-                        {% if type == "character" or type == "object" %}
+                        {% if category == "character" or category == "object" %}
                             <button type="button" data-bs-target="#carousel-4"
                                     data-bs-slide-to="2"></button>
                         {% endif %}
@@ -477,7 +478,7 @@
                 </div>
                 <div class="row row-cols-2 row-cols-sm-3 mw-100 justify-content-center"
                      style="width: 500px;margin-right: auto;margin-left: auto;margin-top: 12px;">
-                    {% if type == "landscape" %}
+                    {% if category == "landscape" %}
                         {% for choice in form.complexity %}
                             <div class="col" style="text-align: left;">
                                 <div class="form-check d-inline-block" style="width: 200px">
@@ -487,7 +488,7 @@
                                 </div>
                             </div>
                         {% endfor %}
-                        {{ form.errors.complexity }}
+
                     {% else %}
                         {% for choice in form.background %}
                             <div class="col" style="text-align: left;">
@@ -498,9 +499,11 @@
                                 </div>
                             </div>
                         {% endfor %}
-                        {{ form.errors.background }}
+
                     {% endif %}
                 </div>
+                {{ form.errors.complexity }}
+                {{ form.errors.background }}
             </div>
         </div>
 
@@ -570,8 +573,8 @@
                             </div>
                         </div>
                     {% endfor %}
-                    {{ form.errors.aspect_ratio }}
                 </div>
+                {{ form.errors.aspect_ratio }}
             </div>
         </div>
 
@@ -625,8 +628,8 @@
                             </div>
                         </div>
                     {% endfor %}
-                    {{ form.errors.fx }}
                 </div>
+                {{ form.errors.fx }}
             </div>
         </div>
     </div>

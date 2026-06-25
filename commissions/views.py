@@ -25,6 +25,19 @@ def redirect_if_invalid_category(category):
         return redirect("comms_choice")
 
 
+def set_required_fields_based_on_category(form, category):
+    required_fields = {
+        "character": ["character_type", "count", "art_type", "clothing", "body_type", "background"],
+        "landscape": ["complexity"],
+        "object": ["complexity", "count", "art_type", "background"]
+    }
+
+    for field_name, field_obj in zip(form.fields, form.fields.values()):
+        if field_name in required_fields[category]:
+            field_obj.required = True
+    return form
+
+
 # Create your views here.
 def commission_choice(request):
     return render(request, "commissions/comms_choice.html", context={"landing_data": get_landing_data()})
@@ -40,21 +53,23 @@ class CommissionFormView(View):
     def get(self, request):
         form = forms.CommissionForm()
         form_data = request.session.pop("form_data", None)
-
         category = request.GET.get("category", "")
+        form = set_required_fields_based_on_category(form, category)
+
         redirect_if_invalid_category(category)
         form["category"].initial = category
 
         context = {
-            "type": category,
+            "category": category,
             "landing_data": get_landing_data(),
         }
 
         if form_data:
-            form = forms.CommissionForm(form_data)
-            required_details_form = self.comms_form_details_required_inverter(form, True)
-            context["form"] = required_details_form
-            context["calculated_price"] = request.session.pop("calculated_price", None)
+            if form_data["category"] == category:
+                form = forms.CommissionForm(form_data)
+                required_details_form = self.comms_form_details_required_inverter(form, True)
+                context["form"] = required_details_form
+                context["calculated_price"] = request.session.pop("calculated_price", None)
 
         context["form"] = form
 
@@ -62,8 +77,12 @@ class CommissionFormView(View):
 
     def post(self, request):
         form = forms.CommissionForm(request.POST, request.FILES)
-        non_required_details_form = self.comms_form_details_required_inverter(form, False)
-        form = non_required_details_form
+        category = request.POST.get("category", None)
+        redirect_if_invalid_category(category)
+
+        optional_details_form = self.comms_form_details_required_inverter(form, False)
+        form = optional_details_form
+        form = set_required_fields_based_on_category(form, category)
 
         context = {
             "landing_data": get_landing_data(),
@@ -72,22 +91,20 @@ class CommissionFormView(View):
 
         if form.is_valid():
             form_data = form.cleaned_data
-            category = form_data["category"]
-            redirect_if_invalid_category(category)
 
-            context["type"] = category
+            price = CALCULATORS[category](form_data)
+            request.session["calculated_price"] = price
 
-            if category in CALCULATORS:
-                price = CALCULATORS[category](form_data)
-                context["calculated_price"] = price
-                request.session["calculated_price"] = price
-
-                required_details_form = self.comms_form_details_required_inverter(form, True)
-                context["form"] = required_details_form
+            required_details_form = self.comms_form_details_required_inverter(form, True)
+            form = required_details_form
+            context["calculated_price"] = price
+            context["category"] = category
+            context["form"] = form
 
             return render(request, "commissions/comms_form_base.html", context=context)
 
         else:
+            context["category"] = form.cleaned_data["category"]
             messages.error(request,
                            _("Ocorreu um erro com a sua solicitação, por favor verifique os campos do formulário e tente novamente"))
             return render(request, "commissions/comms_form_base.html", context=context)
@@ -106,6 +123,10 @@ def commission_confirmation(request):
 
     if request.method == "POST" and get_landing_data().comms_status == True:
         form = forms.CommissionForm(request.POST, request.FILES)
+        category = request.POST.get("category", None)
+        redirect_if_invalid_category(category)
+
+        form = set_required_fields_based_on_category(form, category)
         request.session["form_data"] = request.POST.dict()
 
         context = {
@@ -114,26 +135,24 @@ def commission_confirmation(request):
 
         if form.is_valid():
             form_data = form.cleaned_data
-            category = form_data["category"]
-            redirect_if_invalid_category(category)
-            
+
             form_readable_names = get_human_readable_names(form.fields.values(), form_data)
 
-            if category in CALCULATORS:
-                price = CALCULATORS[category](form_data)
-                context["calculated_price"] = price
-                request.session.delete("calculated_price")
+            price = CALCULATORS[category](form_data)
+            context["calculated_price"] = price
+            request.session.delete("calculated_price")
 
             images = request.FILES.getlist("reference_images", [])
             images_uuids = []
-            for image in images:
-                temp_image = models.ReferenceImage(image=image, is_temp=True)
-                images_uuids.append(str(temp_image.uuid))
-                temp_image.save()
+            if images != []:
+                for image in images:
+                    temp_image = models.ReferenceImage(image=image, is_temp=True)
+                    images_uuids.append(str(temp_image.uuid))
+                    temp_image.save()
 
             context["form_readable_names"] = form_readable_names
             context["reference_images_uuids"] = request.session["reference_images_uuids"] = images_uuids
-            context["type"] = category
+            context["category"] = category
             return render(request, "commissions/comms_confirmation.html", context=context)
 
         else:
@@ -142,7 +161,7 @@ def commission_confirmation(request):
             )
 
             messages.error(request, message)
-            return redirect(f"{reverse_lazy("comms_form")}?{urlencode({"category": form.cleaned_data["category"]})}")
+            return redirect(f"{reverse_lazy("comms_form")}?{urlencode({"category": category})}")
     else:
         return redirect("comms_choice")
 
@@ -166,11 +185,12 @@ def commission_success(request):
             commission.price_usd = prices["usd"]
             commission.save()
 
-            for uuid in reference_images_uuids:
-                image = models.ReferenceImage.objects.get(uuid=uuid)
-                image.commission = commission
-                image.is_temp = False
-                image.save()
+            if reference_images_uuids != []:
+                for uuid in reference_images_uuids:
+                    image = models.ReferenceImage.objects.get(uuid=uuid)
+                    image.commission = commission
+                    image.is_temp = False
+                    image.save()
 
             artist_notification_context = {"client_name": request.user.username,
                                            "price_brl": commission.price_brl,

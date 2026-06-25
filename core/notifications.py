@@ -7,7 +7,7 @@ NOTIFICATION_TEMPLATES = {
     "test": _noop("This is a test notification for user {username}"),
     "order_success": _noop("""
     Seu pedido foi realizado com sucesso!
-    Logo você será informado(a) se seu pedido foi aceito ou recusado e seu valor final.
+    Logo você será informado(a) se seu pedido foi aceito ou recusado e seu valor total.
     Fique atento às notificações para atualizações.
     """),
     "new_order": _noop("Novo pedido para o usuário {client_name} por BRL: {price_brl}$ USD: {price_usd}$")

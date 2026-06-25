@@ -15,23 +15,17 @@
                     <div class="card-body" style="text-align: center;">
                         <h4 class="card-title"
                             style="font-family: 'Abhaya Libre', serif;font-size: 44px;color: rgb(33, 37, 41);">
-                            {% if type == "character" %}
+                            {% if category == "character" %}
                                 {% translate 'Commission de Personagem' %}
-                            {% elif type == "landscape" %}
+                            {% elif category == "landscape" %}
                                 {% translate 'Commission de Cenário' %}
-                            {% elif type == "object" %}
+                            {% elif category == "object" %}
                                 {% translate 'Commission de Objeto' %}
                             {% endif %}
                         </h4>
                         {% if messages %}
                             {% for message in messages %}
-                                {% if calculated_price %}
-                                    {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
-                                        <p class="card-text" style="color: #029c1c">{{ message }}</p>
-                                    {% else %}
-                                        <p class="card-text" style="color: #dc3343">{{ message }}</p>
-                                    {% endif %}
-                                {% endif %}
+                                <p class="card-text" style="color: #dc3343">{{ message }}</p>
                             {% endfor %}
 
                         {% else %}
@@ -69,14 +63,16 @@
 
                         {% if calculated_price %}
                             <span class="d-block" style="margin-bottom: 12px;color: #69A7FC;font-weight: bold;">
-                                {% translate 'Valor estimado:' %} <br>{{ calculated_price.brl|floatformat:2 }} BRL$ | {{ calculated_price.usd|floatformat:2 }} USD$
+                                {% translate 'Valor estimado:' %} <br>BRL: {{ calculated_price.brl|floatformat:2 }}$ | USD: {{ calculated_price.usd|floatformat:2 }}$
                             </span>
                         {% endif %}
+
                         {% if calculated_price and landing_data.comms_status and user.is_superuser == False %}
                             <p class="mw-100 card-text"
-                               style="color: rgb(130 115 222); font-weight: bold; margin-top: 20px;font-size: 18px; text-decoration: underline ">
+                               style="color: #fcba66; font-weight: bold; margin-top: 20px;font-size: 18px; text-decoration: underline ">
                                 {% translate 'Preencha os detalhes do pedido para prosseguir:' %}
                             </p>
+
                             {% include 'commissions/include/comms_form_details.html' %}
 
                             <button class="btn btn-primary d-block commission-request-btn"
@@ -92,17 +88,11 @@
                             <a class="card-link" href="#" style="color: #69A7FC;">
                                 {% translate 'Termos e Condições' %}
                             </a>
-
                         {% endif %}
 
                     </div>
                 </div>
             </div>
-
-
-            <div class="col col-sm col-md col-lg-6 col-xl-5 col-xxl-4">
-            </div>
-
         </div>
         <a id="scroll-to-top" title="Scroll to top" href="#" style="background: #69A7FC;">
             <i class="fas fa-angle-up"></i>

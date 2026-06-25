@@ -34,7 +34,8 @@ class Commission(models.Model):
         "human": _noop("humano"),
         "furry": _noop("furry"),
         "chibi": _noop("chibi"),
-        "creature": _noop("criatura")
+        "simple_creature": _noop("criatura simples"),
+        "complex_creature": _noop("criatura complexa"),
     }
     complexity_choices = {
         "simple": _noop("simples"),
