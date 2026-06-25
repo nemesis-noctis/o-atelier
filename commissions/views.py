@@ -8,7 +8,8 @@ from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
 from django.views.generic import View
 
-from core.utils import get_landing_data
+from core.notifications import send_notification_to_artist, send_notification_to_client
+from core.utils import get_landing_data, decrease_comms_slots
 from . import forms
 from . import models
 from . import price_calculator
@@ -64,17 +65,17 @@ class CommissionFormView(View):
         non_required_details_form = self.comms_form_details_required_inverter(form, False)
         form = non_required_details_form
 
-        category = request.POST.get("category", "none")
-        redirect_if_invalid_category(category)
-
         context = {
-            "type": category,
             "landing_data": get_landing_data(),
             "form": form,
         }
 
         if form.is_valid():
             form_data = form.cleaned_data
+            category = form_data["category"]
+            redirect_if_invalid_category(category)
+
+            context["type"] = category
 
             if category in CALCULATORS:
                 price = CALCULATORS[category](form_data)
@@ -94,11 +95,17 @@ class CommissionFormView(View):
 
 @login_required()
 def commission_confirmation(request):
+    def get_human_readable_names(fields, form_data):
+        readable_names = {}
+        for field, data in zip(form.fields.values(), form_data):
+            if isinstance(field.widget, RadioSelect):
+                readable_names[data] = dict(field.choices).get(form_data[data])
+            else:
+                readable_names[data] = form_data[data]
+        return readable_names
+
     if request.method == "POST" and get_landing_data().comms_status == True:
         form = forms.CommissionForm(request.POST, request.FILES)
-        category = request.POST.get("category", "none")
-        redirect_if_invalid_category(category)
-
         request.session["form_data"] = request.POST.dict()
 
         context = {
@@ -107,12 +114,10 @@ def commission_confirmation(request):
 
         if form.is_valid():
             form_data = form.cleaned_data
-            form_readable_names = {}
-            for field, data in zip(form.fields.values(), form_data):
-                if isinstance(field.widget, RadioSelect):
-                    form_readable_names[data] = dict(field.choices).get(form_data[data])
-                else:
-                    form_readable_names[data] = form_data[data]
+            category = form_data["category"]
+            redirect_if_invalid_category(category)
+            
+            form_readable_names = get_human_readable_names(form.fields.values(), form_data)
 
             if category in CALCULATORS:
                 price = CALCULATORS[category](form_data)
@@ -137,7 +142,7 @@ def commission_confirmation(request):
             )
 
             messages.error(request, message)
-            return redirect(f"{reverse_lazy("comms_form")}?{urlencode({"category": category})}")
+            return redirect(f"{reverse_lazy("comms_form")}?{urlencode({"category": form.cleaned_data["category"]})}")
     else:
         return redirect("comms_choice")
 
@@ -147,12 +152,36 @@ def commission_success(request):
     if request.method == "POST" and get_landing_data().comms_status == True and (
             request.session.get("form_data", None) is not None):
 
-        form = forms.CommissionForm(request.session.pop("form_data", None))
+        form = forms.CommissionForm(request.session.pop("form_data"))
         reference_images_uuids = request.session.pop("reference_images_uuids", [])
 
         if form.is_valid():
+            form_data = form.cleaned_data
+            prices = CALCULATORS[form_data["category"]](form_data)
+
+            commission = form.save(commit=False)
+            commission.user = request.user
+            commission.stage = "waiting_confirmation"
+            commission.price_brl = prices["brl"]
+            commission.price_usd = prices["usd"]
+            commission.save()
+
+            for uuid in reference_images_uuids:
+                image = models.ReferenceImage.objects.get(uuid=uuid)
+                image.commission = commission
+                image.is_temp = False
+                image.save()
+
+            artist_notification_context = {"client_name": request.user.username,
+                                           "price_brl": commission.price_brl,
+                                           "price_usd": commission.price_usd}
+
+            send_notification_to_client(client=request.user, key="order_success", level="MESSAGE", context={})
+            send_notification_to_artist(key="new_order", level="MESSAGE", context=artist_notification_context)
+            decrease_comms_slots()
+
             return render(request, "commissions/comms_success.html", context={"landing_data": get_landing_data()})
-        
+
         else:
             return redirect("comms_choice")
     else:

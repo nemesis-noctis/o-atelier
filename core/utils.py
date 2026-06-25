@@ -25,6 +25,12 @@ def get_landing_data() -> LandingPage:
     return data
 
 
+def decrease_comms_slots():
+    landing_data = LandingPage.objects.all()[0]
+    landing_data.slots -= 1
+    landing_data.save()
+
+
 def add_current_data_to_post_if_empty(request, current_data) -> HttpRequest:
     """Add the entered current data to the post request if the data is empty."""
     post_data = request.POST.copy()
