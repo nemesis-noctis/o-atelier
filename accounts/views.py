@@ -54,7 +54,7 @@ class NotificationsView(LoginRequiredMixin, View):
     def post(self, request):
         read_all = request.POST.get("read_all", "")
         if not read_all == "":
-            request.user.notifications.all().update(is_read=False)
+            request.user.notifications.all().update(is_read=True)
 
         notification_pk = request.POST.get("pk", "")
         if not notification_pk == "":

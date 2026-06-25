@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %}
+{% block title %}
+    Commission Choice
+{% endblock %}
+
+{% block content %}
+    {% include 'include/navbar.html' %}
+    <section class="position-relative mt-9 mt-sm-9 mt-md-9 mt-lg-9 mt-xl-9 mt-xxl-10"
+             style="width: 100%;height: 100%;color: rgb(33, 37, 41);">
+        <div class="container">
+            <div class="row mb-5">
+                <div class="col-md-8 col-xl-6 text-center mx-auto">
+                    <h2 style="font-family: 'Abhaya Libre', serif;font-size: 48px;color: rgb(86,99,112);">
+                        {% translate 'Escolha o tipo de pedido' %}
+                    </h2>
+                    <p>
+                        {% translate 'Para pedir uma commission ou fazer o orçamento, escolha o tipo de pedido que mais se alinhe com o que você deseja.' %}
+                    </p>
+                </div>
+            </div>
+            <div class="row gy-4 row-cols-1 row-cols-sm-1 row-cols-md-2 row-cols-lg-2 row-cols-xl-3 row-cols-xxl-3 justify-content-center align-items-center">
+                <div class="col">
+                    <div class="card border-0 shadow-none" style="border-radius: 80px;padding: 30px ;">
+                        <div class="card-body align-items-center p-0" style="text-align: center;">
+                            <a class="text-decoration-none" href="{% url 'comms_form' %}?category=character">
+                                <img class="object-fit-cover rounded-circle d-inline-block flex-shrink-0 me-3"
+                                     width="320"
+                                     height="320" src="{% static "images/image-placeholder-500x500.jpeg" %}">
+                                <div class="d-block" style="margin-top: 12px;">
+                                    <h5 style="color: rgba(33,37,41,0.75);font-weight: bold;">
+                                        {% translate 'Personagens' %}
+                                    </h5>
+                                    <p class="text-muted mb-1" style="color: rgba(33, 37, 41, 0.75);">
+                                        {% translate 'Humanos, Furry, Chibi, Animais, Criaturas.' %}
+                                    </p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card border-0 shadow-none" style="padding: 30px;border-radius: 80px;">
+                        <div class="card-body align-items-center p-0" style="text-align: center;">
+                            <a class="text-decoration-none" href="{% url 'comms_form' %}?category=landscape">
+                                <img class="object-fit-cover rounded-circle d-inline-block flex-shrink-0 me-3"
+                                     width="320"
+                                     height="320" src="{% static "images/image-placeholder-500x500.jpeg" %}">
+                                <div class="d-block" style="margin-top: 12px;">
+                                    <h5 style="color: rgba(33,37,41,0.75);font-weight: bold;">
+                                        {% translate 'Cenários' %}
+                                    </h5>
+                                    <p class="text-muted mb-1">
+                                        {% translate 'Fundos, Construções, Paisagens.' %}
+                                    </p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="card border-0 shadow-none"
+                         style="border-radius: 80px;padding: 30px;border-color: #69A7FC;">
+                        <div class="card-body align-items-center p-0" style="text-align: center;">
+                            <a class="text-decoration-none" href="{% url 'comms_form' %}?category=object">
+                                <img class="object-fit-cover rounded-circle d-inline-block flex-shrink-0 me-3"
+                                     width="320"
+                                     height="320" src="{% static "images/image-placeholder-500x500.jpeg" %}">
+                                <div class=" d-block" style="margin-top: 12px;">
+                                    <h5 style="color: rgba(33,37,41,0.75);font-weight: bold;">
+                                        {% translate 'Objetos' %}
+                                    </h5>
+                                    <p class="text-muted mb-1">
+                                        {% translate 'Armas, Roupas, Acessórios, Items.' %}
+                                    </p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

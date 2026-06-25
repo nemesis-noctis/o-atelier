@@ -1,9 +1,16 @@
 from django.utils.translation import gettext_noop as _noop
 
+from accounts.models import CustomUser
 from .models import Notification
 
 NOTIFICATION_TEMPLATES = {
-    "test": _noop("This is a test notification for user {username}")
+    "test": _noop("This is a test notification for user {username}"),
+    "order_success": _noop("""
+    Seu pedido foi realizado com sucesso!
+    Logo você será informado(a) se seu pedido foi aceito ou recusado e seu valor total.
+    Fique atento às notificações para atualizações.
+    """),
+    "new_order": _noop("Novo pedido para o usuário {client_name} por BRL: {price_brl}$ USD: {price_usd}$")
 }
 
 
@@ -21,3 +28,17 @@ def render_notification(notification: Notification):
     }
 
     return notification_data
+
+
+def send_notification_to_client(client, key, level, context):
+    Notification(user=client,
+                 template_key=key,
+                 level=level,
+                 context=context).save()
+
+
+def send_notification_to_artist(key, level, context):
+    Notification(user=CustomUser.objects.get(is_superuser=True),
+                 template_key=key,
+                 level=level,
+                 context=context).save()

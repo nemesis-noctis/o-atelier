@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}
+    Commission Confirmation
+{% endblock %}
+
+{% block content %}
+    {% include 'include/navbar.html' %}
+    <section class="mt-9 mt-sm-9 mt-md-9 mt-lg-9 mt-xl-9 mt-xxl-9"
+             style="width: 100%;height: 100%;color: rgb(33, 37, 41);">
+        <div class="row gx-4 gy-2 mw-100 justify-content-center"
+             style="width: 1800px;margin-left: auto;margin-right: auto;">
+            <div class="col col-sm col-md col-lg-6 col-xl-5 col-xxl-4">
+                <div class="card mw-100"
+                     style="border-radius: 30px;width: 600px;margin-right: auto;margin-left: auto;padding: 20px 30px;border-color: var(--bs-focus-ring-color);">
+                    <div class="card-body" style="text-align: center;">
+                        <span class="d-block" style="margin-bottom: 12px;color: #69A7FC;font-weight: bold;">
+                        {% translate 'Resumo do pedido:' %}
+                        </span>
+                        <div>
+                            <ul class="list-unstyled text-start" style="font-size: 14px;">
+                                <li>{% translate 'Categoria:' %}
+                                    <span style="color: var(--bs-secondary);">
+                                        {% if category == "character" %}
+                                            {% translate 'Personagem' %}
+                                        {% elif category == "landscape" %}
+                                            {% translate 'Cenário' %}
+                                        {% elif category == "object" %}
+                                            {% translate 'Objeto' %}
+                                        {% endif %}
+
+                                    </span>
+                                </li>
+                                {% if category == "character" %}
+                                    <li>{% translate 'Tipo de Personagem:' %}
+                                        <span style="color: var(--bs-secondary);">
+                                        {{ form_readable_names.character_type|title }}
+                                    </span>
+                                    </li>
+                                    <li>{% translate 'Tipo de Vestimenta:' %}
+                                        <span style="color: var(--bs-secondary);">
+                                        {{ form_readable_names.clothing|title }}
+                                    </span>
+                                    </li>
+                                    <li>{% translate 'Tipo de Corpo:' %}
+                                        <span style="color: var(--bs-secondary);">
+                                        {{ form_readable_names.body_type|title }}
+                                    </span>
+                                    </li>
+                                {% endif %}
+
+                                {% if category == "landscape" or category == "object" %}
+                                    <li>{% translate 'Complexidade:' %}
+                                        <span style="color: var(--bs-secondary);">
+                                        {{ form_readable_names.complexity|title }}
+                                        </span>
+                                    </li>
+                                {% endif %}
+
+                                {% if category == "character" or category == "object" %}
+                                    <li>{% translate 'Quantidade:' %}
+                                        <span style="color: var(--bs-secondary);">
+                                        {{ form_readable_names.count }}
+                                    </span>
+                                    </li>
+                                    <li>{% translate 'Tipo de Arte:' %}
+                                        <span style="color: var(--bs-secondary);">
+                                        {{ form_readable_names.art_type|title }}
+                                    </span>
+                                    </li>
+                                    <li>{% translate 'Tipo de Fundo:' %}
+                                        <span style="color: var(--bs-secondary);">
+                                        {{ form_readable_names.background|title }}
+                                    </span>
+                                    </li>
+                                {% endif %}
+
+                                <li>{% translate 'Etapa Final:' %}
+                                    <span style="color: var(--bs-secondary);">
+                                        {{ form_readable_names.final_stage|title }}
+                                    </span>
+                                </li>
+                                <li>{% translate 'Proporção da Tela:' %}
+                                    <span style="color: var(--bs-secondary);">
+                                        {{ form_readable_names.aspect_ratio|title }}
+                                    </span>
+                                </li>
+                                <li>{% translate 'Efeitos:' %}
+                                    <span style="color: var(--bs-secondary);">
+                                        {% if form_readable_names.fx == True %}
+                                            Sim
+                                        {% else %}
+                                            Não
+                                        {% endif %}
+
+                                    </span>
+                                </li>
+                                <li>{% translate 'Rede Social para Contato:' %}
+                                    <span style="color: var(--bs-secondary);">
+                                        {{ form_readable_names.contact_social }}
+                                    </span>
+                                </li>
+                                <li>{% translate 'Nome na rede social:' %}
+                                    <span style="color: var(--bs-secondary);">
+                                        {{ form_readable_names.contact_username }}
+                                    </span>
+                                </li>
+                                <li>{% translate 'Uso comercial:' %}
+                                    <span style="color: var(--bs-secondary);">
+                                        {% if form_readable_names.commercial == True %}
+                                            Sim
+                                        {% else %}
+                                            Não
+                                        {% endif %}
+                                    </span>
+                                </li>
+                                <li>{% translate 'Permissão de postagem:' %}
+                                    <span style="color: var(--bs-secondary);">
+                                        {% if form_readable_names.share_permission == True %}
+                                            Sim
+                                        {% else %}
+                                            Não
+                                        {% endif %}
+                                    </span>
+                                </li>
+                                <li>{% translate 'Número de Referências:' %}
+                                    <span style="color: var(--bs-secondary);">
+                                    {{ reference_images_uuids|length }}
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <span class="d-block"
+                                  style="margin-bottom: 12px;color: #69A7FC;font-weight: bold;font-size: 14px;">
+                                {% translate 'Descrição:' %}
+                            </span>
+                            <div class="overflow-auto"
+                                 style="background: #EDF5FE;border-radius: 18px;padding: 20px 10px;height: 200px;">
+                                <span style="font-size: 15px;">
+                                    {{ form_readable_names.description }}
+                                </span>
+                            </div>
+                        </div>
+                        <span class="d-block"
+                              style="margin-bottom: 12px;color: var(--bs-secondary);font-weight: bold;">{% translate 'Preço estimado:' %} <br> BRL: {{ calculated_price.brl|floatformat:2 }}$ | USD: {{ calculated_price.usd|floatformat:2 }}$</span>
+                        <form method="post" action="{% url 'comms_success' %}">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    class="btn btn-primary d-block commission-request-btn"
+                                    style="margin: 12px auto;">
+                                {% translate 'Confirmar pedido' %}
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

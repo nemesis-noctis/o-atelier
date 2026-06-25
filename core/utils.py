@@ -1,3 +1,4 @@
+from django import forms
 from django.core.files import File
 from django.http import HttpRequest
 from django.shortcuts import redirect
@@ -22,6 +23,12 @@ def get_landing_data() -> LandingPage:
     """Get landing page and navbar data from db."""
     data = LandingPage.objects.all().order_by("-pk")[0]
     return data
+
+
+def decrease_comms_slots():
+    landing_data = LandingPage.objects.all()[0]
+    landing_data.slots -= 1
+    landing_data.save()
 
 
 def add_current_data_to_post_if_empty(request, current_data) -> HttpRequest:
@@ -55,3 +62,18 @@ def render_gallery_images_from_tags(request, tag, html_template, all_tags=None):
         gallery_images = GalleryImage.objects.filter(tag=GalleryTag.objects.get(tag=tag))
         return render(request, template_name=html_template,
                       context={"gallery_images": gallery_images, "gallery_tags": all_tags})
+
+
+def set_form_field_classes(fields_values):
+    for field in fields_values:
+        if isinstance(field.widget, forms.RadioSelect):
+            pass
+
+        elif isinstance(field.widget, forms.CheckboxInput):
+            field.widget.attrs["class"] = "form-check-input"
+
+        elif isinstance(field, forms.ImageField):
+            field.widget.attrs["class"] = "form-control form-control-sm login-register-inputs"
+
+        else:
+            field.widget.attrs["class"] = "form-control login-register-inputs"
