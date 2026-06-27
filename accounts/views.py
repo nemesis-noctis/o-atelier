@@ -3,10 +3,13 @@ import os
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as login_user, logout as logout_user, authenticate
+from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, PasswordResetDoneView, \
     PasswordResetCompleteView
+from django.db.models import QuerySet
+from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
@@ -15,10 +18,11 @@ from dotenv import load_dotenv
 
 import accounts.forms as forms
 from accounts.models import CustomUser
+from core.models import Notification
 from core.notifications import render_notification
 from core.utils import redirect_if_logged, get_landing_data, add_current_data_to_post_if_empty, \
-    render_gallery_images_from_tags
-from landing.models import GalleryTag, GalleryImage
+    get_gallery_images_from_tags
+from landing.models import GalleryTag, GalleryImage, LandingPage
 
 load_dotenv(settings.BASE_DIR / ".env")
 
@@ -26,7 +30,7 @@ load_dotenv(settings.BASE_DIR / ".env")
 # Create your views here.
 
 @login_required
-def user_profile(request):
+def user_profile(request) -> HttpResponse:
     new_notifications = False
     if request.user.notifications.filter(is_read=False).exists():
         new_notifications = True
@@ -38,8 +42,8 @@ def user_profile(request):
 class NotificationsView(LoginRequiredMixin, View):
     login_url = reverse_lazy("login")
 
-    def get(self, request):
-        notifications = request.user.notifications.all().order_by("-created_at")
+    def get(self, request) -> HttpResponse:
+        notifications: QuerySet[Notification] = request.user.notifications.all().order_by("-created_at")
         rendered_notifications = []
         if notifications:
             for notification in notifications:
@@ -51,7 +55,7 @@ class NotificationsView(LoginRequiredMixin, View):
         }
         return render(request, "accounts/profile/notifications.html", context=context)
 
-    def post(self, request):
+    def post(self, request) -> HttpResponseRedirect:
         read_all = request.POST.get("read_all", "")
         if not read_all == "":
             request.user.notifications.all().update(is_read=True)
@@ -70,10 +74,10 @@ class NotificationsView(LoginRequiredMixin, View):
 class UserManagerView(LoginRequiredMixin, UserPassesTestMixin, View):
     login_url = reverse_lazy("login")
 
-    def test_func(self):
+    def test_func(self) -> bool | None:
         return self.request.user.is_superuser
 
-    def order_users(self, users, order_by):
+    def order_users(self, users: QuerySet[CustomUser], order_by: str) -> QuerySet[CustomUser]:
         orders = {
             "username": "username",
             "date": "date_joined",
@@ -85,7 +89,7 @@ class UserManagerView(LoginRequiredMixin, UserPassesTestMixin, View):
 
         return users.order_by(orders[order_by if order_by in orders else "username"])
 
-    def get(self, request):
+    def get(self, request) -> HttpResponse:
         username_search = request.GET.get("username_search", "")
         all_users = CustomUser.objects.all().filter(username__icontains=username_search, is_superuser=False)
         users_count = all_users.count()
@@ -102,10 +106,10 @@ class UserManagerView(LoginRequiredMixin, UserPassesTestMixin, View):
 class ChangeUserPasswordView(LoginRequiredMixin, UserPassesTestMixin, View):
     login_url = reverse_lazy("login")
 
-    def test_func(self):
+    def test_func(self) -> bool | None:
         return self.request.user.is_superuser
 
-    def get_user_pk(self, request):
+    def get_user_pk(self, request) -> CustomUser:
         if request.method == "GET":
             user_pk = request.GET.get("user_pk", "")
             return CustomUser.objects.get(pk=user_pk)
@@ -113,7 +117,7 @@ class ChangeUserPasswordView(LoginRequiredMixin, UserPassesTestMixin, View):
             user_pk = request.POST.get("user_pk", "")
             return CustomUser.objects.get(pk=user_pk)
 
-    def get(self, request):
+    def get(self, request) -> HttpResponse:
         user = self.get_user_pk(request)
         context = {
             "user_": user,
@@ -121,7 +125,7 @@ class ChangeUserPasswordView(LoginRequiredMixin, UserPassesTestMixin, View):
         }
         return render(request, "accounts/artist/partials/change_user_password.html", context=context)
 
-    def post(self, request):
+    def post(self, request) -> HttpResponse:
         user = self.get_user_pk(request)
         form = forms.NewPasswordForm(user, request.POST)
         context = {
@@ -140,7 +144,7 @@ class ChangeUserPasswordView(LoginRequiredMixin, UserPassesTestMixin, View):
 class BlockedUserView(LoginRequiredMixin, UserPassesTestMixin, View):
     login_url = reverse_lazy("login")
 
-    def test_func(self):
+    def test_func(self) -> bool | None:
         return self.request.user.is_superuser
 
     def get(self, request, b_status, pk):
@@ -157,10 +161,10 @@ class BlockedUserView(LoginRequiredMixin, UserPassesTestMixin, View):
 class GalleryEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
     login_url = reverse_lazy("login")
 
-    def test_func(self):
+    def test_func(self) -> bool | None:
         return self.request.user.is_superuser
 
-    def get(self, request):
+    def get(self, request) -> HttpResponse:
         gallery_tags = GalleryTag.objects.all()
         gallery_images = GalleryImage.objects.all()
         context = {
@@ -175,10 +179,10 @@ class GalleryEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
 class GalleryAddView(LoginRequiredMixin, UserPassesTestMixin, View):
     login_url = reverse_lazy("login")
 
-    def test_func(self):
+    def test_func(self) -> bool | None:
         return self.request.user.is_superuser
 
-    def post(self, request, _type):
+    def post(self, request, _type) -> HttpResponseRedirect:
         form = None
 
         if _type == "image":
@@ -197,17 +201,17 @@ class GalleryAddView(LoginRequiredMixin, UserPassesTestMixin, View):
 class GalleryDeleteView(LoginRequiredMixin, UserPassesTestMixin, View):
     login_url = reverse_lazy("login")
 
-    def test_func(self):
+    def test_func(self) -> bool | None:
         return self.request.user.is_superuser
 
-    def get(self, request, _type, pk):
+    def get(self, request, _type, pk) -> HttpResponse | HttpResponseRedirect:
         if _type in {"image", "tag"}:
             return render(request, f"accounts/artist/partials/gallery_{_type}_delete_confirmation.html",
                           context={"pk": pk})
         else:
             return redirect("gallery_editor")
 
-    def post(self, request, _type, pk):
+    def post(self, request, _type, pk) -> HttpResponseRedirect:
         if _type == "tag":
             GalleryTag.objects.get(pk=pk).delete()
 
@@ -219,17 +223,17 @@ class GalleryDeleteView(LoginRequiredMixin, UserPassesTestMixin, View):
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser)
-def gallery_editor_image_filter(request):
+def gallery_editor_image_filter(request) -> HttpResponse:
     tag_name = request.GET.get("tag", "")
     all_tags = GalleryTag.objects.all()
-    return render_gallery_images_from_tags(request, tag_name, "accounts/artist/partials/gallery_images.html",
-                                           all_tags=all_tags)
+    return get_gallery_images_from_tags(request, tag_name, "accounts/artist/partials/gallery_images.html",
+                                        all_tags=all_tags)
 
 
 class LandingPageEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
     login_url = reverse_lazy("login")
 
-    def test_func(self):
+    def test_func(self) -> bool | None:
         return self.request.user.is_superuser
 
     def get_current_landing_data_dict(self, landing_data) -> dict:
@@ -247,9 +251,10 @@ class LandingPageEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
         }
         return current_data
 
-    def post(self, request):
-        landing_data = get_landing_data()
-        post_data = add_current_data_to_post_if_empty(request, self.get_current_landing_data_dict(landing_data))
+    def post(self, request) -> HttpResponse:
+        landing_data: LandingPage = get_landing_data()
+        post_data: HttpRequest = add_current_data_to_post_if_empty(request,
+                                                                   self.get_current_landing_data_dict(landing_data))
         form = forms.LandingPageEditorForm(post_data.POST, post_data.FILES, instance=landing_data)
 
         if form.is_valid():
@@ -263,7 +268,7 @@ class LandingPageEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
                           context={"form": form})
 
     def get(self, request):
-        landing_data = get_landing_data()
+        landing_data: LandingPage = get_landing_data()
         form = forms.LandingPageEditorForm(initial=self.get_current_landing_data_dict(landing_data),
                                            instance=landing_data)
         return render(request, "accounts/artist/partials/landing_page_editor.html", context={"form": form})
@@ -272,14 +277,14 @@ class LandingPageEditorView(LoginRequiredMixin, UserPassesTestMixin, View):
 class ChangeAccountDataView(LoginRequiredMixin, View):
     login_url = reverse_lazy("login")
 
-    def post(self, request):
+    def post(self, request) -> HttpResponse:
         current_data = {
             "username": request.user.username,
             "email": request.user.email,
             "new_password1": request.POST.get("old_password", ""),
         }
 
-        post_data = add_current_data_to_post_if_empty(request, current_data).POST
+        post_data: HttpRequest = add_current_data_to_post_if_empty(request, current_data).POST
         post_data["new_password2"] = post_data.get("new_password1", "")
 
         form = forms.EditAccountDataForm(request.user, post_data)
@@ -290,7 +295,8 @@ class ChangeAccountDataView(LoginRequiredMixin, View):
             request.user.save()
             form.save()
 
-            user = authenticate(request, username=data["username"], password=data["new_password1"])
+            user: AbstractBaseUser | None = authenticate(request, username=data["username"],
+                                                         password=data["new_password1"])
             login_user(request, user)
 
             messages.success(request, _("Dados alterados com sucesso."))
@@ -301,7 +307,7 @@ class ChangeAccountDataView(LoginRequiredMixin, View):
             return render(request, "accounts/partials/change_account_data.html",
                           context={"form": form})
 
-    def get(self, request):
+    def get(self, request) -> HttpResponse:
         form = forms.EditAccountDataForm(user=request.user,
                                          initial={"username": request.user.username, "email": request.user.email})
         return render(request, "accounts/partials/change_account_data.html",
@@ -309,20 +315,20 @@ class ChangeAccountDataView(LoginRequiredMixin, View):
 
 
 @login_required()
-def logout(request):
+def logout(request) -> HttpResponseRedirect:
     logout_user(request)
-    return redirect("landing-page")
+    return redirect("landing_page")
 
 
 ##################################################################
 
 @redirect_if_logged
-def login(request):
+def login(request) -> HttpResponseRedirect | HttpResponse:
     if request.method == "POST":
         form = forms.LoginForm(request, request.POST)
         if form.is_valid():
             login_user(request, form.get_user())
-            return redirect("landing-page")
+            return redirect("landing_page")
 
         else:
             messages.error(request, _("Nome de usuário ou senha inválidos."))
@@ -333,7 +339,7 @@ def login(request):
 
 
 @redirect_if_logged
-def register(request):
+def register(request) -> HttpResponseRedirect | HttpResponse:
     if request.method == "POST":
         form = forms.RegisterForm(request.POST)
         if form.is_valid():

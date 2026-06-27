@@ -1,11 +1,12 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 
-from core.utils import get_landing_data, render_gallery_images_from_tags
+from core.utils import get_landing_data, get_gallery_images_from_tags
 from .models import GalleryTag, GalleryImage
 
 
 # Create your views here.
-def index(request):
+def index(request) -> HttpResponse:
     gallery_tags = GalleryTag.objects.all()
     gallery_images = GalleryImage.objects.all()
     context = {
@@ -16,7 +17,6 @@ def index(request):
     return render(request, "landing/index.html", context=context)
 
 
-def gallery_image_filter(request):
+def gallery_image_filter(request) -> HttpResponse:
     tag_name = request.GET.get("tag", "")
-    gallery_tags = GalleryTag.objects.all()
-    return render_gallery_images_from_tags(request, tag_name, "landing/partials/gallery_images.html")
+    return get_gallery_images_from_tags(request, tag_name, "landing/partials/gallery_images.html")
