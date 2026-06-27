@@ -61,13 +61,13 @@
                             {% translate 'Calcular Valor Estimado' %}
                         </button>
 
-                        {% if calculated_price %}
+                        {% if calculated_prices %}
                             <span class="d-block" style="margin-bottom: 12px;color: #69A7FC;font-weight: bold;">
-                                {% translate 'Valor estimado:' %} <br>BRL: {{ calculated_price.brl|floatformat:2 }}$ | USD: {{ calculated_price.usd|floatformat:2 }}$
+                                {% translate 'Valor estimado:' %} <br>BRL: {{ calculated_prices.brl|floatformat:2 }}$ | USD: {{ calculated_prices.usd|floatformat:2 }}$
                             </span>
                         {% endif %}
 
-                        {% if calculated_price and landing_data.comms_status and user.is_superuser == False %}
+                        {% if calculated_prices and landing_data.comms_status and user.is_superuser == False %}
                             <p class="mw-100 card-text"
                                style="color: #fcba66; font-weight: bold; margin-top: 20px;font-size: 18px; text-decoration: underline ">
                                 {% translate 'Preencha os detalhes do pedido para prosseguir:' %}
@@ -78,7 +78,7 @@
                             <button class="btn btn-primary d-block commission-request-btn"
                                     type="submit"
                                     form="commission-form"
-                                    formaction="{% url 'comms-confirmation' %}"
+                                    formaction="{% url 'comms_confirmation' %}"
                                     style="margin: 12px auto; margin-top: 12px">
                                 {% translate 'Prosseguir com o pedido' %}
                             </button>

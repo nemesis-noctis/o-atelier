@@ -96,7 +96,7 @@
                                    id="gallery-editor-tag-all"
                                    checked>
                             <label for="gallery-editor-tag-all"
-                                   hx-get="{% url "gallery-image-filter" %}?tag=all"
+                                   hx-get="{% url "gallery_image_filter" %}?tag=all"
                                    hx-trigger="click"
                                    hx-target="#images-container"
                                    hx-swap="innerHTML"
@@ -113,7 +113,7 @@
                                        id="gallery-editor-tag-{{ tag.pk }}">
                                 <label for="gallery-editor-tag-{{ tag.pk }}"
                                        class="btn btn-primary gallery-tag"
-                                       hx-get="{% url "gallery-image-filter" %}?tag={{ tag }}"
+                                       hx-get="{% url "gallery_image_filter" %}?tag={{ tag }}"
                                        hx-trigger="click"
                                        hx-target="#images-container"
                                        hx-swap="innerHTML">
@@ -125,7 +125,7 @@
 
                 </div>
             </div>
-            <div hx-get="{% url "gallery-image-filter" %}?tag=all"
+            <div hx-get="{% url "gallery_image_filter" %}?tag=all"
                  hx-trigger="load"
                  hx-swap="innerHTML"
                  id="images-container"

@@ -1,3 +1,6 @@
+from datetime import datetime
+from typing import Any
+
 from django.utils.translation import gettext_noop as _noop
 
 from accounts.models import CustomUser
@@ -14,7 +17,7 @@ NOTIFICATION_TEMPLATES = {
 }
 
 
-def render_notification(notification: Notification):
+def render_notification(notification: Notification) -> dict[str, str | bool | datetime | Any]:
     # TODO: Ajustar quando adicionar o idioma inglês pro site.
     template = NOTIFICATION_TEMPLATES.get(notification.template_key,
                                           _noop("Ocorreu um erro e esta mensagem não pode ser processada."))
@@ -30,14 +33,14 @@ def render_notification(notification: Notification):
     return notification_data
 
 
-def send_notification_to_client(client, key, level, context):
+def send_notification_to_client(client: CustomUser, key: str, level: str, context: dict) -> None:
     Notification(user=client,
                  template_key=key,
                  level=level,
                  context=context).save()
 
 
-def send_notification_to_artist(key, level, context):
+def send_notification_to_artist(key: str, level: str, context: dict) -> None:
     Notification(user=CustomUser.objects.get(is_superuser=True),
                  template_key=key,
                  level=level,

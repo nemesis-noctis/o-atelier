@@ -1,6 +1,6 @@
 from django import forms
 from django.core.files import File
-from django.http import HttpRequest
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.shortcuts import render
 
@@ -13,7 +13,7 @@ def redirect_if_logged(func):
 
     def wrapper(request, *args, **kwargs):
         if request.user.is_authenticated:
-            return redirect("landing-page")
+            return redirect("landing_page")
         return func(request, *args, **kwargs)
 
     return wrapper
@@ -51,8 +51,8 @@ def add_current_data_to_post_if_empty(request, current_data) -> HttpRequest:
     return request
 
 
-def render_gallery_images_from_tags(request, tag, html_template, all_tags=None):
-    """Render gallery imagens from db and return render with the given template."""
+def get_gallery_images_from_tags(request, tag: str, html_template: str, all_tags=None) -> HttpResponse:
+    """Get gallery imagens from db and return response with the given template."""
     if tag == "all" or tag == "":
         gallery_images = GalleryImage.objects.all()
         return render(request, template_name=html_template,
@@ -65,6 +65,7 @@ def render_gallery_images_from_tags(request, tag, html_template, all_tags=None):
 
 
 def set_form_field_classes(fields_values):
+    """Set HTML classes to each form field for styling."""
     for field in fields_values:
         if isinstance(field.widget, forms.RadioSelect):
             pass

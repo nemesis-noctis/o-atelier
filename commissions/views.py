@@ -3,6 +3,7 @@ from urllib.parse import urlencode
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.forms import RadioSelect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
@@ -13,6 +14,8 @@ from core.utils import get_landing_data, decrease_comms_slots
 from . import forms
 from . import models
 from . import price_calculator
+from .forms import CommissionForm
+from .models import Commission
 
 CALCULATORS = {"character": price_calculator.calculate_character_price,
                "landscape": price_calculator.calculate_landscape_price,
@@ -20,12 +23,13 @@ CALCULATORS = {"character": price_calculator.calculate_character_price,
                }
 
 
-def redirect_if_invalid_category(category):
+def redirect_if_invalid_category(category: str) -> HttpResponseRedirect | None:
     if category not in ["character", "landscape", "object"]:
         return redirect("comms_choice")
+    return None
 
 
-def set_required_fields_based_on_category(form, category):
+def set_required_fields_based_on_category(form: CommissionForm, category: str) -> CommissionForm:
     required_fields = {
         "character": ["character_type", "count", "art_type", "clothing", "body_type", "background"],
         "landscape": ["complexity"],
@@ -39,20 +43,20 @@ def set_required_fields_based_on_category(form, category):
 
 
 # Create your views here.
-def commission_choice(request):
+def commission_choice(request) -> HttpResponse:
     return render(request, "commissions/comms_choice.html", context={"landing_data": get_landing_data()})
 
 
 class CommissionFormView(View):
-    def comms_form_details_required_inverter(self, form, set_status):
+    def comms_form_details_required_inverter(self, form: CommissionForm, set_status: bool) -> CommissionForm:
         for field_name, field_obj in zip(form.fields, form.fields.values()):
             if field_name in ["description", "reference_images", "contact_social", "contact_username"]:
                 field_obj.required = set_status
         return form
 
-    def get(self, request):
+    def get(self, request) -> HttpResponse:
         form = forms.CommissionForm()
-        form_data = request.session.pop("form_data", None)
+        form_data: dict = request.session.pop("form_data", None)
         category = request.GET.get("category", "")
         form = set_required_fields_based_on_category(form, category)
 
@@ -75,7 +79,7 @@ class CommissionFormView(View):
 
         return render(request, "commissions/comms_form_base.html", context=context)
 
-    def post(self, request):
+    def post(self, request) -> HttpResponse:
         form = forms.CommissionForm(request.POST, request.FILES)
         category = request.POST.get("category", None)
         redirect_if_invalid_category(category)
@@ -90,14 +94,14 @@ class CommissionFormView(View):
         }
 
         if form.is_valid():
-            form_data = form.cleaned_data
+            form_data: dict = form.cleaned_data
 
-            price = CALCULATORS[category](form_data)
-            request.session["calculated_price"] = price
+            prices: dict = CALCULATORS[category](form_data)
+            request.session["calculated_prices"] = prices
 
             required_details_form = self.comms_form_details_required_inverter(form, True)
             form = required_details_form
-            context["calculated_price"] = price
+            context["calculated_prices"] = prices
             context["category"] = category
             context["form"] = form
 
@@ -111,8 +115,8 @@ class CommissionFormView(View):
 
 
 @login_required()
-def commission_confirmation(request):
-    def get_human_readable_names(fields, form_data):
+def commission_confirmation(request) -> HttpResponse | HttpResponseRedirect:
+    def get_human_readable_names(fields, form_data: dict) -> dict[str, str]:
         readable_names = {}
         for field, data in zip(form.fields.values(), form_data):
             if isinstance(field.widget, RadioSelect):
@@ -138,12 +142,12 @@ def commission_confirmation(request):
 
             form_readable_names = get_human_readable_names(form.fields.values(), form_data)
 
-            price = CALCULATORS[category](form_data)
-            context["calculated_price"] = price
-            request.session.delete("calculated_price")
+            prices: dict = CALCULATORS[category](form_data)
+            context["calculated_prices"] = prices
+            request.session.delete("calculated_prices")
 
             images = request.FILES.getlist("reference_images", [])
-            images_uuids = []
+            images_uuids: list[str] = []
             if images != []:
                 for image in images:
                     temp_image = models.ReferenceImage(image=image, is_temp=True)
@@ -167,25 +171,25 @@ def commission_confirmation(request):
 
 
 @login_required
-def commission_success(request):
+def commission_success(request) -> HttpResponse | HttpResponseRedirect:
     if request.method == "POST" and get_landing_data().comms_status == True and (
             request.session.get("form_data", None) is not None):
 
         form = forms.CommissionForm(request.session.pop("form_data"))
-        reference_images_uuids = request.session.pop("reference_images_uuids", [])
+        reference_images_uuids: list[str] = request.session.pop("reference_images_uuids", [])
 
         if form.is_valid():
             form_data = form.cleaned_data
-            prices = CALCULATORS[form_data["category"]](form_data)
+            prices: dict = CALCULATORS[form_data["category"]](form_data)
 
-            commission = form.save(commit=False)
+            commission: Commission = form.save(commit=False)
             commission.user = request.user
             commission.stage = "waiting_confirmation"
             commission.price_brl = prices["brl"]
             commission.price_usd = prices["usd"]
             commission.save()
 
-            if reference_images_uuids != []:
+            if reference_images_uuids:
                 for uuid in reference_images_uuids:
                     image = models.ReferenceImage.objects.get(uuid=uuid)
                     image.commission = commission

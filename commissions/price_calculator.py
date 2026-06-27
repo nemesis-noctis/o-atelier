@@ -1,5 +1,5 @@
-def calculate_character_price(commission_data):
-    def calculate_base_price():  # Base prices
+def calculate_character_price(commission_data: dict) -> dict[str, int | float]:
+    def calculate_base_price() -> int | float:  # Base prices
         prices_character_type = {
             "human": 50,
             "furry": 60,
@@ -38,7 +38,7 @@ def calculate_character_price(commission_data):
 
         return base_price + 10 if commission_data["fx"] == True else base_price
 
-    def calculate_discount_price(base_price):
+    def calculate_discount_price(base_price) -> int | float:
         # Subtract prices
         prices_percent_body_type = {
             "bust": 0.6,
@@ -60,7 +60,7 @@ def calculate_character_price(commission_data):
 
         return body_type_price - body_type_price * prices_percent_final_stage[commission_data["final_stage"]]
 
-    def calculate_final_price(discount_price):
+    def calculate_final_price(discount_price) -> int | float:
         prices_percent_art_type = {
             "illustration": 0,
             "scene": 0.2,
@@ -74,7 +74,7 @@ def calculate_character_price(commission_data):
         }
         art_type_price = discount_price + discount_price * prices_percent_art_type[commission_data["art_type"]]
         return art_type_price + art_type_price * prices_percent_aspect_ratio[commission_data["aspect_ratio"]]
-    
+
     base_price = calculate_base_price()
     discount_price = calculate_discount_price(base_price)
     final_price = calculate_final_price(discount_price)
@@ -85,8 +85,8 @@ def calculate_character_price(commission_data):
 
 
 ########################################################################################################################
-def calculate_landscape_price(commission_data):
-    def calculate_base_price():
+def calculate_landscape_price(commission_data: dict) -> dict[str, int | float]:
+    def calculate_base_price() -> int:
         prices_complexity = {
             "simple": 30,
             "complex": 70
@@ -95,7 +95,7 @@ def calculate_landscape_price(commission_data):
         base_price = prices_complexity[commission_data["complexity"]]
         return base_price + 10 if commission_data["fx"] == True else base_price
 
-    def calculate_discount_price(base_price):
+    def calculate_discount_price(base_price) -> int | float:
         # Subtract prices
         prices_percent_final_stage = {
             "lineart": 0.3,
@@ -105,7 +105,7 @@ def calculate_landscape_price(commission_data):
 
         return base_price - base_price * prices_percent_final_stage[commission_data["final_stage"]]
 
-    def calculate_final_price(discount_price):
+    def calculate_final_price(discount_price) -> int | float:
         prices_percent_aspect_ratio = {
             "1:1": 0,
             "3:2": 0.4,
@@ -125,8 +125,8 @@ def calculate_landscape_price(commission_data):
 
 
 ########################################################################################################################
-def calculate_object_price(commission_data):
-    def calculate_base_price():
+def calculate_object_price(commission_data: dict) -> dict[str, int | float]:
+    def calculate_base_price() -> int:
         prices_complexity = {
             "simple": 15,
             "complex": 30
@@ -150,7 +150,7 @@ def calculate_object_price(commission_data):
 
         return base_price + 10 if commission_data["fx"] == True else base_price
 
-    def calculate_discount_price(base_price):
+    def calculate_discount_price(base_price) -> int | float:
         # Subtract prices
         prices_percent_final_stage = {
             "lineart": 0.3,
@@ -160,7 +160,7 @@ def calculate_object_price(commission_data):
 
         return base_price - base_price * prices_percent_final_stage[commission_data["final_stage"]]
 
-    def calculate_final_price(discount_price):
+    def calculate_final_price(discount_price) -> int | float:
         prices_percent_aspect_ratio = {
             "1:1": 0,
             "3:2": 0.2,
