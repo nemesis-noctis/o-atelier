@@ -73,7 +73,7 @@ class Commission(models.Model):
         False: "não"
     }
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid7, editable=False)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="commissions")
     stage = models.CharField(max_length=24, choices=stage_choices)
     category = models.CharField(max_length=24, choices=category_choices, default="character")
     final_stage = models.CharField(max_length=24, choices=final_stage_choices, default="render")
@@ -101,7 +101,14 @@ class Commission(models.Model):
 
 class ReferenceImage(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid7, editable=False)
-    commission = models.ForeignKey(Commission, on_delete=models.CASCADE, null=True)
+    commission = models.ForeignKey(Commission, on_delete=models.CASCADE, null=True, related_name="reference_images")
     is_temp = models.BooleanField(default=True)
     image = models.ImageField(upload_to="commission/reference")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class FinalImage(models.Model):
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid7, editable=False)
+    commission = models.OneToOneField(Commission, on_delete=models.CASCADE, null=True, related_name="final_image")
+    image = models.ImageField(upload_to="commission/final")
     created_at = models.DateTimeField(auto_now_add=True)

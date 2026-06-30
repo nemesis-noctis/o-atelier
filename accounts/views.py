@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, PasswordResetDoneView, \
     PasswordResetCompleteView
+from django.db.models import Q
 from django.db.models import QuerySet
 from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
 from django.shortcuts import render, redirect
@@ -18,6 +19,7 @@ from dotenv import load_dotenv
 
 import accounts.forms as forms
 from accounts.models import CustomUser
+from commissions.models import Commission
 from core.models import Notification
 from core.notifications import render_notification
 from core.utils import redirect_if_logged, get_landing_data, add_current_data_to_post_if_empty, \
@@ -39,6 +41,25 @@ def user_profile(request) -> HttpResponse:
                   context={"landing_data": get_landing_data(), "new_notifications": new_notifications})
 
 
+class CommsHistoryView(LoginRequiredMixin, View):
+    login_url = reverse_lazy("login")
+
+    def get(self, request) -> HttpResponse:
+        if request.user.is_superuser:
+            completed_commissions = Commission.objects.filter(Q(stage="finished") | Q(stage="canceled")).order_by(
+                "-created_at")
+
+        else:
+            completed_commissions: Commission = request.user.commissions.filter(
+                Q(stage="finished") | Q(stage="canceled")).order_by("-created_at")
+
+        context = {
+            "commissions": completed_commissions,
+            "count": completed_commissions.count()
+        }
+        return render(request, "accounts/partials/comms_history.html", context=context)
+
+
 class NotificationsView(LoginRequiredMixin, View):
     login_url = reverse_lazy("login")
 
@@ -53,7 +74,7 @@ class NotificationsView(LoginRequiredMixin, View):
         context = {
             "notifications": rendered_notifications
         }
-        return render(request, "accounts/profile/notifications.html", context=context)
+        return render(request, "accounts/partials/notifications.html", context=context)
 
     def post(self, request) -> HttpResponseRedirect:
         read_all = request.POST.get("read_all", "")
