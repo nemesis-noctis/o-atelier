@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, PasswordResetDoneView, \
     PasswordResetCompleteView
+from django.db.models import Q
 from django.db.models import QuerySet
 from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
 from django.shortcuts import render, redirect
@@ -18,6 +19,7 @@ from dotenv import load_dotenv
 
 import accounts.forms as forms
 from accounts.models import CustomUser
+from commissions.models import Commission
 from core.models import Notification
 from core.notifications import render_notification
 from core.utils import redirect_if_logged, get_landing_data, add_current_data_to_post_if_empty, \
@@ -43,7 +45,17 @@ class CommsHistoryView(LoginRequiredMixin, View):
     login_url = reverse_lazy("login")
 
     def get(self, request) -> HttpResponse:
-        return render(request, "accounts/partials/comms_history.html")
+        if request.user.is_superuser:
+            completed_commissions = Commission.objects.filter(Q(stage="finished") | Q(stage="canceled"))
+            print(completed_commissions)
+        else:
+            completed_commissions: Commission = request.user.commissions.filter(
+                Q(stage="finished") | Q(stage="canceled"))
+
+        context = {
+            "commissions": completed_commissions
+        }
+        return render(request, "accounts/partials/comms_history.html", context=context)
 
 
 class NotificationsView(LoginRequiredMixin, View):

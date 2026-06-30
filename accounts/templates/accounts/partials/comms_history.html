@@ -1,52 +1,83 @@
+{% load i18n %}
+
 <div class="mh-100" style="width: 100%;height: 100%;">
     <h2 style="color: rgb(76,84,92);font-family: 'Abhaya Libre', serif;text-align: center;font-size: 22px;padding-top: 15px;padding-bottom: 10px;border-bottom: 1px solid var(--bs-dark-border-subtle);">
-        Pedidos Completados</h2>
+        {% translate 'Pedidos Completados' %}
+    </h2>
 
     <div class=" mw-100 row gy-4 row-cols-1 justify-content-center"
          style="width: 860px; margin-left: auto; margin-right: auto">
-        <div class="col"
-             style="margin-left: 12px; background: #EDF5FE;border-radius: 18px;padding: 18px;color: rgb(76,84,92);text-align: center;font-size: 14px;border: 1px solid var(--bs-border-color);">
-            <div class="row row-cols-1 row-cols-md-2" style="margin-bottom: 12px;font-size: 18px;">
-                <div class="col">
-                    <span>Pedido :&nbsp;</span><span>oijridf-t43rete-45ergr-5trfg</span></div>
-                <div class="col"><span>Preço :&nbsp;</span><span>BRL: 30$ | USD: 18$</span></div>
-            </div>
-            <div class="row row-cols-1 row-cols-sm-3" style="margin-bottom: 12px;">
-                <div class="col"><span
-                        style="font-weight: bold;color: #6ba7f7;">Realizado em : 13 de maio de 2026</span>
+        {% for commission in commissions %}
+            <div class="col"
+                 style="margin-left: 12px; background: #EDF5FE;border-radius: 18px;padding: 18px;color: rgb(76,84,92);text-align: center;font-size: 14px;border: 1px solid var(--bs-border-color);">
+                <div class="row row-cols-1 row-cols-md-2" style="margin-bottom: 12px;font-size: 14px;">
+                    <div class="col">
+                        <span style="white-space: nowrap">
+                            {% translate 'Pedido:' %} {{ commission.uuid }}
+                        </span>
+                    </div>
+                    <div class="col">
+                        <span>
+                            {% translate 'Preço:' %} BRL: {{ commission.price_brl }}$ | USD: {{ commission.price_usd }}$
+                        </span>
+                    </div>
                 </div>
-                <div class="col"><span
-                        style="font-weight: bold;color: #6ba7f7;">Completado em : 26 de maio de 2026</span>
+                <div class="row row-cols-1 row-cols-sm-3" style="margin-bottom: 12px;">
+                    <div class="col">
+                        <span style="font-weight: bold;color: #6ba7f7;">
+                            {% translate 'Realizado em:' %} {{ commission.created_at }}
+                        </span>
+                    </div>
+                    <div class="col">
+                        <span style="font-weight: bold;color: #6ba7f7;">
+                        {% translate 'Completado em:' %} {{ commission.finished_at }}
+                    </span>
+                    </div>
+                    <div class="col">
+                        <a href="#" style="color: #6ba7f7;font-weight: bold;">
+                            {% translate 'Download da Arte Final' %}
+                        </a>
+                    </div>
                 </div>
-                <div class="col"><a href="#" style="color: #6ba7f7;font-weight: bold;">Download da
-                    Arte Final</a></div>
-            </div>
-            <div class="row gy-1 row-cols-2 row-cols-sm-4 justify-content-center"
-                 style="margin-bottom: 12px;">
-                <div class="col"><span>Categoria: Personagem</span></div>
-                <div class="col"><span>Estilo de Arte : Render</span></div>
-                <div class="col"><span>Tipo de personagem: Furry</span></div>
-                <div class="col"><span>Tipo de Arte : Ilustração</span></div>
-                <div class="col"><span>Quantidade : 1</span></div>
-                <div class="col"><span>Tipo de Corpo : Full</span></div>
-                <div class="col"><span>Vestimenta : Simples</span></div>
-                <div class="col"><span>Fundo : Complexo</span></div>
-                <div class="col"><span>Proporção da tela : 3:2</span></div>
-                <div class="col"><span>FX : Não</span></div>
-            </div>
-            <div><span>Descrição</span>
-                <div style="background: #ffffff;border-radius: 18px;padding: 18px 8px;margin-top: 12px;">
-                    <p style="font-size: 12px;">Vestibulum accumsan mauris at fringilla mollis.
-                        Quisque efficitur dui ex, et volutpat metus sollicitudin in. Nunc eu posuere
-                        purus. Donec sed diam vulputate, faucibus nibh ac, consectetur erat. Sed sit
-                        amet dui sit amet orci malesuada fringilla tincidunt sit amet lacus. Sed
-                        varius consectetur sapien, vel placerat dolor. Praesent pellentesque, diam
-                        eu cursus pellentesque, augue odio lacinia justo, non bibendum metus nulla
-                        ac ipsum. Aliquam vestibulum leo vitae felis venenatis vestibulum. Mauris
-                        sed dui vitae elit imperdiet ultrices.</p>
+                <div class="row gy-1 row-cols-2 row-cols-sm-4 justify-content-center"
+                     style="margin-bottom: 12px;">
+                    <div class="col">
+                        <span>{% translate 'Categoria:' %} {{ commission.get_category_display|title }}</span></div>
+                    <div class="col">
+                        <span>{% translate 'Estilo de Arte:' %} {{ commission.get_final_stage_display|title }}</span>
+                    </div>
+                    <div class="col">
+                        <span>{% translate 'Tipo de personagem:' %} {{ commission.get_character_type_display|title }}</span>
+                    </div>
+                    <div class="col">
+                        <span>{% translate 'Tipo de Arte:' %} {{ commission.get_art_type_display|title }}</span>
+                    </div>
+                    <div class="col"><span>{% translate 'Quantidade:' %} {{ commission.count }}</span>
+                    </div>
+                    <div class="col">
+                        <span>{% translate 'Tipo de Corpo:' %} {{ commission.get_body_type_display|title }}</span></div>
+                    <div class="col">
+                        <span>{% translate 'Vestimenta:' %} {{ commission.get_clothing_display|title }}</span>
+                    </div>
+                    <div class="col"><span>{% translate 'Fundo:' %} {{ commission.get_background_display|title }}</span>
+                    </div>
+                    <div class="col">
+                        <span>{% translate 'Proporção da tela:' %} {{ commission.get_aspect_ratio_display|title }}</span>
+                    </div>
+                    <div class="col"><span>{% translate 'FX:' %} {{ commission.get_fx_display|title }}</span></div>
+                </div>
+                <div>
+                    <span>
+                        {% translate 'Descrição' %}
+                    </span>
+                    <div style="background: #ffffff;border-radius: 18px;padding: 18px 8px;margin-top: 12px;">
+                        <p style="font-size: 12px;">
+                            {{ commission.description }}
+                        </p>
+                    </div>
                 </div>
             </div>
-        </div>
+        {% endfor %}
     </div>
 </div>
 

@@ -73,7 +73,7 @@ class Commission(models.Model):
         False: "não"
     }
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid7, editable=False)
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="commissions")
     stage = models.CharField(max_length=24, choices=stage_choices)
     category = models.CharField(max_length=24, choices=category_choices, default="character")
     final_stage = models.CharField(max_length=24, choices=final_stage_choices, default="render")
