@@ -101,7 +101,14 @@ class Commission(models.Model):
 
 class ReferenceImage(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid7, editable=False)
-    commission = models.ForeignKey(Commission, on_delete=models.CASCADE, null=True)
+    commission = models.ForeignKey(Commission, on_delete=models.CASCADE, null=True, related_name="reference_images")
     is_temp = models.BooleanField(default=True)
     image = models.ImageField(upload_to="commission/reference")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
+class FinalImage(models.Model):
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid7, editable=False)
+    commission = models.OneToOneField(Commission, on_delete=models.CASCADE, null=True, related_name="final_image")
+    image = models.ImageField(upload_to="commission/final")
     created_at = models.DateTimeField(auto_now_add=True)

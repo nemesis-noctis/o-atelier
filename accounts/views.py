@@ -46,14 +46,16 @@ class CommsHistoryView(LoginRequiredMixin, View):
 
     def get(self, request) -> HttpResponse:
         if request.user.is_superuser:
-            completed_commissions = Commission.objects.filter(Q(stage="finished") | Q(stage="canceled"))
-            print(completed_commissions)
+            completed_commissions = Commission.objects.filter(Q(stage="finished") | Q(stage="canceled")).order_by(
+                "-created_at")
+
         else:
             completed_commissions: Commission = request.user.commissions.filter(
-                Q(stage="finished") | Q(stage="canceled"))
+                Q(stage="finished") | Q(stage="canceled")).order_by("-created_at")
 
         context = {
-            "commissions": completed_commissions
+            "commissions": completed_commissions,
+            "count": completed_commissions.count()
         }
         return render(request, "accounts/partials/comms_history.html", context=context)
 
