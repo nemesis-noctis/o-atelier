@@ -76,6 +76,10 @@
                                             <input type="radio" id="sidebar-option-3" name="sidebar-option"
                                                    class="sidebar-radio">
                                             <label class="sidebar-label nav-link py-3 border-bottom rounded-0"
+                                                   hx-get="{% url 'comms_history' %}"
+                                                   hx-target="#content"
+                                                   hx-trigger="click"
+                                                   hx-swap="innerHTML"
                                                    for="sidebar-option-3">
                                                 <svg class="bi bi-clock-history" xmlns="http://www.w3.org/2000/svg"
                                                      width="1em" height="1em" fill="currentColor"

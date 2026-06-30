@@ -39,6 +39,13 @@ def user_profile(request) -> HttpResponse:
                   context={"landing_data": get_landing_data(), "new_notifications": new_notifications})
 
 
+class CommsHistoryView(LoginRequiredMixin, View):
+    login_url = reverse_lazy("login")
+
+    def get(self, request) -> HttpResponse:
+        return render(request, "accounts/partials/comms_history.html")
+
+
 class NotificationsView(LoginRequiredMixin, View):
     login_url = reverse_lazy("login")
 
@@ -53,7 +60,7 @@ class NotificationsView(LoginRequiredMixin, View):
         context = {
             "notifications": rendered_notifications
         }
-        return render(request, "accounts/profile/notifications.html", context=context)
+        return render(request, "accounts/partials/notifications.html", context=context)
 
     def post(self, request) -> HttpResponseRedirect:
         read_all = request.POST.get("read_all", "")

@@ -22,5 +22,6 @@ urlpatterns = [
     path("user-manager", views.UserManagerView.as_view(), name="user_manager"),
     path("blocked-user/<b_status>/<int:pk>", views.BlockedUserView.as_view(), name="blocked_user"),
     path("change-user-password", views.ChangeUserPasswordView.as_view(), name="change_user_password"),
-    path("notifications", views.NotificationsView.as_view(), name="notifications")
+    path("notifications", views.NotificationsView.as_view(), name="notifications"),
+    path("comms-history", views.CommsHistoryView.as_view(), name="comms_history")
 ]
