@@ -55,7 +55,6 @@
                                 {% translate 'Nome' %}
                             </option>
                             <option {% if order_by == "comms" %}selected {% endif %}value="comms">{% translate 'Pedidos' %}</option>
-                            <option {% if order_by == "spend" %}selected {% endif %}value="comms">{% translate 'Gasto' %}</option>
                             <option {% if order_by == "date" %}selected {% endif %}value="date">{% translate 'Criado em' %}</option>
                             <option {% if order_by == "active" %}selected {% endif %}value="active">{% translate 'Bloqueado' %}</option>
                         </optgroup>
@@ -100,11 +99,11 @@
         </div>
         <hr>
         {% for user_ in users %}
-            <div class="col"
-                 style="color: #69a7fc">
+            <div class="col">
                 <div class="row gx-5 gy-2 justify-content-start" style="font-size: 14px">
                     <div class="col text-center order-xxl-first">
-                        <div class="overflow-auto" style="width: 106px; margin-left: auto; margin-right: auto">
+                        <div class="overflow-auto"
+                             style="width: 106px; margin-left: auto; margin-right: auto; color: #69a7fc">
                             <span>{{ user_.username }}</span>
                         </div>
                     </div>
@@ -141,16 +140,8 @@
                                 <path d="M21 3a16 16 0 0 1 -10.2 12.8"></path>
                                 <path d="M10.6 9a9 9 0 0 1 4.4 4.4"></path>
                             </svg>
-                            &nbsp;0
-                            <svg class="icon icon-tabler icon-tabler-pig-money" xmlns="http://www.w3.org/2000/svg"
-                                 style="margin-left: 4px"
-                                 width="1em" height="1em" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                                 fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                                <path d="M15 11v.01"></path>
-                                <path d="M5.173 8.378a3 3 0 1 1 4.656 -1.377"></path>
-                                <path d="M16 4v3.803a6.019 6.019 0 0 1 2.658 3.197h1.341a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-1.342c-.336 .95 -.907 1.8 -1.658 2.473v2.027a1.5 1.5 0 0 1 -3 0v-.583a6.04 6.04 0 0 1 -1 .083h-4a6.04 6.04 0 0 1 -1 -.083v.583a1.5 1.5 0 0 1 -3 0v-2l0 -.027a6 6 0 0 1 4 -10.473h2.5l4.5 -3h0z"></path>
-                            </svg> 0&#36;
+                            &nbsp;{{ user_.commissions.count }}
+
                         </span>
                         </div>
                     </div>

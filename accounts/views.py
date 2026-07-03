@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, PasswordResetDoneView, \
     PasswordResetCompleteView
+from django.db.models import Count
 from django.db.models import Q
 from django.db.models import QuerySet
 from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
@@ -70,6 +71,7 @@ class CommsInProgressView(LoginRequiredMixin, View):
 
         context = {
             "commissions": comms_in_progress,
+            "count": comms_in_progress.count()
         }
 
         return render(request, "accounts/partials/comms_in_progress.html", context=context)
@@ -137,12 +139,15 @@ class UserManagerView(LoginRequiredMixin, UserPassesTestMixin, View):
             "username": "username",
             "date": "date_joined",
             "active": "is_active",
-            # TODO: Alterar para o valor certo quando as commissions forem adicionadas
             "comms": "username",
-            "spend": "username"
         }
 
-        return users.order_by(orders[order_by if order_by in orders else "username"])
+        if not order_by == "comms":
+            ordered = users.order_by(orders[order_by if order_by in orders else "username"])
+        else:
+            ordered = users.annotate(comms_count=Count("commissions")).order_by("-comms_count")
+
+        return ordered
 
     def get(self, request) -> HttpResponse:
         username_search = request.GET.get("username_search", "")

@@ -6,8 +6,11 @@
     </h2>
     <div>
 
-        <div class="row gy-4 row-cols-1 justify-content-center">
-
+        <div class="mw-100 row gy-4 row-cols-1 justify-content-center"
+             style="width: 860px; margin: 0 auto">
+            <span style="text-align: right; font-size: 14px">
+                {% translate 'Total:' %} {{ count }}
+            </span>
             {% for commission in commissions %}
                 <div class="col"
                      style="background: #EDF5FE;border-radius: 18px;padding: 18px;color: rgb(76,84,92);text-align: center;font-size: 14px;border: 1px solid var(--bs-border-color);width: 960px;">
@@ -59,7 +62,7 @@
                     </span>
 
                     <div class="row g-0 d-inline-flex justify-content-center flex-nowrap"
-                         style="margin-bottom: 12px;font-size: 11px;background: #00000000;color: white;border-radius: 18px;font-weight: bold;border: 2px solid var(--bs-secondary-bg-subtle) ;">
+                         style="margin-bottom: 12px;font-size: 10px;background: #00000000;color: white;border-radius: 18px;font-weight: bold;border: 2px solid var(--bs-secondary-bg-subtle) ;">
 
                         <div class="col-auto"
                              style="
@@ -68,7 +71,7 @@
                                      {% else %}
                                          background: #6ba7f7;
                                      {% endif %}
-                                     padding: 4px 10px;border-top-left-radius: 18px;border-bottom-left-radius: 18px;border: 1px solid white;border-top-width: 0px;border-bottom-width: 0px;border-left-width: 0px;">
+                                     padding: 4px 6px;border-top-left-radius: 18px;border-bottom-left-radius: 18px;border: 1px solid white;border-top-width: 0px;border-bottom-width: 0px;border-left-width: 0px;">
                             {% if commission.stage == "waiting_confirmation" %}
                                 <svg class="d-none d-sm-none d-md-none d-lg-inline-block"
                                      xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 24 24"
@@ -114,7 +117,7 @@
                                      {% else %}
                                          background: #6ba7f7;
                                      {% endif %}
-                                     padding: 4px 10px;border: 1px solid white;border-top-width: 0px;border-bottom-width: 0px;">
+                                     padding: 4px 6px;border: 1px solid white;border-top-width: 0px;border-bottom-width: 0px;">
                             {% if commission.stage == "waiting_deposit_payment" %}
                                 <svg class="d-none d-sm-none d-md-none d-lg-inline-block"
                                      xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 24 24"
@@ -160,7 +163,7 @@
                                      {% else %}
                                          background: #6ba7f7;
                                      {% endif %}
-                                     padding: 4px 10px;border: 1px solid white ;border-top-width: 0px;border-bottom-width: 0px;">
+                                     padding: 4px 6px;border: 1px solid white ;border-top-width: 0px;border-bottom-width: 0px;">
                             {% if commission.stage == "sketch" %}
                                 <svg class="d-none d-sm-none d-md-none d-lg-inline-block"
                                      xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 24 24"
@@ -206,7 +209,7 @@
                                          {% else %}
                                              background: #6ba7f7;
                                          {% endif %}
-                                         padding: 4px 10px;border: 1px solid white;border-top-width: 0px;border-bottom-width: 0px;">
+                                         padding: 4px 6px;border: 1px solid white;border-top-width: 0px;border-bottom-width: 0px;">
                                 {% if commission.stage == "lineart" %}
                                     <svg class="d-none d-sm-none d-md-none d-lg-inline-block"
                                          xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 24 24"
@@ -255,7 +258,7 @@
                                          {% else %}
                                              background: #6ba7f7;
                                          {% endif %}
-                                         padding: 4px 10px;border: 1px solid white;border-top-width: 0px;border-bottom-width: 0px;">
+                                         padding: 4px 6px;border: 1px solid white;border-top-width: 0px;border-bottom-width: 0px;">
                                 {% if commission.stage == "flat_colour" %}
                                     <svg class="d-none d-sm-none d-md-none d-lg-inline-block"
                                          xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 24 24"
@@ -303,7 +306,7 @@
                                          {% else %}
                                              background: #6ba7f7;
                                          {% endif %}
-                                         padding: 4px 10px;border: 1px solid white;border-top-width: 0px;border-bottom-width: 0px;">
+                                         padding: 4px 6px;border: 1px solid white;border-top-width: 0px;border-bottom-width: 0px;">
                                 {% if commission.stage == "render" %}
                                     <svg class="d-none d-sm-none d-md-none d-lg-inline-block"
                                          xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 24 24"
@@ -346,7 +349,7 @@
                                      {% else %}
                                          background: #6ba7f7;
                                      {% endif %}
-                                     padding: 4px 10px;border: 1px solid white;border-top-width: 0px;border-bottom-width: 0px;">
+                                     padding: 4px 6px;border: 1px solid white;border-top-width: 0px;border-bottom-width: 0px;">
                             {% if commission.stage == "waiting_full_payment" %}
                                 <svg class="d-none d-sm-none d-md-none d-lg-inline-block"
                                      xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 24 24"
@@ -391,7 +394,7 @@
                                      {% else %}
                                          background: #6ba7f7;
                                      {% endif %}
-                                     padding: 4px 10px;border-top-right-radius: 18px;border-bottom-right-radius: 18px;border: 1px solid white;border-top-width: 0px;border-right-width: 0px;border-bottom-width: 0px;">
+                                     padding: 4px 6px;border-top-right-radius: 18px;border-bottom-right-radius: 18px;border: 1px solid white;border-top-width: 0px;border-right-width: 0px;border-bottom-width: 0px;">
                             {% if commission.stage == "finished" %}
                                 <svg class="d-none d-sm-none d-md-none d-lg-inline-block"
                                      xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 24 24"
