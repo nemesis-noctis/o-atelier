@@ -23,12 +23,6 @@ CALCULATORS = {"character": price_calculator.calculate_character_price,
                }
 
 
-def redirect_if_invalid_category(category: str) -> HttpResponseRedirect | None:
-    if category not in ["character", "landscape", "object"]:
-        return redirect("comms_choice")
-    return None
-
-
 def set_required_fields_based_on_category(form: CommissionForm, category: str) -> CommissionForm:
     required_fields = {
         "character": ["character_type", "count", "art_type", "clothing", "body_type", "background"],
@@ -58,9 +52,11 @@ class CommissionFormView(View):
         form = forms.CommissionForm()
         form_data: dict = request.session.pop("form_data", None)
         category = request.GET.get("category", "")
+        if category not in ["character", "landscape", "object"]:
+            return redirect("comms_choice")
+
         form = set_required_fields_based_on_category(form, category)
 
-        redirect_if_invalid_category(category)
         form["category"].initial = category
 
         context = {
@@ -82,7 +78,8 @@ class CommissionFormView(View):
     def post(self, request) -> HttpResponse:
         form = forms.CommissionForm(request.POST, request.FILES)
         category = request.POST.get("category", None)
-        redirect_if_invalid_category(category)
+        if category not in ["character", "landscape", "object"]:
+            return redirect("comms_choice")
 
         optional_details_form = self.comms_form_details_required_inverter(form, False)
         form = optional_details_form
@@ -128,7 +125,8 @@ def commission_confirmation(request) -> HttpResponse | HttpResponseRedirect:
     if request.method == "POST" and get_landing_data().comms_status == True:
         form = forms.CommissionForm(request.POST, request.FILES)
         category = request.POST.get("category", None)
-        redirect_if_invalid_category(category)
+        if category not in ["character", "landscape", "object"]:
+            return redirect("comms_choice")
 
         form = set_required_fields_based_on_category(form, category)
         request.session["form_data"] = request.POST.dict()
