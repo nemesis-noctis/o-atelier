@@ -41,6 +41,37 @@ def user_profile(request) -> HttpResponse:
                   context={"landing_data": get_landing_data(), "new_notifications": new_notifications})
 
 
+class CommsInProgressView(LoginRequiredMixin, View):
+    login_url = reverse_lazy("login")
+
+    def get(self, request) -> HttpResponse:
+        if request.user.is_superuser:
+            comms_in_progress = Commission.objects.exclude(Q(stage="finished") | Q(stage="canceled"))
+        else:
+            comms_in_progress: Commission = request.user.commissions.exclude(Q(stage="finished") | Q(stage="canceled"))
+
+        stages_indexes = {
+            "waiting_confirmation": 0,
+            "waiting_deposit_payment": 1,
+            "sketch": 2,
+            "lineart": 3,
+            "flat_colour": 4,
+            "render": 5,
+            "waiting_full_payment": 6
+        }
+
+        for commission in comms_in_progress:
+            stage_index = stages_indexes[commission.stage]
+            final_stage_index = stages_indexes[commission.final_stage]
+            commission.stage_index = stage_index
+
+        context = {
+            "commissions": comms_in_progress,
+        }
+
+        return render(request, "accounts/partials/comms_in_progress.html", context=context)
+
+
 class CommsHistoryView(LoginRequiredMixin, View):
     login_url = reverse_lazy("login")
 

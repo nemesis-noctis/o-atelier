@@ -23,5 +23,6 @@ urlpatterns = [
     path("blocked-user/<b_status>/<int:pk>", views.BlockedUserView.as_view(), name="blocked_user"),
     path("change-user-password", views.ChangeUserPasswordView.as_view(), name="change_user_password"),
     path("notifications", views.NotificationsView.as_view(), name="notifications"),
-    path("comms-history", views.CommsHistoryView.as_view(), name="comms_history")
+    path("comms-history", views.CommsHistoryView.as_view(), name="comms_history"),
+    path("comms-in-progress", views.CommsInProgressView.as_view(), name="comms_in_progress")
 ]
