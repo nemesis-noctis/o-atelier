@@ -46,9 +46,11 @@ class CommsInProgressView(LoginRequiredMixin, View):
 
     def get(self, request) -> HttpResponse:
         if request.user.is_superuser:
-            comms_in_progress = Commission.objects.exclude(Q(stage="finished") | Q(stage="canceled"))
+            comms_in_progress = Commission.objects.exclude(Q(stage="finished") | Q(stage="canceled")).order_by(
+                "-created_at")
         else:
-            comms_in_progress: Commission = request.user.commissions.exclude(Q(stage="finished") | Q(stage="canceled"))
+            comms_in_progress: Commission = request.user.commissions.exclude(
+                Q(stage="finished") | Q(stage="canceled")).order_by("-created_at")
 
         stages_indexes = {
             "waiting_confirmation": 0,
@@ -64,6 +66,7 @@ class CommsInProgressView(LoginRequiredMixin, View):
             stage_index = stages_indexes[commission.stage]
             final_stage_index = stages_indexes[commission.final_stage]
             commission.stage_index = stage_index
+            commission.final_stage_index = final_stage_index
 
         context = {
             "commissions": comms_in_progress,
