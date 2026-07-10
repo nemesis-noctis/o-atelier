@@ -107,3 +107,7 @@ class AddTagToGalleryForm(ModelForm):
             field.widget.attrs = {"class": "align-middle",
                                   "style": "width: 124px;border-radius: 30px;border-top-right-radius: 0;border-bottom-right-radius: 0;border: 1px inset #69A7FC;padding: 1px 10px;",
                                   "placeholder": _("Adicionar Tag")}
+
+
+class CancelReasonForm(forms.Form):
+    reason = forms.CharField(max_length=300, widget=forms.Textarea)

@@ -5,15 +5,14 @@
         {% translate 'Pedidos Em andamento' %}
     </h2>
     <div>
-
         <div class="mw-100 row gy-4 row-cols-1 justify-content-center"
-             style="width: 860px; margin: 0 auto">
+             style="width: 860px; margin-left: auto; margin-right: auto">
             <span style="text-align: right; font-size: 14px">
                 {% translate 'Total:' %} {{ count }}
             </span>
             {% for commission in commissions %}
                 <div class="col"
-                     style="background: #EDF5FE;border-radius: 18px;padding: 18px;color: rgb(76,84,92);text-align: center;font-size: 14px;border: 1px solid var(--bs-border-color);width: 960px;">
+                     style="margin-left: 12px; background: #EDF5FE;border-radius: 18px;padding: 18px;color: rgb(76,84,92);text-align: center;font-size: 14px;border: 1px solid var(--bs-border-color);">
 
                     <div class="row row-cols-1 row-cols-md-2" style="margin-bottom: 12px;font-size: 18px;">
                         <div class="col" style="padding-left: 28px;">
@@ -337,8 +336,8 @@
                                        style="margin-right: 4px;"></i>
                                 {% endif %}
                                 <span class="d-none d-sm-none d-md-none d-lg-inline-block">
-                                {% translate 'Render' %}
-                            </span>
+                                    {% translate 'Render' %}
+                                </span>
                             </div>
                         {% endif %}
 
@@ -439,7 +438,6 @@
                     <div class="card mw-100"
                          style="border-radius: 30px;margin-right: auto;margin-left: auto;padding: 0px 30px;border-color: var(--bs-focus-ring-color);margin-bottom: 12px;">
                         <div class="card-body" style="text-align: center;">
-                            <div></div>
                             <span class="d-block" style="margin-bottom: 12px;color: #69A7FC;font-weight: bold;">
                                 {% translate 'Descrição:' %}
                             </span>
@@ -451,19 +449,91 @@
                     <div class="row">
                         <div class="col" style="text-align: left;padding-left: 14px;">
                             <div class="row gx-2 gy-1">
-                                <div class="col-auto">
-                                    <a class="btn btn-danger" role="button"
-                                       style="border-radius: 8px;padding: 4px 8px;margin-right: 2px;color: #b70303;background: white;font-size: 13px;border-color: #ff0000;">
-                                        <svg class="bi bi-ban" xmlns="http://www.w3.org/2000/svg" width="1em"
-                                             height="1em" fill="currentColor" viewBox="0 0 16 16"
-                                             style="width: 20px;height: 20px;margin-bottom: 2px;margin-right: 8px;">
-                                            <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"></path>
-                                        </svg>
-                                        {% translate 'Cancelar Pedido' %}
-                                    </a>
-                                </div>
+                                {% if user.is_superuser %}
+
+                                    {% if not commission.stage == "waiting_confirmation" %}
+                                        <div class="col-auto">
+                                            <button class="btn btn-danger"
+                                                    hx-get="{% url "cancel_comm" uuid=commission.uuid %}"
+                                                    hx-trigger="click"
+                                                    hx-target="#content"
+                                                    hx-swap="innerHTML" role="button"
+                                                    style="border-radius: 8px;padding: 4px 8px;margin-right: 2px;color: #b70303;background: white;font-size: 13px;border-color: #ff0000;">
+                                                <svg class="bi bi-ban" xmlns="http://www.w3.org/2000/svg"
+                                                     width="1em"
+                                                     height="1em" fill="currentColor" viewBox="0 0 16 16"
+                                                     style="width: 20px;height: 20px;margin-bottom: 2px;margin-right: 8px;">
+                                                    <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"></path>
+                                                </svg>
+                                                {% translate 'Cancelar Pedido' %}
+                                            </button>
+                                        </div>
+                                        {% if commission.stage != "waiting_deposit_payment" and commission.stage != "waiting_full_payment" %}
+                                            <div class="col-auto">
+                                                <a class="btn btn-success" role="button"
+                                                   style="border-radius: 8px;padding: 4px 8px;color: rgb(2, 156, 28);background: white;font-size: 13px;border-color: rgb(2, 156, 28);border-top-color: rgb(2,;border-right-color: 156,;border-bottom-color: 28);border-left-color: 156,;"
+                                                   href="next_stage-confirmation.html">
+                                                    <svg class="bi bi-forward" xmlns="http://www.w3.org/2000/svg"
+                                                         width="1em"
+                                                         height="1em" fill="currentColor" viewBox="0 0 16 16"
+                                                         style="width: 20px;height: 20px;margin-bottom: 2px;margin-right: 8px;">
+                                                        <path d="M9.502 5.513a.144.144 0 0 0-.202.134V6.65a.5.5 0 0 1-.5.5H2.5v2.9h6.3a.5.5 0 0 1 .5.5v1.003c0 .108.11.176.202.134l3.984-2.933.042-.028a.147.147 0 0 0 0-.252l-.042-.028zM8.3 5.647a1.144 1.144 0 0 1 1.767-.96l3.994 2.94a1.147 1.147 0 0 1 0 1.946l-3.994 2.94a1.144 1.144 0 0 1-1.767-.96v-.503H2a.5.5 0 0 1-.5-.5v-3.9a.5.5 0 0 1 .5-.5h6.3z"></path>
+                                                    </svg>
+                                                    {% translate 'Avançar Etapa' %}
+                                                </a>
+                                            </div>
+                                        {% endif %}
+
+                                    {% else %}
+                                        <div class="col-auto">
+                                            <a class="btn btn-danger" role="button"
+                                               style="border-radius: 8px;padding: 4px 8px;margin-right: 2px;color: #b70303;background: white;font-size: 13px;border-color: #ff0000;">
+                                                <svg class="bi bi-ban" xmlns="http://www.w3.org/2000/svg"
+                                                     width="1em"
+                                                     height="1em" fill="currentColor" viewBox="0 0 16 16"
+                                                     style="width: 20px;height: 20px;margin-bottom: 2px;margin-right: 8px;">
+                                                    <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"></path>
+                                                </svg>
+                                                {% translate 'Recusar Pedido' %}
+                                            </a>
+                                        </div>
+
+                                        <div class="col-auto">
+                                            <a class="btn btn-success" role="button"
+                                               style="border-radius: 8px;padding: 4px 8px;color: rgb(2, 156, 28);background: white;font-size: 13px;border-color: rgb(2, 156, 28);border-top-color: rgb(2,;border-right-color: 156,;border-bottom-color: 28);border-left-color: 156,;">
+                                                <svg class="bi bi-check-circle" xmlns="http://www.w3.org/2000/svg"
+                                                     width="1em"
+                                                     height="1em" fill="currentColor" viewBox="0 0 16 16"
+                                                     style="width: 20px;height: 20px;margin-bottom: 2px;margin-right: 8px;">
+                                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"></path>
+                                                    <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"></path>
+                                                </svg>
+                                                {% translate 'Aceitar Pedido' %}
+                                            </a>
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="col-auto">
+                                        <button class="btn btn-danger"
+                                                hx-get="{% url "cancel_comm" uuid=commission.uuid %}"
+                                                hx-trigger="click"
+                                                hx-target="#content"
+                                                hx-swap="innerHTML"
+                                                role="button"
+                                                style="border-radius: 8px;padding: 4px 8px;margin-right: 2px;color: #b70303;background: white;font-size: 13px;border-color: #ff0000;">
+                                            <svg class="bi bi-ban" xmlns="http://www.w3.org/2000/svg"
+                                                 width="1em"
+                                                 height="1em" fill="currentColor" viewBox="0 0 16 16"
+                                                 style="width: 20px;height: 20px;margin-bottom: 2px;margin-right: 8px;">
+                                                <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"></path>
+                                            </svg>
+                                            {% translate 'Cancelar Pedido' %}
+                                        </button>
+                                    </div>
+                                {% endif %}
                             </div>
                         </div>
+
                         <div class="col" style="text-align: right;padding-right: 14px;">
                             <div class="row gx-0 gy-2 row-cols-sm-1 row-cols-md-3 justify-content-end align-items-baseline">
                                 <div class="col-auto">
@@ -493,7 +563,6 @@
                     {% translate 'Nenhuma commission encontrada.' %}
                 </h2>
             {% endfor %}
-
         </div>
     </div>
 </div>

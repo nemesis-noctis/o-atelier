@@ -24,5 +24,6 @@ urlpatterns = [
     path("change-user-password", views.ChangeUserPasswordView.as_view(), name="change_user_password"),
     path("notifications", views.NotificationsView.as_view(), name="notifications"),
     path("comms-history", views.CommsHistoryView.as_view(), name="comms_history"),
-    path("comms-in-progress", views.CommsInProgressView.as_view(), name="comms_in_progress")
+    path("comms-in-progress", views.CommsInProgressView.as_view(), name="comms_in_progress"),
+    path("cancel-comm/<uuid:uuid>", views.CancelCommissionView.as_view(), name="cancel_comm")
 ]

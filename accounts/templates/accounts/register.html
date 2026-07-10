@@ -26,9 +26,9 @@
                             <form class="text-center" method="post" novalidate>
                                 {% csrf_token %}
                                 <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
-                                    <label class="form-label login-register-labels">{% translate 'Nome de Usuário<' %}/label>
-                                        {{ form.username }}
-                                        {{ form.errors.username }}
+                                    <label class="form-label login-register-labels">{% translate 'Nome de Usuário' %}</label>
+                                    {{ form.username }}
+                                    {{ form.errors.username }}
                                 </div>
                                 <div class="text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start mb-3">
                                     <label class="form-label login-register-labels">{% translate 'Senha' %}</label>
@@ -45,7 +45,7 @@
                                     {{ form.email }}
                                     {{ form.errors.email }}
                                     <span class="login-register-email-disclaimer">
-                                        <span style="color: rgb(100, 116, 139); text-align: center">{% translate 'Opcional — usado apenas para recuperação de senha.' %}</span>
+                                        <span style="color: rgb(100, 116, 139); text-align: center">{% translate 'Opcional — usado apenas para recuperação de senha e notificações.' %}</span>
                                     </span>
                                 </div>
                                 <div class="mb-3">

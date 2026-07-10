@@ -22,9 +22,9 @@ import accounts.forms as forms
 from accounts.models import CustomUser
 from commissions.models import Commission
 from core.models import Notification
-from core.notifications import render_notification
+from core.notifications import render_notification, send_notification_to_client, send_notification_to_artist
 from core.utils import redirect_if_logged, get_landing_data, add_current_data_to_post_if_empty, \
-    get_gallery_images_from_tags
+    get_gallery_images_from_tags, set_form_field_classes
 from landing.models import GalleryTag, GalleryImage, LandingPage
 
 load_dotenv(settings.BASE_DIR / ".env")
@@ -75,6 +75,57 @@ class CommsInProgressView(LoginRequiredMixin, View):
         }
 
         return render(request, "accounts/partials/comms_in_progress.html", context=context)
+
+
+class CancelCommissionView(LoginRequiredMixin, View):
+    login_url = reverse_lazy("login")
+
+    def get(self, request, uuid) -> HttpResponse:
+        if request.user.is_superuser:
+            comm_to_cancel = Commission.objects.get(uuid=uuid)
+            form = forms.CancelReasonForm()
+            set_form_field_classes(form.fields.values())
+            context = {
+                "commission": comm_to_cancel,
+                "form": form
+            }
+            return render(request, "accounts/partials/cancel_confirmation.html", context=context)
+
+        else:
+            comm_to_cancel = request.user.commissions.get(uuid=uuid)
+            context = {
+                "commission": comm_to_cancel
+            }
+            return render(request, "accounts/partials/cancel_confirmation.html", context=context)
+
+    def post(self, request, uuid):
+        if request.user.is_superuser:
+            form = forms.CancelReasonForm(request.POST)
+            set_form_field_classes(form.fields.values())
+            comm_to_cancel = Commission.objects.get(uuid=uuid)
+
+            if form.is_valid():
+                comm_to_cancel.stage = "canceled"
+                comm_to_cancel.save()
+                cancellation_reason = form.cleaned_data["reason"]
+                send_notification_to_client(comm_to_cancel.user, "comm_cancelation_client", "ALERT",
+                                            context={"message": cancellation_reason, "uuid": str(comm_to_cancel.uuid)})
+                return redirect("comms_in_progress")
+            else:
+                context = {
+                    "commission": comm_to_cancel,
+                    "form": form
+                }
+                return render(request, "accounts/partials/cancel_confirmation.html", context=context)
+
+        else:
+            comm_to_cancel = request.user.commissions.get(uuid=uuid)
+            comm_to_cancel.stage = "canceled"
+            comm_to_cancel.save()
+            send_notification_to_artist("comm_cancelation_artist", "ALERT",
+                                        context={"uuid": str(comm_to_cancel.uuid),
+                                                 "client": comm_to_cancel.user.username})
+            return redirect("comms_in_progress")
 
 
 class CommsHistoryView(LoginRequiredMixin, View):

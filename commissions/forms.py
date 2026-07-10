@@ -60,7 +60,7 @@ class CommissionForm(forms.ModelForm):
                 ]
 
         self.fields["description"].widget.attrs["placeholder"] = _noop(
-            "Ex: Gostaria de uma fanart do Satoru Gojo de jujutsu kaisen.")
+            "Faça uma descrição detalhada do pedido. Descreva os personagens, cenário, roupas, poses, paleta de cor, etc.")
         self.fields["contact_social"].widget.attrs["placeholder"] = _noop("Ex: Whatsapp, Twitter, Instagram")
         self.fields["contact_username"].widget.attrs["placeholder"] = _noop("Ex: @lirio_guinevere, (00)0000-0000")
 

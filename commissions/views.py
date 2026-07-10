@@ -198,7 +198,7 @@ def commission_success(request) -> HttpResponse | HttpResponseRedirect:
                                            "price_brl": commission.price_brl,
                                            "price_usd": commission.price_usd}
 
-            send_notification_to_client(client=request.user, key="order_success", level="MESSAGE", context={})
+            send_notification_to_client(client=request.user, key="order_success", level="SUCCESS", context={})
             send_notification_to_artist(key="new_order", level="MESSAGE", context=artist_notification_context)
             decrease_comms_slots()
 
