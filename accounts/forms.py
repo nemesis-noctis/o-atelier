@@ -7,6 +7,7 @@ from django.core.validators import MinValueValidator
 from django.forms import ModelForm
 from django.utils.translation import gettext as _
 
+from commissions.models import ProgressImage
 from core.utils import set_form_field_classes
 from landing.models import LandingPage, GalleryTag, GalleryImage
 
@@ -114,3 +115,17 @@ class ReasonForm(forms.Form):
     new_price_brl = forms.FloatField(required=False, validators=[MinValueValidator(1)])
     new_price_usd = forms.FloatField(required=False, validators=[MinValueValidator(1)])
     reason = forms.CharField(max_length=600, widget=forms.Textarea)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        set_form_field_classes(self.fields.values())
+
+
+class NextStageForm(ModelForm):
+    class Meta:
+        model = ProgressImage
+        fields = ["image"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        set_form_field_classes(self.fields.values())

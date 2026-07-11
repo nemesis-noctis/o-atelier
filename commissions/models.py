@@ -107,8 +107,16 @@ class ReferenceImage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
-class FinalImage(models.Model):
+class ProgressImage(models.Model):
+    stage_choices = {
+        "sketch": _noop("esboço"),
+        "lineart": _noop("lineart"),
+        "flat_colour": _noop("cor flat"),
+        "render": _noop("render"),
+    }
+
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid7, editable=False)
-    commission = models.OneToOneField(Commission, on_delete=models.CASCADE, null=True, related_name="final_image")
-    image = models.ImageField(upload_to="commission/final")
+    stage = models.CharField(max_length=24, choices=stage_choices)
+    commission = models.ForeignKey(Commission, on_delete=models.CASCADE, null=True, related_name="progress_image")
+    image = models.ImageField(upload_to="commission/progress")
     created_at = models.DateTimeField(auto_now_add=True)

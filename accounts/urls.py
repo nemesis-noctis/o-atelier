@@ -26,5 +26,6 @@ urlpatterns = [
     path("comms-history", views.CommsHistoryView.as_view(), name="comms_history"),
     path("comms-in-progress", views.CommsInProgressView.as_view(), name="comms_in_progress"),
     path("cancel-comm/<uuid:uuid>", views.CancelCommissionView.as_view(), name="cancel_comm"),
-    path("accept-comm/<uuid:uuid>", views.AcceptCommissionView.as_view(), name="accept_comm")
+    path("accept-comm/<uuid:uuid>", views.AcceptCommissionView.as_view(), name="accept_comm"),
+    path("comm-next-stage/<uuid:uuid>", views.CommissionNextStageView.as_view(), name="comm_next_stage")
 ]

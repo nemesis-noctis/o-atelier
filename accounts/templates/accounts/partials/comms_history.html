@@ -183,11 +183,15 @@
                         </div>
                     </div>
                 </div>
-                <div style="text-align: right;margin-top: 4px;padding: 0 12px;">
-                    <a href="commission.final_image.image.url" download style="color: #6ba7f7;font-weight: bold;">
-                        {% translate 'Download da Arte Final' %}
-                    </a>
-                </div>
+                {% if commission.stage == "finished" %}
+                    <div style="text-align: right;margin-top: 4px;padding: 0 12px;">
+                        <a href="{{ commission.final_image.image.url }}" download
+                           style="color: #6ba7f7;font-weight: bold;">
+                            {% translate 'Download da Arte Final' %}
+                        </a>
+                    </div>
+                {% endif %}
+
             </div>
         {% empty %}
             <h2 class="hero-h mx-auto" style="text-align: center; font-size: 24px; white-space: nowrap">

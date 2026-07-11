@@ -38,6 +38,17 @@ NOTIFICATION_TEMPLATES = {
         Por favor, realize o pagamento da garantia para prosseguir. 
         Verifique a mensagem da artista para mais informações: 
         {message}"""),
+
+    "comm_update": _noop(
+        """O status do pedido: {uuid}, foi atualizado. 
+        {previous_stage} -> {current_stage}. 
+        """),
+
+    "comm_update_final": _noop(
+        """O status do pedido: {uuid}, foi atualizado. 
+        {previous_stage} -> {current_stage}.
+        Por favor, realize o pagamento do valor restante do pedido para prosseguir.
+        """),
 }
 
 
