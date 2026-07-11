@@ -486,8 +486,12 @@
 
                                     {% else %}
                                         <div class="col-auto">
-                                            <a class="btn btn-danger" role="button"
-                                               style="border-radius: 8px;padding: 4px 8px;margin-right: 2px;color: #b70303;background: white;font-size: 13px;border-color: #ff0000;">
+                                            <button class="btn btn-danger"
+                                                    hx-get="{% url "cancel_comm" uuid=commission.uuid %}"
+                                                    hx-trigger="click"
+                                                    hx-target="#content"
+                                                    hx-swap="innerHTML"
+                                                    style="border-radius: 8px;padding: 4px 8px;margin-right: 2px;color: #b70303;background: white;font-size: 13px;border-color: #ff0000;">
                                                 <svg class="bi bi-ban" xmlns="http://www.w3.org/2000/svg"
                                                      width="1em"
                                                      height="1em" fill="currentColor" viewBox="0 0 16 16"
@@ -495,12 +499,16 @@
                                                     <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"></path>
                                                 </svg>
                                                 {% translate 'Recusar Pedido' %}
-                                            </a>
+                                            </button>
                                         </div>
 
                                         <div class="col-auto">
-                                            <a class="btn btn-success" role="button"
-                                               style="border-radius: 8px;padding: 4px 8px;color: rgb(2, 156, 28);background: white;font-size: 13px;border-color: rgb(2, 156, 28);border-top-color: rgb(2,;border-right-color: 156,;border-bottom-color: 28);border-left-color: 156,;">
+                                            <button class="btn btn-success"
+                                                    hx-get="{% url "accept_comm" uuid=commission.uuid %}"
+                                                    hx-trigger="click"
+                                                    hx-target="#content"
+                                                    hx-swap="innerHTML"
+                                                    style="border-radius: 8px;padding: 4px 8px;color: rgb(2, 156, 28);background: white;font-size: 13px;border-color: rgb(2, 156, 28);border-top-color: rgb(2,;border-right-color: 156,;border-bottom-color: 28);border-left-color: 156,;">
                                                 <svg class="bi bi-check-circle" xmlns="http://www.w3.org/2000/svg"
                                                      width="1em"
                                                      height="1em" fill="currentColor" viewBox="0 0 16 16"
@@ -509,7 +517,7 @@
                                                     <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"></path>
                                                 </svg>
                                                 {% translate 'Aceitar Pedido' %}
-                                            </a>
+                                            </button>
                                         </div>
                                     {% endif %}
                                 {% else %}

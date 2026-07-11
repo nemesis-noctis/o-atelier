@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm, SetPasswordForm, \
     PasswordChangeForm
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.core.validators import MinValueValidator
 from django.forms import ModelForm
 from django.utils.translation import gettext as _
 
@@ -109,5 +110,7 @@ class AddTagToGalleryForm(ModelForm):
                                   "placeholder": _("Adicionar Tag")}
 
 
-class CancelReasonForm(forms.Form):
-    reason = forms.CharField(max_length=300, widget=forms.Textarea)
+class ReasonForm(forms.Form):
+    new_price_brl = forms.FloatField(required=False, validators=[MinValueValidator(1)])
+    new_price_usd = forms.FloatField(required=False, validators=[MinValueValidator(1)])
+    reason = forms.CharField(max_length=600, widget=forms.Textarea)

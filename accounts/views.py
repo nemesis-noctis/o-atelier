@@ -77,13 +77,57 @@ class CommsInProgressView(LoginRequiredMixin, View):
         return render(request, "accounts/partials/comms_in_progress.html", context=context)
 
 
+class AcceptCommissionView(LoginRequiredMixin, UserPassesTestMixin, View):
+    login_url = reverse_lazy("login")
+
+    def test_func(self) -> bool | None:
+        return self.request.user.is_superuser
+
+    def get(self, request, uuid) -> HttpResponse:
+        comm_to_accept = Commission.objects.get(uuid=uuid)
+        form = forms.ReasonForm()
+        form.fields["new_price_brl"].initial = comm_to_accept.price_brl
+        form.fields["new_price_usd"].initial = comm_to_accept.price_usd
+        set_form_field_classes(form.fields.values())
+        context = {
+            "commission": comm_to_accept,
+            "form": form
+        }
+        return render(request, "accounts/artist/partials/accept_confirmation.html", context=context)
+
+    def post(self, request, uuid):
+        form = forms.ReasonForm(request.POST)
+        set_form_field_classes(form.fields.values())
+        comm_to_accept = Commission.objects.get(uuid=uuid)
+
+        if form.is_valid():
+            comm_to_accept.stage = "waiting_deposit_payment"
+            comm_to_accept.price_brl = form.cleaned_data["new_price_brl"]
+            comm_to_accept.price_usd = form.cleaned_data["new_price_usd"]
+            comm_to_accept.save()
+            accept_message = form.cleaned_data["reason"]
+
+            send_notification_to_client(comm_to_accept.user, "comm_accepted", "SUCCESS",
+                                        context={"message": accept_message, "uuid": str(comm_to_accept.uuid),
+                                                 "price_brl": comm_to_accept.price_brl,
+                                                 "price_usd": comm_to_accept.price_usd})
+
+            return redirect("comms_in_progress")
+        else:
+            context = {
+                "commission": comm_to_accept,
+                "form": form
+            }
+            return render(request, "accounts/artist/partials/accept_confirmation.html", context=context)
+
+
 class CancelCommissionView(LoginRequiredMixin, View):
     login_url = reverse_lazy("login")
 
     def get(self, request, uuid) -> HttpResponse:
         if request.user.is_superuser:
             comm_to_cancel = Commission.objects.get(uuid=uuid)
-            form = forms.CancelReasonForm()
+            form = forms.ReasonForm()
             set_form_field_classes(form.fields.values())
             context = {
                 "commission": comm_to_cancel,
@@ -100,16 +144,20 @@ class CancelCommissionView(LoginRequiredMixin, View):
 
     def post(self, request, uuid):
         if request.user.is_superuser:
-            form = forms.CancelReasonForm(request.POST)
+            form = forms.ReasonForm(request.POST)
             set_form_field_classes(form.fields.values())
             comm_to_cancel = Commission.objects.get(uuid=uuid)
 
             if form.is_valid():
+                comm_original_stage = comm_to_cancel.stage
                 comm_to_cancel.stage = "canceled"
                 comm_to_cancel.save()
                 cancellation_reason = form.cleaned_data["reason"]
-                send_notification_to_client(comm_to_cancel.user, "comm_cancelation_client", "ALERT",
+
+                notification_key = "comm_refusal" if comm_original_stage == "waiting_confirmation" else "comm_cancelation_client"
+                send_notification_to_client(comm_to_cancel.user, notification_key, "ALERT",
                                             context={"message": cancellation_reason, "uuid": str(comm_to_cancel.uuid)})
+
                 return redirect("comms_in_progress")
             else:
                 context = {
@@ -122,9 +170,11 @@ class CancelCommissionView(LoginRequiredMixin, View):
             comm_to_cancel = request.user.commissions.get(uuid=uuid)
             comm_to_cancel.stage = "canceled"
             comm_to_cancel.save()
+
             send_notification_to_artist("comm_cancelation_artist", "ALERT",
                                         context={"uuid": str(comm_to_cancel.uuid),
                                                  "client": comm_to_cancel.user.username})
+
             return redirect("comms_in_progress")
 
 

@@ -15,13 +15,29 @@ NOTIFICATION_TEMPLATES = {
     Fique atento às notificações para atualizações.
     """),
 
-    "new_order": _noop("Novo pedido para o usuário {client_name} por BRL: {price_brl}$ USD: {price_usd}$"),
+    "new_order": _noop(
+        """Novo pedido para o usuário {client_name} 
+        por BRL: {price_brl}$ USD: {price_usd}$"""),
 
     "comm_cancelation_client": _noop(
-        "O pedido: {uuid} foi cancelado. Verifique a mensagem da artista para mais informações: {message}"),
+        """O pedido: {uuid} foi cancelado. 
+        Verifique a mensagem da artista para mais informações: 
+        {message}"""),
 
     "comm_cancelation_artist": _noop(
-        "O pedido: {uuid} do cliente: {client} foi cancelado."),
+        """O pedido: {uuid} do cliente: {client} foi cancelado."""),
+
+    "comm_refusal": _noop(
+        """O pedido: {uuid} foi recusado. 
+        Verifique a mensagem da artista para mais informações: 
+        {message}"""),
+
+    "comm_accepted": _noop(
+        """O pedido: {uuid} foi aceito! 
+        Seu valor final é de BRL: {price_brl}$ | USD: {price_usd}$. 
+        Por favor, realize o pagamento da garantia para prosseguir. 
+        Verifique a mensagem da artista para mais informações: 
+        {message}"""),
 }
 
 
