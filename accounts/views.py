@@ -201,7 +201,7 @@ class CancelCommissionView(LoginRequiredMixin, View):
             }
             return render(request, "accounts/partials/cancel_confirmation.html", context=context)
 
-    def post(self, request, uuid):
+    def post(self, request, uuid) -> HttpResponseRedirect | HttpResponse:
         if request.user.is_superuser:
             form = forms.ReasonForm(request.POST)
             comm_to_cancel = Commission.objects.get(uuid=uuid)
@@ -209,6 +209,8 @@ class CancelCommissionView(LoginRequiredMixin, View):
             if form.is_valid():
                 comm_original_stage = comm_to_cancel.stage
                 comm_to_cancel.stage = "canceled"
+                comm_to_cancel.progress_image.all().delete()
+                comm_to_cancel.reference_images.all().delete()
                 comm_to_cancel.save()
                 cancellation_reason = form.cleaned_data["reason"]
 
@@ -227,6 +229,8 @@ class CancelCommissionView(LoginRequiredMixin, View):
         else:
             comm_to_cancel = request.user.commissions.get(uuid=uuid)
             comm_to_cancel.stage = "canceled"
+            comm_to_cancel.progress_image.all().delete()
+            comm_to_cancel.reference_images.all().delete()
             comm_to_cancel.save()
 
             send_notification_to_artist("comm_cancelation_artist", "ALERT",
