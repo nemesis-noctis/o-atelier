@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, PasswordResetDoneView, \
     PasswordResetCompleteView
+from django.db.models import Count
 from django.db.models import Q
 from django.db.models import QuerySet
 from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
@@ -19,9 +20,9 @@ from dotenv import load_dotenv
 
 import accounts.forms as forms
 from accounts.models import CustomUser
-from commissions.models import Commission
+from commissions.models import Commission, ProgressImage
 from core.models import Notification
-from core.notifications import render_notification
+from core.notifications import render_notification, send_notification_to_client, send_notification_to_artist
 from core.utils import redirect_if_logged, get_landing_data, add_current_data_to_post_if_empty, \
     get_gallery_images_from_tags
 from landing.models import GalleryTag, GalleryImage, LandingPage
@@ -41,6 +42,204 @@ def user_profile(request) -> HttpResponse:
                   context={"landing_data": get_landing_data(), "new_notifications": new_notifications})
 
 
+class CommsInProgressView(LoginRequiredMixin, View):
+    login_url = reverse_lazy("login")
+
+    def get(self, request) -> HttpResponse:
+        if request.user.is_superuser:
+            comms_in_progress = Commission.objects.exclude(Q(stage="finished") | Q(stage="canceled")).order_by(
+                "-created_at")
+        else:
+            comms_in_progress: Commission = request.user.commissions.exclude(
+                Q(stage="finished") | Q(stage="canceled")).order_by("-created_at")
+
+        stages_indexes = {
+            "waiting_confirmation": 0,
+            "waiting_deposit_payment": 1,
+            "sketch": 2,
+            "lineart": 3,
+            "flat_colour": 4,
+            "render": 5,
+            "waiting_full_payment": 6
+        }
+
+        for commission in comms_in_progress:
+            stage_index = stages_indexes[commission.stage]
+            final_stage_index = stages_indexes[commission.final_stage]
+            commission.stage_index = stage_index
+            commission.final_stage_index = final_stage_index
+
+        context = {
+            "commissions": comms_in_progress,
+            "count": comms_in_progress.count()
+        }
+
+        return render(request, "accounts/partials/comms_in_progress.html", context=context)
+
+
+class CommissionNextStageView(LoginRequiredMixin, UserPassesTestMixin, View):
+    login_url = reverse_lazy("login")
+
+    def test_func(self) -> bool | None:
+        return self.request.user.is_superuser
+
+    def set_commission_to_next_stage(self, commission: Commission, commit: bool) -> str:
+        stages = ["sketch", "lineart", "flat_colour", "render"]
+        current_stage = commission.stage
+
+        next_stage = "waiting_full_payment" if current_stage == commission.final_stage else stages[
+            stages.index(current_stage) + 1]
+        commission.stage = next_stage
+        next_stage = commission.get_stage_display()
+
+        if commit:
+            commission.save()
+        else:
+            commission.stage = current_stage
+
+        return next_stage
+
+    def get(self, request, uuid) -> HttpResponse:
+        commission = Commission.objects.get(uuid=uuid)
+        form = forms.NextStageForm()
+        next_stage = self.set_commission_to_next_stage(commission, commit=False)
+        context = {
+            "commission": commission,
+            "form": form,
+            "next_stage": next_stage
+        }
+        return render(request, "accounts/artist/partials/next_stage_confirmation.html", context=context)
+
+    def post(self, request, uuid):
+        form = forms.NextStageForm(request.POST, request.FILES)
+        commission = Commission.objects.get(uuid=uuid)
+
+        if form.is_valid():
+            previous_stage = commission.get_stage_display()
+            next_stage = self.set_commission_to_next_stage(commission, commit=True)
+            instance: ProgressImage = form.save(commit=False)
+            instance.commission = commission
+            instance.stage = previous_stage
+            instance.save()
+
+            notification_key = "comm_update_final" if commission.stage == "waiting_full_payment" else "comm_update"
+            send_notification_to_client(commission.user, notification_key, "MESSAGE",
+                                        context={"uuid": str(commission.uuid),
+                                                 "previous_stage": previous_stage.title(),
+                                                 "current_stage": next_stage.title()})
+
+            return redirect("comms_in_progress")
+        else:
+            next_stage = self.set_commission_to_next_stage(commission, commit=False)
+            context = {
+                "commission": commission,
+                "form": form,
+                "next_stage": next_stage
+            }
+            return render(request, "accounts/artist/partials/next_stage_confirmation.html", context=context)
+
+
+class AcceptCommissionView(LoginRequiredMixin, UserPassesTestMixin, View):
+    login_url = reverse_lazy("login")
+
+    def test_func(self) -> bool | None:
+        return self.request.user.is_superuser
+
+    def get(self, request, uuid) -> HttpResponse:
+        comm_to_accept = Commission.objects.get(uuid=uuid)
+        form = forms.ReasonForm()
+        form.fields["new_price_brl"].initial = comm_to_accept.price_brl
+        form.fields["new_price_usd"].initial = comm_to_accept.price_usd
+        context = {
+            "commission": comm_to_accept,
+            "form": form
+        }
+        return render(request, "accounts/artist/partials/accept_confirmation.html", context=context)
+
+    def post(self, request, uuid):
+        form = forms.ReasonForm(request.POST)
+        comm_to_accept = Commission.objects.get(uuid=uuid)
+
+        if form.is_valid():
+            comm_to_accept.stage = "waiting_deposit_payment"
+            comm_to_accept.price_brl = form.cleaned_data["new_price_brl"]
+            comm_to_accept.price_usd = form.cleaned_data["new_price_usd"]
+            comm_to_accept.save()
+            accept_message = form.cleaned_data["reason"]
+
+            send_notification_to_client(comm_to_accept.user, "comm_accepted", "SUCCESS",
+                                        context={"message": accept_message, "uuid": str(comm_to_accept.uuid),
+                                                 "price_brl": comm_to_accept.price_brl,
+                                                 "price_usd": comm_to_accept.price_usd})
+
+            return redirect("comms_in_progress")
+        else:
+            context = {
+                "commission": comm_to_accept,
+                "form": form
+            }
+            return render(request, "accounts/artist/partials/accept_confirmation.html", context=context)
+
+
+class CancelCommissionView(LoginRequiredMixin, View):
+    login_url = reverse_lazy("login")
+
+    def get(self, request, uuid) -> HttpResponse:
+        if request.user.is_superuser:
+            comm_to_cancel = Commission.objects.get(uuid=uuid)
+            form = forms.ReasonForm()
+            context = {
+                "commission": comm_to_cancel,
+                "form": form
+            }
+            return render(request, "accounts/partials/cancel_confirmation.html", context=context)
+
+        else:
+            comm_to_cancel = request.user.commissions.get(uuid=uuid)
+            context = {
+                "commission": comm_to_cancel
+            }
+            return render(request, "accounts/partials/cancel_confirmation.html", context=context)
+
+    def post(self, request, uuid) -> HttpResponseRedirect | HttpResponse:
+        if request.user.is_superuser:
+            form = forms.ReasonForm(request.POST)
+            comm_to_cancel = Commission.objects.get(uuid=uuid)
+
+            if form.is_valid():
+                comm_original_stage = comm_to_cancel.stage
+                comm_to_cancel.stage = "canceled"
+                comm_to_cancel.progress_image.all().delete()
+                comm_to_cancel.reference_images.all().delete()
+                comm_to_cancel.save()
+                cancellation_reason = form.cleaned_data["reason"]
+
+                notification_key = "comm_refusal" if comm_original_stage == "waiting_confirmation" else "comm_cancelation_client"
+                send_notification_to_client(comm_to_cancel.user, notification_key, "ALERT",
+                                            context={"message": cancellation_reason, "uuid": str(comm_to_cancel.uuid)})
+
+                return redirect("comms_in_progress")
+            else:
+                context = {
+                    "commission": comm_to_cancel,
+                    "form": form
+                }
+                return render(request, "accounts/partials/cancel_confirmation.html", context=context)
+
+        else:
+            comm_to_cancel = request.user.commissions.get(uuid=uuid)
+            comm_to_cancel.stage = "canceled"
+            comm_to_cancel.progress_image.all().delete()
+            comm_to_cancel.reference_images.all().delete()
+            comm_to_cancel.save()
+
+            send_notification_to_artist("comm_cancelation_artist", "ALERT",
+                                        context={"uuid": str(comm_to_cancel.uuid),
+                                                 "client": comm_to_cancel.user.username})
+
+            return redirect("comms_in_progress")
+
+
 class CommsHistoryView(LoginRequiredMixin, View):
     login_url = reverse_lazy("login")
 
@@ -52,6 +251,10 @@ class CommsHistoryView(LoginRequiredMixin, View):
         else:
             completed_commissions: Commission = request.user.commissions.filter(
                 Q(stage="finished") | Q(stage="canceled")).order_by("-created_at")
+
+        for commission in completed_commissions:
+            if commission.stage == "finished":
+                commission.final_image = commission.progress_image.get(stage=commission.final_stage)
 
         context = {
             "commissions": completed_commissions,
@@ -103,12 +306,15 @@ class UserManagerView(LoginRequiredMixin, UserPassesTestMixin, View):
             "username": "username",
             "date": "date_joined",
             "active": "is_active",
-            # TODO: Alterar para o valor certo quando as commissions forem adicionadas
             "comms": "username",
-            "spend": "username"
         }
 
-        return users.order_by(orders[order_by if order_by in orders else "username"])
+        if not order_by == "comms":
+            ordered = users.order_by(orders[order_by if order_by in orders else "username"])
+        else:
+            ordered = users.annotate(comms_count=Count("commissions")).order_by("-comms_count")
+
+        return ordered
 
     def get(self, request) -> HttpResponse:
         username_search = request.GET.get("username_search", "")

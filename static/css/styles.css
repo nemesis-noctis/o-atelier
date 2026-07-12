@@ -285,6 +285,16 @@ img:hover {
 }
 
 
+.mt-7 {
+    margin-top: 5rem !important;
+}
+
+@media (min-width: 1200px) {
+    .mt-xl-8 {
+        margin-top: 60rem !important;
+    }
+}
+
 .mt-9 {
     margin-top: 9rem !important;
 }

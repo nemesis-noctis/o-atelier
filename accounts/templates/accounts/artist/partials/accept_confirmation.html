@@ -1,0 +1,102 @@
+{% load i18n %}
+<div class="col ps-0">
+    <div class="mh-100" style="width: 100%;height: 100%;">
+        <h2 style="color: rgb(76,84,92);font-family: 'Abhaya Libre', serif;text-align: center;font-size: 22px;padding-top: 15px;padding-bottom: 10px;border-bottom: 1px solid var(--bs-dark-border-subtle);">
+            {% translate 'Pedido:' %} {{ commission.uuid }}
+        </h2>
+        <div style="text-align: right;"></div>
+        <div>
+            <div class="row gy-4 row-cols-1 justify-content-center">
+                <div class="col"
+                     style="background: #EDF5FE;border-radius: 18px;padding: 18px;color: rgb(76,84,92);text-align: center;font-size: 14px;border: 1px solid var(--bs-border-color);width: 960px;">
+                    <div class="row gy-1" style="margin-bottom: 12px;font-size: 18px;">
+                        <div class="col" style="padding-right: 24px;padding-left: 28px;text-align: right;">
+                            <button class="btn btn-primary" role="button"
+                                    hx-get="{% url "comms_in_progress" %}"
+                                    hx-trigger="click"
+                                    hx-target="#content"
+                                    hx-swap="innerHTML"
+                                    style="background: #6ba7f7;border-color: #6ba7f7;border-radius: 8px;font-size: 12px;padding: 4px 8px;">
+                                <i class="typcn typcn-arrow-back-outline"
+                                   style="margin-right: 4px;"></i>
+                                {% translate 'Voltar' %}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card mw-100"
+                         style="border-radius: 30px;margin-right: auto;margin-left: auto;padding: 0px 30px;border-color: var(--bs-focus-ring-color);margin-bottom: 12px;">
+                        <div class="card-body" style="text-align: center;">
+                            <span class="d-block"
+                                  style="margin-bottom: 12px;color: rgb(76,84,92);font-size: 24px;font-family: 'Abhaya Libre', serif;">
+                                {% translate 'Tem certeza que deseja Aceitar este pedido?' %}
+                            </span>
+                            <div class="row row-cols-2 justify-content-end" style="margin-bottom: 12px;">
+                                <div class="col">
+                                    <span class="d-inline-block" style="font-size: 12px;text-align: left;">
+                                        {% translate 'Pedido:' %} {{ commission.uuid }}
+                                    </span>
+                                </div>
+                                <div class="col">
+                                    <span class="d-inline-block" style="font-size: 12px;text-align: left;">
+                                        {% translate 'Cliente:' %} {{ commission.user }}
+                                    </span>
+                                </div>
+                                <div class="col">
+                                    <span class="d-inline-block"
+                                          style="color: #6ba7f7;font-size: 12px;text-align: left;">
+                                        {% translate 'Realizado em:' %} {{ commission.created_at }}
+                                    </span>
+                                </div>
+                                <div class="col">
+                                    <span class="d-inline-block"
+                                          style="font-size: 12px;color: #6ba7f7;text-align: left;">
+                                        {% translate 'Preço:' %} BRL: {{ commission.price_brl }}$ | USD: {{ commission.price_usd }}$
+                                    </span>
+                                </div>
+                            </div>
+                            <form hx-post="{% url 'accept_comm' uuid=commission.uuid %}"
+                                  hx-trigger="submit"
+                                  hx-target="#content"
+                                  hx-swap="innerHTML"
+                                  novalidate>
+                                {% csrf_token %}
+                                <span class="d-block" style="margin-bottom: 12px;color: #69A7FC;">
+                                    {% translate 'Defina o valor final do pedido:' %}
+                                </span>
+                                <div style="width: 100px; margin: 0 auto; margin-bottom: 24px">
+                                    <label>BRL:</label>
+                                    {{ form.new_price_brl }}
+                                    {{ form.errors.new_price_brl }}
+                                    <label>USD:</label>
+                                    {{ form.new_price_usd }}
+                                    {{ form.errors.new_price_usd }}
+                                </div>
+                                <span class="d-block" style="margin-bottom: 28px;color: #69A7FC;">
+                                    {% translate 'Adicione uma mensagem para o cliente:' %}
+                                </span>
+                                {{ form.reason }}
+                                {{ form.errors.reason }}
+                                <div class="row justify-content-center" style="margin-top: 12px;">
+                                    <div class="col-auto">
+                                        <button class="btn btn-success"
+                                                style="border-radius: 8px;padding: 4px 8px;color: rgb(2, 156, 28);background: white;font-size: 13px;border-color: rgb(2, 156, 28);border-top-color: rgb(2,;border-right-color: 156,;border-bottom-color: 28);border-left-color: 156,;"
+                                                type="submit">
+                                            <svg class="bi bi-check-circle" xmlns="http://www.w3.org/2000/svg"
+                                                 width="1em"
+                                                 height="1em" fill="currentColor" viewBox="0 0 16 16"
+                                                 style="width: 20px;height: 20px;margin-bottom: 2px;margin-right: 8px;">
+                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"></path>
+                                                <path d="m10.97 4.97-.02.022-3.473 4.425-2.093-2.094a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05"></path>
+                                            </svg>
+                                            {% translate 'Aceitar Pedido' %}
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

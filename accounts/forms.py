@@ -3,9 +3,11 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordResetForm, SetPasswordForm, \
     PasswordChangeForm
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.core.validators import MinValueValidator
 from django.forms import ModelForm
 from django.utils.translation import gettext as _
 
+from commissions.models import ProgressImage
 from core.utils import set_form_field_classes
 from landing.models import LandingPage, GalleryTag, GalleryImage
 
@@ -107,3 +109,23 @@ class AddTagToGalleryForm(ModelForm):
             field.widget.attrs = {"class": "align-middle",
                                   "style": "width: 124px;border-radius: 30px;border-top-right-radius: 0;border-bottom-right-radius: 0;border: 1px inset #69A7FC;padding: 1px 10px;",
                                   "placeholder": _("Adicionar Tag")}
+
+
+class ReasonForm(forms.Form):
+    new_price_brl = forms.FloatField(required=False, validators=[MinValueValidator(1)])
+    new_price_usd = forms.FloatField(required=False, validators=[MinValueValidator(1)])
+    reason = forms.CharField(max_length=600, widget=forms.Textarea)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        set_form_field_classes(self.fields.values())
+
+
+class NextStageForm(ModelForm):
+    class Meta:
+        model = ProgressImage
+        fields = ["image"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        set_form_field_classes(self.fields.values())
