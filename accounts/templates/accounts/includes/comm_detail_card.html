@@ -1,0 +1,138 @@
+{% load i18n %}
+
+<div class="card mw-100"
+     style="border-radius: 30px;margin-right: auto;margin-left: auto;padding: 0px 30px;border-color: var(--bs-focus-ring-color);margin-bottom: 12px;">
+    <div class="card-body" style="text-align: center;">
+            <span class="d-block"
+                  style="margin-bottom: 12px;color: #69A7FC;font-weight: bold;">
+                {% translate 'Detalhes do pedido:' %}
+            </span>
+        <div>
+            <div class="row gy-1 row-cols-2 row-cols-sm-4 justify-content-center"
+                 style="font-size: 13px; margin-bottom: 12px;">
+                <div class="col">
+                    <span>{% translate 'Categoria:' %}
+                        <span style="color: var(--bs-secondary);">
+                            {{ commission.get_category_display|title }}
+                        </span>
+                    </span>
+                </div>
+                <div class="col">
+                    <span>{% translate 'Estilo de Arte:' %}
+                         <span style="color: var(--bs-secondary);">
+                            {{ commission.get_final_stage_display|title }}
+                        </span>
+                    </span>
+                </div>
+                {% if commission.category == "character" %}
+                    <div class="col">
+                        <span>{% translate 'Tipo de personagem:' %}
+                            <span style="color: var(--bs-secondary);">
+                                {{ commission.get_character_type_display|title }}
+                            </span>
+                        </span>
+                    </div>
+                    <div class="col">
+                        <span>{% translate 'Tipo de Corpo:' %}
+                            <span style="color: var(--bs-secondary);">
+                                {{ commission.get_body_type_display|title }}
+                            </span>
+                        </span>
+                    </div>
+                    <div class="col">
+                        <span>{% translate 'Vestimenta:' %}
+                            <span style="color: var(--bs-secondary);">
+                                {{ commission.get_clothing_display|title }}
+                            </span>
+                        </span>
+                    </div>
+                {% endif %}
+                {% if commission.category == "character" or commission.category == "object" %}
+                    <div class="col">
+                        <span>{% translate 'Tipo de Arte:' %}
+                            <span style="color: var(--bs-secondary);">
+                                {{ commission.get_art_type_display|title }}
+                            </span>
+                        </span>
+                    </div>
+                    <div class="col">
+                        <span>{% translate 'Quantidade:' %}
+                            <span style="color: var(--bs-secondary);">
+                                {{ commission.count }}
+                            </span>
+                        </span>
+                    </div>
+                    <div class="col">
+                        <span>{% translate 'Fundo:' %}
+                            <span style="color: var(--bs-secondary);">
+                                {{ commission.get_background_display|title }}
+                            </span>
+                        </span>
+                    </div>
+                {% endif %}
+                {% if commission.category == "object" or commission.category == "landscape" %}
+                    <div class="col">
+                        <span>{% translate 'Complexidade:' %}
+                            <span style="color: var(--bs-secondary);">
+                                {{ commission.get_complexity_display|title }}
+                            </span>
+                        </span>
+                    </div>
+                {% endif %}
+                <div class="col">
+                    <span>{% translate 'Proporção da tela:' %}
+                        <span style="color: var(--bs-secondary);">
+                            {{ commission.get_aspect_ratio_display|title }}
+                        </span>
+                    </span>
+                </div>
+                <div class="col">
+                    <span>{% translate 'FX:' %}
+                        <span style="color: var(--bs-secondary);">
+                            {{ commission.get_fx_display|title }}
+                        </span>
+                    </span>
+                </div>
+                <div class="col">
+                    <span>{% translate 'Uso Comercial:' %}
+                        <span style="color: var(--bs-secondary);">
+                            {% if commission.commercial == "True" %}
+                                {% translate 'Sim' %} {% else %} {% translate 'Não' %}
+                            {% endif %}
+                        </span>
+                    </span>
+                </div>
+                <div class="col">
+                    <span>{% translate 'Compartilhamento:' %}
+                        <span style="color: var(--bs-secondary);">
+                            {% if commission.share_permission == "True" %}
+                                {% translate 'Sim' %} {% else %} {% translate 'Não' %}
+                            {% endif %}
+                        </span>
+                    </span>
+                </div>
+                <div class="col">
+                    <span>{% translate 'Contato:' %}
+                        <span style="color: var(--bs-secondary);">
+                            {{ commission.contact_social|title }}
+                        </span>
+                    </span>
+                </div>
+                <div class="col">
+                    <span>{% translate 'Nome Contato:' %}
+                        <span style="color: var(--bs-secondary);">
+                            {{ commission.contact_username|title }}
+                        </span>
+                    </span>
+                </div>
+            </div>
+            <span class="d-block"
+                  style="margin-bottom: 12px;color: #69A7FC;font-weight: bold;">
+                {% translate 'Descrição:' %}
+            </span>
+            <p style="font-size: 12px;">
+                {{ commission.description }}
+            </p>
+        </div>
+    </div>
+</div>
