@@ -43,6 +43,13 @@ def user_profile(request) -> HttpResponse:
                   context={"landing_data": get_landing_data(), "new_notifications": new_notifications})
 
 
+class CommChat(LoginRequiredMixin, View):
+    login_url = reverse_lazy("login")
+
+    def get(self, request, uuid) -> HttpResponse:
+        return render(request, "accounts/partials/comm_chat.html")
+
+
 class CommsInProgressDetailsView(LoginRequiredMixin, DetailView):
     login_url = reverse_lazy("login")
     model = Commission
