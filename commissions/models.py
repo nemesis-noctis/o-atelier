@@ -9,6 +9,17 @@ from accounts.models import CustomUser
 
 # Create your models here.
 class Commission(models.Model):
+    stages_indexes = {
+        "waiting_confirmation": 0,
+        "waiting_deposit_payment": 1,
+        "sketch": 2,
+        "lineart": 3,
+        "flat_colour": 4,
+        "render": 5,
+        "waiting_full_payment": 6,
+        "finished": 7,
+        "canceled": 8,
+    }
     stage_choices = {
         "waiting_confirmation": _noop("aguardando confirmação"),
         "waiting_deposit_payment": _noop("aguardando pagamento da garantia"),
@@ -97,6 +108,14 @@ class Commission(models.Model):
     price_usd = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
     finished_at = models.DateTimeField(null=True)
+
+    @property
+    def stage_index(self):
+        return self.stages_indexes[self.stage]
+
+    @property
+    def final_stage_index(self):
+        return self.stages_indexes[self.final_stage]
 
 
 class ReferenceImage(models.Model):

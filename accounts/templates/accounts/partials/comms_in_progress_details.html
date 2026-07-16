@@ -1,0 +1,57 @@
+{% load i18n %}
+
+<div class="mh-100" style="width: 100%;height: 100%;">
+    <h2 style="color: rgb(76,84,92);font-family: 'Abhaya Libre', serif;text-align: center;font-size: 22px;padding-top: 15px;padding-bottom: 10px;border-bottom: 1px solid var(--bs-dark-border-subtle);">
+        {% translate 'Pedido:' %} {{ commission.uuid }}
+    </h2>
+    <div>
+        <div class="row gy-4 row-cols-1 justify-content-center">
+            <div style="text-align: right;">
+                <button class="btn btn-primary" role="button"
+                        hx-get="{% url "comms_in_progress" %}"
+                        hx-trigger="click"
+                        hx-target="#content"
+                        hx-swap="innerHTML"
+                        style="background: #6ba7f7;border-color: #6ba7f7;border-radius: 8px;font-size: 12px;padding: 4px 8px;">
+                    <i class="typcn typcn-arrow-back-outline"
+                       style="margin-right: 4px;"></i>
+                    {% translate 'Voltar' %}
+                </button>
+            </div>
+            <div class="col"
+                 style="background: #EDF5FE;border-radius: 18px;padding: 18px;color: rgb(76,84,92);text-align: center;font-size: 14px;border: 1px solid var(--bs-border-color);width: 960px;">
+
+                {% include 'accounts/includes/comm_heading.html' %}
+                {% include 'accounts/includes/comm_status_bar.html' %}
+                {% include "accounts/includes/comm_detail_card.html" %}
+
+                <div class="card mw-100"
+                     style="border-radius: 30px;margin-right: auto;margin-left: auto;padding: 0px 30px;border-color: var(--bs-focus-ring-color);margin-bottom: 12px;">
+                    <div class="card-body" style="text-align: center;">
+                        <span class="d-block" style="margin-bottom: 12px;color: #69A7FC;font-weight: bold;">
+                            {% translate 'Referências:' %}
+                        </span>
+                        <div class="container">
+                            <div class="row gx-2 gy-2 row-cols-1 row-cols-md-2 row-cols-xl-4"
+                                 data-bss-baguettebox="">
+                                {% for image in commission.reference_images.all %}
+                                    <div class="col">
+                                        <a href="{{ image.image.url }}">
+                                            <div style="width: 200px; height: 200px; margin: 0 auto">
+                                                <img class="img-fluid"
+                                                     style="border-radius: 18px; object-fit: cover; width: 100%; height: 100%"
+                                                     src="{{ image.image.url }}">
+                                            </div>
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+

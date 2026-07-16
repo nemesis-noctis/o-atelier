@@ -16,6 +16,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
 from django.views import View
+from django.views.generic import DetailView
 from dotenv import load_dotenv
 
 import accounts.forms as forms
@@ -42,6 +43,23 @@ def user_profile(request) -> HttpResponse:
                   context={"landing_data": get_landing_data(), "new_notifications": new_notifications})
 
 
+class CommsInProgressDetailsView(LoginRequiredMixin, DetailView):
+    login_url = reverse_lazy("login")
+    model = Commission
+    template_name = "accounts/partials/comms_in_progress_details.html"
+    context_object_name = "commission"
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            commissions = Commission.objects.exclude(Q(stage="finished") | Q(stage="canceled"))
+            return commissions
+
+        else:
+            commissions = Commission.objects.filter(user=self.request.user).exclude(
+                Q(stage="finished") | Q(stage="canceled"))
+            return commissions
+
+
 class CommsInProgressView(LoginRequiredMixin, View):
     login_url = reverse_lazy("login")
 
@@ -52,22 +70,6 @@ class CommsInProgressView(LoginRequiredMixin, View):
         else:
             comms_in_progress: Commission = request.user.commissions.exclude(
                 Q(stage="finished") | Q(stage="canceled")).order_by("-created_at")
-
-        stages_indexes = {
-            "waiting_confirmation": 0,
-            "waiting_deposit_payment": 1,
-            "sketch": 2,
-            "lineart": 3,
-            "flat_colour": 4,
-            "render": 5,
-            "waiting_full_payment": 6
-        }
-
-        for commission in comms_in_progress:
-            stage_index = stages_indexes[commission.stage]
-            final_stage_index = stages_indexes[commission.final_stage]
-            commission.stage_index = stage_index
-            commission.final_stage_index = final_stage_index
 
         context = {
             "commissions": comms_in_progress,

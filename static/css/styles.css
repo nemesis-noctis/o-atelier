@@ -1,8 +1,28 @@
-/* !
- * baguetteBox.js
- * @author  feimosi
- * @version 1.11.1
- * @url https://github.com/feimosi/baguetteBox.js */
+.loader {
+    margin-top: 66px;
+    width: 100%;
+    height: 8px;
+    background: linear-gradient(90deg, #b0cef6 33%, #6ba7f7 50%, #b2cef3 66%) #f2f2f2;
+    background-size: 300% 100%;
+    animation: loader 1s infinite linear;
+}
+
+@keyframes loader {
+    0% {
+        background-position: right
+    }
+}
+
+
+.htmx-indicator {
+    display: none !important;
+}
+
+
+.htmx-request.htmx-indicator {
+    display: block !important;
+}
+
 
 img:hover {
     box-shadow: 5px 5px 15px rgba(105, 167, 252, 0.36);
@@ -73,10 +93,6 @@ img:hover {
     height: 70px;
     border-bottom: 1px inset rgba(207, 226, 255, 0.08);
     background: rgb(255, 255, 255);
-}
-
-.navbar-collapse {
-    border-radius: 20px;
 }
 
 .commission-request-btn {

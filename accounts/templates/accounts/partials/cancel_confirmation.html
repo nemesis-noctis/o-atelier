@@ -1,31 +1,31 @@
 {% load i18n %}
-<div class="col ps-0">
-    <div class="mh-100" style="width: 100%;height: 100%;">
-        <h2 style="color: rgb(76,84,92);font-family: 'Abhaya Libre', serif;text-align: center;font-size: 22px;padding-top: 15px;padding-bottom: 10px;border-bottom: 1px solid var(--bs-dark-border-subtle);">
-            {% translate 'Pedido:' %} {{ commission.uuid }}
-        </h2>
-        <div style="text-align: right;"></div>
-        <div>
-            <div class="row gy-4 row-cols-1 justify-content-center">
-                <div class="col"
-                     style="background: #EDF5FE;border-radius: 18px;padding: 18px;color: rgb(76,84,92);text-align: center;font-size: 14px;border: 1px solid var(--bs-border-color);width: 960px;">
-                    <div class="row gy-1" style="margin-bottom: 12px;font-size: 18px;">
-                        <div class="col" style="padding-right: 24px;padding-left: 28px;text-align: right;">
-                            <button class="btn btn-primary" role="button"
-                                    hx-get="{% url "comms_in_progress" %}"
-                                    hx-trigger="click"
-                                    hx-target="#content"
-                                    hx-swap="innerHTML"
-                                    style="background: #6ba7f7;border-color: #6ba7f7;border-radius: 8px;font-size: 12px;padding: 4px 8px;">
-                                <i class="typcn typcn-arrow-back-outline"
-                                   style="margin-right: 4px;"></i>
-                                {% translate 'Voltar' %}
-                            </button>
-                        </div>
+
+<div class="mh-100" style="width: 100%;height: 100%;">
+    <h2 style="color: rgb(76,84,92);font-family: 'Abhaya Libre', serif;text-align: center;font-size: 22px;padding-top: 15px;padding-bottom: 10px;border-bottom: 1px solid var(--bs-dark-border-subtle);">
+        {% translate 'Pedido:' %} {{ commission.uuid }}
+    </h2>
+    <div style="text-align: right;"></div>
+    <div>
+        <div class="row gy-4 row-cols-1 justify-content-center">
+            <div class="col"
+                 style="background: #EDF5FE;border-radius: 18px;padding: 18px;color: rgb(76,84,92);text-align: center;font-size: 14px;border: 1px solid var(--bs-border-color);width: 960px;">
+                <div class="row gy-1" style="margin-bottom: 12px;font-size: 18px;">
+                    <div class="col" style="padding-right: 24px;padding-left: 28px;text-align: right;">
+                        <button class="btn btn-primary" role="button"
+                                hx-get="{% url "comms_in_progress" %}"
+                                hx-trigger="click"
+                                hx-target="#content"
+                                hx-swap="innerHTML"
+                                style="background: #6ba7f7;border-color: #6ba7f7;border-radius: 8px;font-size: 12px;padding: 4px 8px;">
+                            <i class="typcn typcn-arrow-back-outline"
+                               style="margin-right: 4px;"></i>
+                            {% translate 'Voltar' %}
+                        </button>
                     </div>
-                    <div class="card mw-100"
-                         style="border-radius: 30px;margin-right: auto;margin-left: auto;padding: 0px 30px;border-color: var(--bs-focus-ring-color);margin-bottom: 12px;">
-                        <div class="card-body" style="text-align: center;">
+                </div>
+                <div class="card mw-100"
+                     style="border-radius: 30px;margin-right: auto;margin-left: auto;padding: 0px 30px;border-color: var(--bs-focus-ring-color);margin-bottom: 12px;">
+                    <div class="card-body" style="text-align: center;">
                             <span class="d-block"
                                   style="margin-bottom: 12px;color: rgb(76,84,92);font-size: 24px;font-family: 'Abhaya Libre', serif;">
                                 {% if commission.stage == "waiting_confirmation" and user.is_superuser %}
@@ -35,74 +35,74 @@
                                 {% endif %}
 
                             </span>
-                            <div class="row row-cols-2 justify-content-end" style="margin-bottom: 12px;">
-                                <div class="col">
+                        <div class="row row-cols-2 justify-content-end" style="margin-bottom: 12px;">
+                            <div class="col">
                                     <span class="d-inline-block" style="font-size: 12px;text-align: left;">
                                         {% translate 'Pedido:' %} {{ commission.uuid }}
                                     </span>
-                                </div>
-                                {% if user.is_superuser %}
-                                    <div class="col">
+                            </div>
+                            {% if user.is_superuser %}
+                                <div class="col">
                                     <span class="d-inline-block" style="font-size: 12px;text-align: left;">
                                         {% translate 'Cliente:' %} {{ commission.user }}
                                     </span>
-                                    </div>
-                                {% endif %}
-                                <div class="col">
+                                </div>
+                            {% endif %}
+                            <div class="col">
                                     <span class="d-inline-block"
                                           style="color: #6ba7f7;font-size: 12px;text-align: left;">
                                         {% translate 'Realizado em:' %} {{ commission.created_at }}
                                     </span>
-                                </div>
-                                <div class="col">
+                            </div>
+                            <div class="col">
                                     <span class="d-inline-block"
                                           style="font-size: 12px;color: #6ba7f7;text-align: left;">
                                         {% translate 'Preço:' %} BRL: {{ commission.price_brl }}$ | USD: {{ commission.price_usd }}$
                                     </span>
-                                </div>
                             </div>
-                            <form hx-post="{% url 'cancel_comm' uuid=commission.uuid %}"
-                                  hx-trigger="submit"
-                                  hx-target="#content"
-                                  hx-swap="innerHTML"
-                                  novalidate>
-                                {% csrf_token %}
-                                {% if user.is_superuser %}
-                                    <span class="d-block" style="margin-bottom: 28px;color: #69A7FC;">
+                        </div>
+                        <form hx-post="{% url 'cancel_comm' uuid=commission.uuid %}"
+                              hx-trigger="submit"
+                              hx-target="#content"
+                              hx-swap="innerHTML"
+                              novalidate>
+                            {% csrf_token %}
+                            {% if user.is_superuser %}
+                                <span class="d-block" style="margin-bottom: 28px;color: #69A7FC;">
                                     {% translate 'Adicione uma mensagem para o cliente:' %}
                                 </span>
-                                    {{ form.reason }}
-                                    {{ form.errors.reason }}
-                                {% else %}
-                                    <span class="d-block" style="margin-bottom: 28px;color: #69A7FC;">
+                                {{ form.reason }}
+                                {{ form.errors.reason }}
+                            {% else %}
+                                <span class="d-block" style="margin-bottom: 28px;color: #69A7FC;">
                                     {% translate 'Caso você tenha realizado o pagamento da garantia, o valor será retido como compensação.' %}
                                  </span>
-                                {% endif %}
-                                <div class="row justify-content-center" style="margin-top: 12px;">
-                                    <div class="col-auto">
-                                        <button class="btn btn-danger"
-                                                type="submit"
-                                                style="border-radius: 8px;padding: 4px 8px;margin-right: 2px;color: #b70303;background: white;font-size: 13px;border-color: #ff0000;">
-                                            <svg class="bi bi-ban" xmlns="http://www.w3.org/2000/svg" width="1em"
-                                                 height="1em"
-                                                 fill="currentColor" viewBox="0 0 16 16"
-                                                 style="width: 20px;height: 20px;margin-bottom: 2px;margin-right: 8px;">
-                                                <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"></path>
-                                            </svg>
-                                            {% if commission.stage == "waiting_confirmation" and user.is_superuser %}
-                                                {% translate 'Recusar Pedido' %}
-                                            {% else %}
-                                                {% translate 'Cancelar Pedido' %}
-                                            {% endif %}
+                            {% endif %}
+                            <div class="row justify-content-center" style="margin-top: 12px;">
+                                <div class="col-auto">
+                                    <button class="btn btn-danger"
+                                            type="submit"
+                                            style="border-radius: 8px;padding: 4px 8px;margin-right: 2px;color: #b70303;background: white;font-size: 13px;border-color: #ff0000;">
+                                        <svg class="bi bi-ban" xmlns="http://www.w3.org/2000/svg" width="1em"
+                                             height="1em"
+                                             fill="currentColor" viewBox="0 0 16 16"
+                                             style="width: 20px;height: 20px;margin-bottom: 2px;margin-right: 8px;">
+                                            <path d="M15 8a6.97 6.97 0 0 0-1.71-4.584l-9.874 9.875A7 7 0 0 0 15 8M2.71 12.584l9.874-9.875a7 7 0 0 0-9.874 9.874ZM16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0"></path>
+                                        </svg>
+                                        {% if commission.stage == "waiting_confirmation" and user.is_superuser %}
+                                            {% translate 'Recusar Pedido' %}
+                                        {% else %}
+                                            {% translate 'Cancelar Pedido' %}
+                                        {% endif %}
 
-                                        </button>
-                                    </div>
+                                    </button>
                                 </div>
-                            </form>
-                        </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
