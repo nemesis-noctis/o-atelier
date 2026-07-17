@@ -7,6 +7,7 @@ from django.core.validators import MinValueValidator
 from django.forms import ModelForm
 from django.utils.translation import gettext as _
 
+from chat.models import Message
 from commissions.models import ProgressImage
 from core.utils import set_form_field_classes
 from landing.models import LandingPage, GalleryTag, GalleryImage
@@ -129,3 +130,12 @@ class NextStageForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         set_form_field_classes(self.fields.values())
+
+
+class SendMessageForm(ModelForm):
+    class Meta:
+        model = Message
+        fields = ["content", "image"]
+        widgets = {
+            "image": forms.FileInput(attrs={"style": "display:none"})
+        }

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'commissions.apps.CommissionsConfig',
     'core.apps.CoreConfig',
     'accounts.apps.AccountsConfig',
+    'chat.apps.ChatConfig',
     'django_cleanup.apps.CleanupConfig',
     'channels'
 ]
