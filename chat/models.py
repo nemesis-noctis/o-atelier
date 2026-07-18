@@ -15,5 +15,3 @@ class Message(models.Model):
     content = models.TextField(max_length=600)
     created_at = models.DateTimeField(auto_now_add=True)
     is_event = models.BooleanField()
-
-    # TODO: Atualizar diagrama ER
