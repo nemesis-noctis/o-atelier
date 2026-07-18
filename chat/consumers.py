@@ -34,7 +34,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             content=content,
             user=self.user,
             commission=self.commission,
-            is_event=False
         )
 
         event = {

@@ -34,11 +34,11 @@
                           _="on htmx:wsAfterSend call me.reset()"
                           enctype="multipart/form-data">
                         {% csrf_token %}
-                        <div class="position-relative">
+                        <div id="message-input-area" class="position-relative">
                             <textarea class="form-control-sm align-middle" name="content" maxlength="600"
                                       style="border-style: solid;border-color: #6ba7f7;border-radius: 18px;height: auto;max-height: 100px;width: 100%;resize: none;min-height: 80px;padding-right: 68px;padding-left: 24px;padding-top: 8px;padding-bottom: 8px;"
                                       placeholder="Digite sua mensagem."></textarea>
-                            {{ form.image }}
+                            {{ image_form.image }}
                             <label class="btn btn-primary position-absolute align-bottom" type="button" for="id_image"
                                    style="background: transparent;color: #6ba7f7;height: auto;font-size: 14px;padding: 2px 8px;border-radius: 18px;right: 52px;bottom: 1px;border-width: 0px;border-color: #6ba7f7;">
                                 <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 24 24"

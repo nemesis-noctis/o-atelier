@@ -57,29 +57,8 @@ class CommChat(LoginRequiredMixin, View):
         context = {
             "all_messages": messages,
             "commission": commission,
-            "form": forms.SendMessageForm()
-        }
-        return render(request, "accounts/partials/comm_chat.html", context=context)
-
-    def post(self, request, uuid):
-        form = forms.SendMessageForm(request.POST, request.FILES)
-        if form.is_valid():
-            if request.user.is_superuser:
-                commission = Commission.objects.get(uuid=uuid)
-            else:
-                commission = request.user.commissions.get(uuid=uuid)
-            message = form.save(commit=False)
-            message.user = request.user
-            message.commission = commission
-            message.is_event = False
-            message.save()
-
-        messages = commission.messages.all().order_by("-created_at")
-
-        context = {
-            "all_messages": messages,
-            "commission": commission,
-            "form": forms.SendMessageForm()
+            "form": forms.SendMessageForm(),
+            "image_form": forms.MessageImageForm()
         }
         return render(request, "accounts/partials/comm_chat.html", context=context)
 

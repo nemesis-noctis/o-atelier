@@ -23,5 +23,6 @@ urlpatterns = [
                   path('admin/', admin.site.urls),
                   path("", include("landing.urls")),
                   path("accounts/", include("accounts.urls")),
-                  path("commissions/", include("commissions.urls"))
+                  path("commissions/", include("commissions.urls")),
+                  path("chat/", include("chat.urls"))
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
