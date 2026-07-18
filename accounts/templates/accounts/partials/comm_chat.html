@@ -19,95 +19,19 @@
                            style="margin-right: 4px;"></i>
                         {% translate 'Voltar' %}
                     </button>
-                    <div id="chat" class="d-flex overflow-y-auto flex-column-reverse"
+                    <div id="chat"
+                         class="d-flex overflow-y-auto flex-column-reverse"
                          style="height: 660px; max-height: 57.5vh">
 
                         {% for message in all_messages %}
-                            {% if not message.user %}
-                                <div style="text-align: left;margin-bottom: 12px;">
-                                    <hr/>
-                                    <h5 style="margin-bottom: 0;text-align: center;font-family: 'Abhaya Libre', serif;color: rgb(76,84,92);font-size: 26px;margin-left: 8px;">
-                                        {% translate 'Etapa:' %} {{ message.content }}
-                                    </h5>
-                                    <span class="d-block"
-                                          style="color: #6ba7f7;font-size: 12px;font-family: arial;text-align: center;margin-bottom: 8px;margin-left: 8px;">
-                                        {{ message.created_at }}
-                                    </span>
-                                    {% if message.image %}
-                                        <div class="mw-100" style="width: 400px;height: auto;margin: 0 auto;">
-                                            <img class="img-fluid"
-                                                 width="940" height="627"
-                                                 style="width: 100%;height: 100%;border-radius: 30px;object-fit: cover;"
-                                                 src="{{ message.image.image.url }}"/></div>
-                                        <span class="d-block"
-                                              style="color: #6ba7f7;font-size: 12px;text-align: center;margin-left: 8px;">
-                                        {% translate 'Imagem Final da Etapa Anterior' %}
-                                    </span>
-                                    {% endif %}
-                                    <hr/>
-                                </div>
-
-                            {% elif message.user == user %}
-                                <div style="margin-bottom: 12px;">
-                                    <div class="d-inline-block"
-                                         style="background: white;padding: 12px 20px;border-radius: 18px;max-width: 60%;">
-                                        {% if message.image %}
-                                            <a href="{{ message.image.url }}">
-                                                <div class="mw-100"
-                                                     style="width: 300px;height: auto;margin: 12px auto;">
-                                                    <img class="img-fluid"
-                                                         width="940" height="627"
-                                                         style="width: 100%;height: 100%;border-radius: 30px;object-fit: cover;"
-                                                         src="{{ message.image.url }}"/>
-                                                </div>
-                                            </a>
-                                        {% endif %}
-                                        <p class="text-break" style="margin: 0;">
-                                            {{ message.content }}
-                                        </p>
-                                        <span class="d-block"
-                                              style="color: #6ba7f7;font-size: 12px;margin-left: 8px;text-align: left;">
-                                            {% translate 'Por:' %} {{ message.user }}
-                                        </span>
-                                    </div>
-                                    <span class="d-block"
-                                          style="color: #6ba7f7;font-size: 12px;margin-right: 8px;margin-top: 4px;">
-                                        {% translate 'Enviado em:' %} {{ message.created_at }}
-                                    </span>
-                                </div>
-                            {% else %}
-                                <div style="text-align: left;margin-bottom: 12px;">
-                                    <div class="d-inline-block"
-                                         style="background: #6ba7f7;padding: 12px 20px;border-radius: 18px;max-width: 60%;">
-                                        {% if message.image %}
-                                            <div class="mw-100" style="width: 300px;height: auto;margin: 12px auto;">
-                                                <img class="img-fluid"
-                                                     width="940" height="627"
-                                                     style="width: 100%;height: 100%;border-radius: 30px;object-fit: cover;"
-                                                     src="{{ message.image.url }}"/>
-                                            </div>
-                                        {% endif %}
-                                        <p class="text-break" style="margin: 0;color: white;">
-                                            {{ message.content }}
-                                        </p>
-                                        <span class="d-block"
-                                              style="color: white;font-size: 12px;margin-left: 8px;text-align: right;">
-                                            {% translate 'Por:' %} {{ message.user }}
-                                        </span>
-                                    </div>
-                                    <span class="d-block"
-                                          style="color: #6ba7f7;font-size: 12px;margin-left: 8px;margin-top: 4px;">
-                                        {% translate 'Enviado em:' %} {{ message.created_at }}
-                                    </span>
-                                </div>
-                            {% endif %}
+                            {% include 'accounts/partials/message.html' %}
                         {% endfor %}
 
                     </div>
-                    <form hx-post="{% url 'comm_chat' uuid=commission.uuid %}"
-                          hx-trigger="submit"
-                          hx-target="#content"
-                          hx-swap="innerHTML"
+                    <form hx-ext="ws"
+                          ws-connect="/ws/comm_chat/{{ commission.uuid }}"
+                          ws-send
+                          _="on htmx:wsAfterSend call me.reset()"
                           enctype="multipart/form-data">
                         {% csrf_token %}
                         <div class="position-relative">
