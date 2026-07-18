@@ -146,7 +146,8 @@ class MessageImageForm(ModelForm):
         widgets = {
             "image": forms.FileInput(attrs={"style": "display:none",
                                             "hx-trigger": "change",
-                                            "hx-encoding": "multipart/form-data"})
+                                            "hx-encoding": "multipart/form-data",
+                                            "_": "on click remove #upload_preview reset me"})
         }
 
     def __init__(self, *args, **kwargs):

@@ -3,8 +3,9 @@ import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 from django.template.loader import render_to_string
 
+from accounts.forms import SendMessageForm
 from accounts.models import CustomUser
-from chat.models import Message
+from chat.models import Message, MessageImage
 from commissions.models import Commission
 
 
@@ -30,10 +31,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def receive(self, text_data, bytes_data=None):
         text_data_json = json.loads(text_data)
         content = text_data_json["content"]
+        image_uuid = text_data_json.get("image_uuid", None)
+        form = SendMessageForm(text_data_json)
+
+        if (not form.is_valid()) or (content.strip() == "" and image_uuid is None):
+            return
+
+        message_image = await MessageImage.objects.aget(uuid=image_uuid) if image_uuid else None
         message = await Message.objects.acreate(
             content=content,
             user=self.user,
             commission=self.commission,
+            image=message_image
         )
 
         event = {
@@ -45,7 +54,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def message_handler(self, event):
         message_uuid = event["message_uuid"]
-        message = await Message.objects.select_related("user").aget(uuid=message_uuid)
+        message = await Message.objects.select_related("user", "image").aget(uuid=message_uuid)
         context = {"message": message, "user": self.user}
         html = render_to_string("accounts/partials/message_wrapper.html", context=context)
         await self.send(text_data=html)

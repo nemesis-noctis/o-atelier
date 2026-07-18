@@ -19,5 +19,5 @@ class Message(models.Model):
     commission = models.ForeignKey(Commission, on_delete=models.CASCADE, related_name="messages")
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True)
     image = models.ForeignKey(MessageImage, on_delete=models.CASCADE, null=True, blank=True)
-    content = models.TextField(max_length=600)
+    content = models.TextField(max_length=600, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

@@ -12,5 +12,5 @@ def receive_image_upload(request):
         if form.is_valid():
             image: MessageImage = form.save()
             return render(request, "chat/partials/img_upload_preview_and_id.html", context={"image": image})
-        
+
     return HttpResponse()

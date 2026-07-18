@@ -1,8 +1,8 @@
 <div id="message-input-area" hx-swap-oob="afterbegin">
     <div id="upload_preview" class="position-absolute" style="right: 10px;bottom: 90px;width: 100px;height: auto;">
-        <div class="position-relative">
+        <div class="position-relative" style="border: 2px solid #6ba7f7;border-radius: 8px;">
             <img class="img-fluid"
-                 width="940" height="627" style="width: 100%;height: 100%;object-fit: cover;"
+                 width="940" height="627" style="width: 100%;height: 100%;object-fit: cover; border-radius: 6px;"
                  src="{{ image.image.url }}"/>
             <button class="btn btn-danger position-absolute" type="button"
                     _="on click remove #upload_preview reset #id_image"
