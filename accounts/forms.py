@@ -135,7 +135,4 @@ class NextStageForm(ModelForm):
 class SendMessageForm(ModelForm):
     class Meta:
         model = Message
-        fields = ["content", "image"]
-        widgets = {
-            "image": forms.FileInput(attrs={"style": "display:none"})
-        }
+        fields = ["content"]
