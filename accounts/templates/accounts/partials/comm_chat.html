@@ -25,13 +25,20 @@
 
                         {% for message in all_messages %}
                             {% include 'accounts/partials/message.html' %}
+                        {% empty %}
+                            <div id="messages-not-found" class="col">
+                                <h2 class="hero-h mx-auto"
+                                    style="text-align: center; font-size: 26px; margin-top: 20px">
+                                    {% translate 'Nenhuma mensagem encontrada.' %}
+                                </h2>
+                            </div>
                         {% endfor %}
 
                     </div>
                     <form hx-ext="ws"
                           ws-connect="/ws/comm_chat/{{ commission.uuid }}"
                           ws-send
-                          _="on htmx:wsAfterSend call me.reset() remove #upload_preview reset #id_image"
+                          _="on htmx:wsAfterSend call me.reset() if #upload_preview exists then remove #upload_preview reset #id_image"
                           enctype="multipart/form-data">
                         {% csrf_token %}
                         <div id="message-input-area" class="position-relative">
@@ -48,6 +55,7 @@
                                 </svg>
                             </label>
                             <button class="btn btn-primary position-absolute align-bottom" type="submit"
+                                    _="on click if #messages-not-found exists then remove #messages-not-found"
                                     style="background: transparent;color: #6ba7f7;height: auto;font-size: 16px;padding: 4px 8px;border-radius: 18px;right: 14px;bottom: 1px;border-width: 0px;border-color: #6ba7f7;">
                                 <i class="fa fa-send" style="font-size: 20px;"></i>
                             </button>
