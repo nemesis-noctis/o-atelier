@@ -1,6 +1,7 @@
 from django.db import models
 
 from accounts.models import CustomUser
+from commissions.models import Commission
 
 
 # Create your models here.

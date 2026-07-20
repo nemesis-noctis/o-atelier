@@ -5,8 +5,10 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, Pass
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.validators import MinValueValidator
 from django.forms import ModelForm
+from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
 
+from chat.models import Message, MessageImage
 from commissions.models import ProgressImage
 from core.utils import set_form_field_classes
 from landing.models import LandingPage, GalleryTag, GalleryImage
@@ -129,3 +131,25 @@ class NextStageForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         set_form_field_classes(self.fields.values())
+
+
+class SendMessageForm(ModelForm):
+    class Meta:
+        model = Message
+        fields = ["content"]
+
+
+class MessageImageForm(ModelForm):
+    class Meta:
+        model = MessageImage
+        fields = ["image"]
+        widgets = {
+            "image": forms.FileInput(attrs={"style": "display:none",
+                                            "hx-trigger": "change",
+                                            "hx-encoding": "multipart/form-data",
+                                            "_": "on click remove #upload_preview reset me"})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["image"].widget.attrs["hx-post"] = reverse_lazy("image_receiver")

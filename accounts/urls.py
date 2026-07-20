@@ -28,5 +28,6 @@ urlpatterns = [
     path("cancel-comm/<uuid:uuid>", views.CancelCommissionView.as_view(), name="cancel_comm"),
     path("accept-comm/<uuid:uuid>", views.AcceptCommissionView.as_view(), name="accept_comm"),
     path("comm-next-stage/<uuid:uuid>", views.CommissionNextStageView.as_view(), name="comm_next_stage"),
-    path("comm-detail/<uuid:pk>", views.CommsInProgressDetailsView.as_view(), name="comm_detail")
+    path("comm-detail/<uuid:pk>", views.CommsInProgressDetailsView.as_view(), name="comm_detail"),
+    path("chat/<uuid:uuid>", views.CommChat.as_view(), name="comm_chat")
 ]

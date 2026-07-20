@@ -21,6 +21,7 @@ from dotenv import load_dotenv
 
 import accounts.forms as forms
 from accounts.models import CustomUser
+from chat.models import Message, MessageImage
 from commissions.models import Commission, ProgressImage
 from core.models import Notification
 from core.notifications import render_notification, send_notification_to_client, send_notification_to_artist
@@ -41,6 +42,26 @@ def user_profile(request) -> HttpResponse:
 
     return render(request, "accounts/profile/profile.html",
                   context={"landing_data": get_landing_data(), "new_notifications": new_notifications})
+
+
+class CommChat(LoginRequiredMixin, View):
+    login_url = reverse_lazy("login")
+
+    def get(self, request, uuid) -> HttpResponse:
+        if request.user.is_superuser:
+            commission = Commission.objects.get(uuid=uuid)
+        else:
+            commission = request.user.commissions.get(uuid=uuid)
+
+        messages = commission.messages.all().order_by("-created_at")
+
+        context = {
+            "all_messages": messages,
+            "commission": commission,
+            "form": forms.SendMessageForm(),
+            "image_form": forms.MessageImageForm()
+        }
+        return render(request, "accounts/partials/comm_chat.html", context=context)
 
 
 class CommsInProgressDetailsView(LoginRequiredMixin, DetailView):
@@ -123,6 +144,11 @@ class CommissionNextStageView(LoginRequiredMixin, UserPassesTestMixin, View):
             instance.commission = commission
             instance.stage = previous_stage
             instance.save()
+
+            sys_message_image = MessageImage(image=instance.image)
+            sys_message_image.save()
+            sys_message = Message(content=_(commission.get_stage_display()), commission=commission,
+                                  image=sys_message_image).save()
 
             notification_key = "comm_update_final" if commission.stage == "waiting_full_payment" else "comm_update"
             send_notification_to_client(commission.user, notification_key, "MESSAGE",

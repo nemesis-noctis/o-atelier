@@ -33,6 +33,7 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,7 +44,9 @@ INSTALLED_APPS = [
     'commissions.apps.CommissionsConfig',
     'core.apps.CoreConfig',
     'accounts.apps.AccountsConfig',
-    'django_cleanup.apps.CleanupConfig'
+    'chat.apps.ChatConfig',
+    'django_cleanup.apps.CleanupConfig',
+    'channels'
 ]
 
 MIDDLEWARE = [
@@ -75,6 +78,13 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'o_atelier.wsgi.application'
+ASGI_APPLICATION = 'o_atelier.asgi.application'
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    }
+}
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
