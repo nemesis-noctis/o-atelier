@@ -44,6 +44,24 @@ def user_profile(request) -> HttpResponse:
                   context={"landing_data": get_landing_data(), "new_notifications": new_notifications})
 
 
+@login_required
+def payment(request, uuid, currency) -> HttpResponse:
+    commission: Commission = request.user.commissions.get(uuid=uuid)
+    if not commission.stage in ["waiting_deposit_payment", "waiting_full_payment"]:
+        return redirect("comms_in_progress")
+    
+    return render(request, "accounts/partials/payment.html", context={"commission": commission, "currency": currency})
+
+
+@login_required
+def payment_currency_choice(request, uuid) -> HttpResponse:
+    commission: Commission = request.user.commissions.get(uuid=uuid)
+    if not commission.stage in ["waiting_deposit_payment", "waiting_full_payment"]:
+        return redirect("comms_in_progress")
+
+    return render(request, "accounts/partials/payment_currency_choice.html", context={"commission": commission})
+
+
 class CommChat(LoginRequiredMixin, View):
     login_url = reverse_lazy("login")
 
