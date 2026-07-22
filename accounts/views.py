@@ -1,5 +1,7 @@
+import json
 import os
 
+import mercadopago
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as login_user, logout as logout_user, authenticate
@@ -59,6 +61,42 @@ class PaymentView(LoginRequiredMixin, View):
         context = {"commission": commission,
                    "currency": currency,
                    "amount": amount}
+        return render(request, "accounts/partials/payment.html", context=context)
+
+    def post(self, request, uuid, currency):
+        commission: Commission = request.user.commissions.get(uuid=uuid)
+
+        if (not commission.stage in ["waiting_deposit_payment", "waiting_full_payment"]) or (
+                currency not in ["brl", "usd"]):
+            return redirect("comms_in_progress")
+
+        sdk = mercadopago.SDK(os.getenv("MP_ACCESS_TOKEN"))
+
+        request_options = mercadopago.config.RequestOptions()
+        request_options.custom_headers = {
+            'x-idempotency-key': f"comm-{commission.uuid}-deposit" if commission.stage == "waiting_deposit_payment" else f"comm-{commission.uuid}-full"
+        }
+
+        data = json.loads(request.body)
+        print(data)
+        amount = round(commission.price_brl / 2, 2) if currency == "brl" else round(commission.price_usd / 2, 2)
+        payment_data = {
+            "transaction_amount": amount,
+            "payment_method_id": "pix",
+            "payer": {
+                "email": json.loads(data.get("payer")).get("email"),
+            },
+        }
+
+        payment_response = sdk.payment().create(payment_data, request_options)
+        payment = payment_response["response"]
+
+        print(payment_data)
+        print(payment)
+        context = {"commission": commission,
+                   "currency": currency,
+                   "amount": amount,
+                   "payment": payment}
         return render(request, "accounts/partials/payment.html", context=context)
 
 
