@@ -24,11 +24,16 @@
                     </div>
                 </div>
                 <div class="card mw-100"
-                     style="border-radius: 30px;margin-right: auto;margin-left: auto;padding: 0px 30px;border-color: var(--bs-focus-ring-color);margin-bottom: 12px;">
+                     style="border-radius: 30px;margin-right: auto;margin-left: auto;border-color: var(--bs-focus-ring-color);margin-bottom: 12px;">
                     <div class="card-body align-content-center" style="text-align: center;">
                         {% include 'accounts/includes/comm_heading.html' %}
                         {% if currency == "brl" %}
-                            {% include 'accounts/includes/mercado_pago_snippet.html' %}
+                            <div class="mw-100" style="margin: 0 auto; width: 400px">
+                                {% include 'accounts/includes/mercado_pago_snippet.html' %}
+                                <span style="font-size: 12px; color: #69a7fc">
+                                    {% translate 'O pagamento é realizado através do Mercado Pago SDK, nenhum dado inserido é armazenado no processo.' %}
+                                </span>
+                            </div>
                         {% endif %}
                     </div>
                 </div>

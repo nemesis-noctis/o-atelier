@@ -44,13 +44,22 @@ def user_profile(request) -> HttpResponse:
                   context={"landing_data": get_landing_data(), "new_notifications": new_notifications})
 
 
-@login_required
-def payment(request, uuid, currency) -> HttpResponse:
-    commission: Commission = request.user.commissions.get(uuid=uuid)
-    if not commission.stage in ["waiting_deposit_payment", "waiting_full_payment"]:
-        return redirect("comms_in_progress")
-    
-    return render(request, "accounts/partials/payment.html", context={"commission": commission, "currency": currency})
+class PaymentView(LoginRequiredMixin, View):
+    login_url = reverse_lazy("login")
+
+    def get(self, request, uuid, currency: str) -> HttpResponseRedirect | HttpResponse:
+        commission: Commission = request.user.commissions.get(uuid=uuid)
+
+        if (not commission.stage in ["waiting_deposit_payment", "waiting_full_payment"]) or (
+                currency not in ["brl", "usd"]):
+            return redirect("comms_in_progress")
+
+        amount = round(commission.price_brl / 2, 2) if currency == "brl" else round(commission.price_usd / 2, 2)
+
+        context = {"commission": commission,
+                   "currency": currency,
+                   "amount": amount}
+        return render(request, "accounts/partials/payment.html", context=context)
 
 
 @login_required
