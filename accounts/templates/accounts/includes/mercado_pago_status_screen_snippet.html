@@ -6,7 +6,10 @@
         var settings = {
             initialization: {
                 paymentId: '{{ payment.id }}',
-                // id do pagamento a ser mostrado
+                additionalInfo: {
+                    externalResourceURL: "{{ payment.three_ds_info.external_resource_url }}",
+                    creq: "{{ payment.three_ds_info.creq }}",
+                },
             },
             customization: {
                 visual: {

@@ -80,13 +80,31 @@ class PaymentView(LoginRequiredMixin, View):
         data = json.loads(request.body)
         print(data)
         amount = round(commission.price_brl / 2, 2) if currency == "brl" else round(commission.price_usd / 2, 2)
-        payment_data = {
-            "transaction_amount": amount,
-            "payment_method_id": "pix",
-            "payer": {
-                "email": json.loads(data.get("payer")).get("email"),
-            },
-        }
+
+        if data["payment_method_id"] == "pix":
+            payment_data = {
+                "transaction_amount": amount,
+                "payment_method_id": data.get("payment_method_id"),
+                "payer": {
+                    "email": json.loads(data.get("payer")).get("email"),
+                },
+            }
+        else:
+            payment_data = {
+                "three_d_secure_mode": 'optional',
+                "transaction_amount": amount,
+                "token": data.get("token"),
+                "description": data.get("description"),
+                "installments": int(data.get("installments")),
+                "payment_method_id": data.get("payment_method_id"),
+                "payer": {
+                    "email": json.loads(data.get("payer")).get("email"),
+                    "identification": {
+                        "type": json.loads(data.get("payer")).get("identification").get("type"),
+                        "number": json.loads(data.get("payer")).get("identification").get("number")
+                    },
+                },
+            }
 
         payment_response = sdk.payment().create(payment_data, request_options)
         payment = payment_response["response"]
