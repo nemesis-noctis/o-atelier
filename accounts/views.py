@@ -85,6 +85,7 @@ class PaymentView(LoginRequiredMixin, View):
             payment_data = {
                 "transaction_amount": amount,
                 "payment_method_id": data.get("payment_method_id"),
+                "external_reference": f"comm-{commission.uuid}-deposit" if commission.stage == "waiting_deposit_payment" else f"comm-{commission.uuid}-full",
                 "payer": {
                     "email": json.loads(data.get("payer")).get("email"),
                 },
@@ -97,6 +98,7 @@ class PaymentView(LoginRequiredMixin, View):
                 "description": data.get("description"),
                 "installments": int(data.get("installments")),
                 "payment_method_id": data.get("payment_method_id"),
+                "external_reference": f"comm-{commission.uuid}-deposit" if commission.stage == "waiting_deposit_payment" else f"comm-{commission.uuid}-full",
                 "payer": {
                     "email": json.loads(data.get("payer")).get("email"),
                     "identification": {
@@ -115,6 +117,8 @@ class PaymentView(LoginRequiredMixin, View):
                    "currency": currency,
                    "amount": amount,
                    "payment": payment}
+
+        sdk.payment().get()
         return render(request, "accounts/partials/payment.html", context=context)
 
 

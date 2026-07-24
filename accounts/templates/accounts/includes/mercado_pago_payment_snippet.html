@@ -51,6 +51,7 @@
                     // callback chamado ao clicar no botão de submissão dos dados
                     return new Promise((resolve, reject) => {
                         htmx.ajax("POST", "{% url 'payment' uuid=commission.uuid currency='brl' %}", {
+                            source: document.getElementById("payment-card"),
                             target: "#content",
                             swap: "innerHTML",
                             headers: {

@@ -32,7 +32,7 @@
     <script src="https://cdn.jsdelivr.net/npm/htmx-ext-ws@2.0.4"
             integrity="sha384-1RwI/nvUSrMRuNj7hX1+27J8XDdCoSLf0EjEyF69nacuWyiJYoQ/j39RT1mSnd2G"
             crossorigin="anonymous"></script>
-    <script src="https://unpkg.com/htmx.org@2.0.10/dist/ext/json-enc.js"></script>
+    <script src="https://unpkg.com/htmx-ext-json-enc@2.0.1/json-enc.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/hyperscript.org@0.9.93/dist/_hyperscript.min.js"
             integrity="sha384-/6HsqTiz02YfFBUhzTwlH/yxe68DhfnkdHiWytM3nxAzs/yvG+3FZY0f4KLnNoov"
             crossorigin="anonymous"></script>
@@ -72,7 +72,7 @@
     <link rel="stylesheet" href="{% static "css/scroll-to-top.css" %}">
 </head>
 
-<body class="position-relative" hx-indicator="#global-loader" hx-ext="json-enc" style="background: #EDF5FE;">
+<body class="position-relative" hx-indicator="#global-loader" style="background: #EDF5FE;">
 {% block content %}
 
 {% endblock %}

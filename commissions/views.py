@@ -7,6 +7,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 
 from core.notifications import send_notification_to_artist, send_notification_to_client
@@ -37,6 +38,12 @@ def set_required_fields_based_on_category(form: CommissionForm, category: str) -
 
 
 # Create your views here.
+@csrf_exempt
+def commission_payment_webhook_receiver(request):
+    print("webhook received")
+    return HttpResponse(200)
+
+
 def commission_choice(request) -> HttpResponse:
     return render(request, "commissions/comms_choice.html", context={"landing_data": get_landing_data()})
 
