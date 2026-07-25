@@ -16,6 +16,7 @@ from django.db.models import QuerySet
 from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views import View
 from django.views.generic import DetailView
@@ -57,7 +58,6 @@ class PaymentView(LoginRequiredMixin, View):
             return redirect("comms_in_progress")
 
         amount = round(commission.price_brl / 2, 2) if currency == "brl" else round(commission.price_usd / 2, 2)
-
         context = {"commission": commission,
                    "currency": currency,
                    "amount": amount}
@@ -71,14 +71,12 @@ class PaymentView(LoginRequiredMixin, View):
             return redirect("comms_in_progress")
 
         sdk = mercadopago.SDK(os.getenv("MP_ACCESS_TOKEN"))
-
         request_options = mercadopago.config.RequestOptions()
         request_options.custom_headers = {
             'x-idempotency-key': f"comm-{commission.uuid}-deposit" if commission.stage == "waiting_deposit_payment" else f"comm-{commission.uuid}-full"
         }
 
         data = json.loads(request.body)
-        print(data)
         amount = round(commission.price_brl / 2, 2) if currency == "brl" else round(commission.price_usd / 2, 2)
 
         if data["payment_method_id"] == "pix":
@@ -110,15 +108,10 @@ class PaymentView(LoginRequiredMixin, View):
 
         payment_response = sdk.payment().create(payment_data, request_options)
         payment = payment_response["response"]
-
-        print(payment_data)
-        print(payment)
         context = {"commission": commission,
                    "currency": currency,
                    "amount": amount,
                    "payment": payment}
-
-        sdk.payment().get()
         return render(request, "accounts/partials/payment.html", context=context)
 
 
@@ -326,6 +319,7 @@ class CancelCommissionView(LoginRequiredMixin, View):
                 comm_to_cancel.stage = "canceled"
                 comm_to_cancel.progress_image.all().delete()
                 comm_to_cancel.reference_images.all().delete()
+                comm_to_cancel.finished_at = timezone.now()
                 comm_to_cancel.save()
                 cancellation_reason = form.cleaned_data["reason"]
 
@@ -346,6 +340,7 @@ class CancelCommissionView(LoginRequiredMixin, View):
             comm_to_cancel.stage = "canceled"
             comm_to_cancel.progress_image.all().delete()
             comm_to_cancel.reference_images.all().delete()
+            comm_to_cancel.finished_at = timezone.now()
             comm_to_cancel.save()
 
             send_notification_to_artist("comm_cancelation_artist", "ALERT",
