@@ -1,0 +1,49 @@
+<div id="statusScreenBrick_container"
+     _="on unload if window.statusScreenBrickController call window.statusScreenBrickController.unmount()"></div>
+
+<script>
+    var renderStatusScreenBrick = async (bricksBuilder) => {
+        var settings = {
+            initialization: {
+                paymentId: '{{ payment.id }}',
+                additionalInfo: {
+                    externalResourceURL: "{{ payment.three_ds_info.external_resource_url }}",
+                    creq: "{{ payment.three_ds_info.creq }}",
+                },
+            },
+            customization: {
+                visual: {
+                    style: {
+                        theme: "bootstrap",
+                        customVariables: {
+                            baseColor: "#6ba7f7",
+                            textPrimaryColor: "#6b7075",
+                            successColor: "#6ba7f7",
+                            borderRadiusMedium: "28px",
+                            fontSizeMedium: "10px",
+                            fontSizeLarge: "12px",
+                        },
+                    },
+                },
+            },
+            callbacks: {
+                onReady: () => {
+                    /*
+                      Callback chamado quando o Brick estiver pronto.
+                      Aqui você pode ocultar loadings do seu site, por exemplo.
+                    */
+                },
+                onError: (error) => {
+                    // callback chamado para todos os casos de erro do Brick
+                    console.error(error);
+                },
+            },
+        };
+        window.statusScreenBrickController = await bricksBuilder.create(
+            'statusScreen',
+            'statusScreenBrick_container',
+            settings,
+        );
+    };
+    renderStatusScreenBrick(bricksBuilder);
+</script>

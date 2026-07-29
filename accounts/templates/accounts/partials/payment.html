@@ -1,0 +1,53 @@
+{% load i18n %}
+
+<div class="mh-100" style="width: 100%;height: 100%;">
+    <h2 style="color: rgb(76,84,92);font-family: 'Abhaya Libre', serif;text-align: center;font-size: 22px;padding-top: 15px;padding-bottom: 10px;border-bottom: 1px solid var(--bs-dark-border-subtle);">
+        {% translate 'Pagamento do pedido:' %} {{ commission.uuid }}
+    </h2>
+    <div style="text-align: right;"></div>
+    <div style="height: 100%;">
+        <div class="row gy-4 row-cols-1 justify-content-center">
+            <div class="col"
+                 style="background: #EDF5FE;border-radius: 18px;padding: 18px;color: rgb(76,84,92);text-align: center;font-size: 14px;border: 1px solid var(--bs-border-color);width: 960px;">
+                <div class="row gy-1" style="margin-bottom: 12px;font-size: 18px;">
+                    <div class="col" style="padding-right: 24px;padding-left: 28px;text-align: right;">
+                        <button class="btn btn-primary" role="button"
+                                hx-get="{% url "comms_in_progress" %}"
+                                hx-trigger="click"
+                                hx-target="#content"
+                                hx-swap="innerHTML"
+                                style="background: #6ba7f7;border-color: #6ba7f7;border-radius: 8px;font-size: 12px;padding: 4px 8px;">
+                            <i class="typcn typcn-arrow-back-outline"
+                               style="margin-right: 4px;"></i>
+                            {% translate 'Voltar' %}
+                        </button>
+                    </div>
+                </div>
+                <div id="payment-card" class="card mw-100" hx-ext="json-enc"
+                     style="border-radius: 30px;margin-right: auto;margin-left: auto;border-color: var(--bs-focus-ring-color);margin-bottom: 12px;">
+                    <div class="card-body align-content-center" style="text-align: center;">
+
+                        {% if payment %}
+                            <div class="mw-100" style="margin: 0 auto; margin-top: 24px; width: 400px">
+                                {% include 'accounts/includes/mercado_pago_status_screen_snippet.html' %}
+                                <span style="font-size: 12px; color: #69a7fc">
+                                    {% translate 'O pagamento é realizado através do Mercado Pago SDK, nenhum dado inserido é armazenado no processo.' %}
+                                </span>
+                            </div>
+                        {% else %}
+                            {% include 'accounts/includes/comm_heading.html' %}
+                            {% if currency == "brl" %}
+                                <div class="mw-100" style="margin: 0 auto; width: 400px">
+                                    {% include 'accounts/includes/mercado_pago_payment_snippet.html' %}
+                                    <span style="font-size: 12px; color: #69a7fc">
+                                    {% translate 'O pagamento é realizado através do Mercado Pago SDK, nenhum dado inserido é armazenado no processo.' %}
+                                </span>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

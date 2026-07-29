@@ -29,6 +29,7 @@ SECRET_KEY = 'django-insecure-ymw-g5r#2dtbs*hybx!v%ra4$0fbn+ynx3)(uo-eab_-ppy(@x
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+CSRF_TRUSTED_ORIGINS = ["https://much-pauper-shredding.ngrok-free.dev", "http://127.0.0.1", "http://localhost"]
 
 # Application definition
 

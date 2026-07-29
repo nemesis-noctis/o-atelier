@@ -1,0 +1,67 @@
+{% load i18n %}
+
+<div class="mh-100" style="width: 100%;height: 100%;">
+    <h2 style="color: rgb(76,84,92);font-family: 'Abhaya Libre', serif;text-align: center;font-size: 22px;padding-top: 15px;padding-bottom: 10px;border-bottom: 1px solid var(--bs-dark-border-subtle);">
+        {% translate 'Pagamento do pedido:' %} {{ commission.uuid }}
+    </h2>
+    <div style="text-align: right;"></div>
+    <div style="height: 100%;">
+        <div class="row gy-4 row-cols-1 justify-content-center">
+            <div class="col"
+                 style="background: #EDF5FE;border-radius: 18px;padding: 18px;color: rgb(76,84,92);text-align: center;font-size: 14px;border: 1px solid var(--bs-border-color);width: 960px;">
+                <div class="row gy-1" style="margin-bottom: 12px;font-size: 18px;">
+                    <div class="col" style="padding-right: 24px;padding-left: 28px;text-align: right;">
+                        <button class="btn btn-primary" role="button"
+                                hx-get="{% url "comms_in_progress" %}"
+                                hx-trigger="click"
+                                hx-target="#content"
+                                hx-swap="innerHTML"
+                                style="background: #6ba7f7;border-color: #6ba7f7;border-radius: 8px;font-size: 12px;padding: 4px 8px;">
+                            <i class="typcn typcn-arrow-back-outline"
+                               style="margin-right: 4px;"></i>
+                            {% translate 'Voltar' %}
+                        </button>
+                    </div>
+                </div>
+                <div class="card mw-100"
+                     style="border-radius: 30px;margin-right: auto;margin-left: auto;padding: 0px 30px;border-color: var(--bs-focus-ring-color);margin-bottom: 12px;">
+                    <div class="card-body align-content-center" style="text-align: center;">
+                        <span class="d-block"
+                              style="margin-bottom: 12px;color: rgb(76,84,92);font-size: 24px;font-family: 'Abhaya Libre', serif;">
+                            {% if commission.stage == "waiting_deposit_payment" %}
+                                {% translate 'Deseja realizar o pagamento da garantia em qual moeda?' %}
+                            {% else %}
+                                {% translate 'Deseja realizar o pagamento final em qual moeda?' %}
+                            {% endif %}
+
+                        </span>
+                        <div class="row" style="margin-top: 40px; margin-bottom: 40px">
+                            <div class="col">
+                                <button class="btn btn-success" type="button"
+                                        hx-get="{% url "payment" uuid=commission.uuid currency="brl" %}"
+                                        hx-trigger="click"
+                                        hx-target="#content"
+                                        hx-swap="innerHTML"
+                                        style="border-radius: 18px;background: linear-gradient(60deg, var(--bs-success) 0%, var(--bs-success) 21%, var(--bs-warning) 35%, var(--bs-primary) 51%, var(--bs-warning) 69%, var(--bs-success) 84%, var(--bs-success));font-size: 14px;padding: 4px 24px;border-width: 2px;border-color: var(--bs-success);">
+                                    <span style="color: rgb(255, 255, 255);background: rgba(50,50,50,0.51);border-radius: 12px;padding: 4px 10px;">
+                                        Real
+                                    </span>
+                                </button>
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-primary" type="button"
+                                        style="border-radius: 18px;background: linear-gradient(60deg, var(--bs-primary) 27%, var(--bs-light) 32%, var(--bs-danger) 37%, var(--bs-light) 43%, var(--bs-danger) 49%, var(--bs-white) 55%, var(--bs-danger) 61%, var(--bs-white) 67%, var(--bs-danger) 73%, var(--bs-white) 80%, var(--bs-danger) 87%);font-size: 14px;padding: 4px 24px;border-width: 2px;">
+                                    <span style="border-radius: 12px;background: rgba(34,34,34,0.42);padding: 4px 10px;">
+                                        Dolar
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
+                        {% include 'accounts/includes/comm_heading.html' %}
+                        {% include 'accounts/includes/comm_detail_card.html' %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -49,6 +49,28 @@ NOTIFICATION_TEMPLATES = {
         {previous_stage} -> {current_stage}.
         Por favor, realize o pagamento do valor restante do pedido para prosseguir.
         """),
+
+    "deposit_confirmation_artist": _noop(
+        """O pagamento da garantia do pedido: {uuid} foi realizada. 
+        O pedido pode começar a ser produzido.
+        """),
+
+    "deposit_confirmation": _noop(
+        """O pagamento da garantia do pedido: {uuid} foi realizada com sucesso. 
+        O chat agora está liberado para dar feedback ou pedir ajustes.
+        A artista logo irá começar o pedido, fique de olho no chat e notificações para atualizações.
+        """),
+
+    "full_confirmation_artist": _noop(
+        """O pagamento final do pedido: {uuid} foi realizado. 
+        O pedido foi finalizado e a arte final já está disponível para o cliente.
+        """),
+
+    "full_confirmation": _noop(
+        """O pagamento final do pedido: {uuid} foi realizado com sucesso. 
+        A arte final já está disponível para download na seção de histórico de pedidos.
+        Muito obrigado por escolher fazer a sua commission por aqui e até a próxima!
+        """),
 }
 
 

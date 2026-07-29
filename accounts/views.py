@@ -1,5 +1,7 @@
+import json
 import os
 
+import mercadopago
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as login_user, logout as logout_user, authenticate
@@ -14,6 +16,7 @@ from django.db.models import QuerySet
 from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views import View
 from django.views.generic import DetailView
@@ -42,6 +45,83 @@ def user_profile(request) -> HttpResponse:
 
     return render(request, "accounts/profile/profile.html",
                   context={"landing_data": get_landing_data(), "new_notifications": new_notifications})
+
+
+class PaymentView(LoginRequiredMixin, View):
+    login_url = reverse_lazy("login")
+
+    def get(self, request, uuid, currency: str) -> HttpResponseRedirect | HttpResponse:
+        commission: Commission = request.user.commissions.get(uuid=uuid)
+
+        if (not commission.stage in ["waiting_deposit_payment", "waiting_full_payment"]) or (
+                currency not in ["brl", "usd"]):
+            return redirect("comms_in_progress")
+
+        amount = round(commission.price_brl / 2, 2) if currency == "brl" else round(commission.price_usd / 2, 2)
+        context = {"commission": commission,
+                   "currency": currency,
+                   "amount": amount}
+        return render(request, "accounts/partials/payment.html", context=context)
+
+    def post(self, request, uuid, currency) -> HttpResponseRedirect | HttpResponse:
+        commission: Commission = request.user.commissions.get(uuid=uuid)
+
+        if (not commission.stage in ["waiting_deposit_payment", "waiting_full_payment"]) or (
+                currency not in ["brl", "usd"]):
+            return redirect("comms_in_progress")
+
+        sdk = mercadopago.SDK(os.getenv("MP_ACCESS_TOKEN"))
+        request_options = mercadopago.config.RequestOptions()
+        request_options.custom_headers = {
+            'x-idempotency-key': f"comm-{commission.uuid}-deposit" if commission.stage == "waiting_deposit_payment" else f"comm-{commission.uuid}-full"
+        }
+
+        data = json.loads(request.body)
+        amount = round(commission.price_brl / 2, 2) if currency == "brl" else round(commission.price_usd / 2, 2)
+
+        if data["payment_method_id"] == "pix":
+            payment_data = {
+                "transaction_amount": amount,
+                "payment_method_id": data.get("payment_method_id"),
+                "external_reference": f"comm-{commission.uuid}-deposit" if commission.stage == "waiting_deposit_payment" else f"comm-{commission.uuid}-full",
+                "payer": {
+                    "email": json.loads(data.get("payer")).get("email"),
+                },
+            }
+        else:
+            payment_data = {
+                "three_d_secure_mode": 'optional',
+                "transaction_amount": amount,
+                "token": data.get("token"),
+                "description": data.get("description"),
+                "installments": int(data.get("installments")),
+                "payment_method_id": data.get("payment_method_id"),
+                "external_reference": f"comm-{commission.uuid}-deposit" if commission.stage == "waiting_deposit_payment" else f"comm-{commission.uuid}-full",
+                "payer": {
+                    "email": json.loads(data.get("payer")).get("email"),
+                    "identification": {
+                        "type": json.loads(data.get("payer")).get("identification").get("type"),
+                        "number": json.loads(data.get("payer")).get("identification").get("number")
+                    },
+                },
+            }
+
+        payment_response = sdk.payment().create(payment_data, request_options)
+        payment = payment_response["response"]
+        context = {"commission": commission,
+                   "currency": currency,
+                   "amount": amount,
+                   "payment": payment}
+        return render(request, "accounts/partials/payment.html", context=context)
+
+
+@login_required
+def payment_currency_choice(request, uuid) -> HttpResponse:
+    commission: Commission = request.user.commissions.get(uuid=uuid)
+    if not commission.stage in ["waiting_deposit_payment", "waiting_full_payment"]:
+        return redirect("comms_in_progress")
+
+    return render(request, "accounts/partials/payment_currency_choice.html", context={"commission": commission})
 
 
 class CommChat(LoginRequiredMixin, View):
@@ -239,6 +319,7 @@ class CancelCommissionView(LoginRequiredMixin, View):
                 comm_to_cancel.stage = "canceled"
                 comm_to_cancel.progress_image.all().delete()
                 comm_to_cancel.reference_images.all().delete()
+                comm_to_cancel.finished_at = timezone.now()
                 comm_to_cancel.save()
                 cancellation_reason = form.cleaned_data["reason"]
 
@@ -259,6 +340,7 @@ class CancelCommissionView(LoginRequiredMixin, View):
             comm_to_cancel.stage = "canceled"
             comm_to_cancel.progress_image.all().delete()
             comm_to_cancel.reference_images.all().delete()
+            comm_to_cancel.finished_at = timezone.now()
             comm_to_cancel.save()
 
             send_notification_to_artist("comm_cancelation_artist", "ALERT",
