@@ -46,7 +46,7 @@ def set_required_fields_based_on_category(form: CommissionForm, category: str) -
 
 # Create your views here.
 @csrf_exempt
-def commission_payment_webhook_receiver(request):
+def commission_payment_webhook_receiver(request) -> HttpResponse:
     secret = os.getenv("WEBHOOK_SECRET_KEY")
     headers = request.headers
     body = json.loads(request.body)
@@ -58,46 +58,47 @@ def commission_payment_webhook_receiver(request):
             body.get("data").get("id"),
             secret,
         )
-        print("Success")
-        payment_id = body.get("data").get("id")
-        sdk = mercadopago.SDK(os.getenv("MP_ACCESS_TOKEN"))
-        request_options = mercadopago.config.RequestOptions()
-        payment = sdk.payment().get(payment_id, request_options)
-
-        if payment.get("response").get("status") == "accepted":
-            raw_comm_id: str = payment.get("response").get("external_reference")
-            comm_id: str = raw_comm_id.removeprefix("comm-").removesuffix("-deposit").removesuffix("-full")
-            commission = Commission.objects.get(uuid=comm_id)
-
-            if commission.stage not in ["waiting_deposit_payment", "waiting_full_payment"]:
-                return HttpResponse("", 200)
-
-            prev_comm_stage = commission.stage
-            commission.stage = "sketch" if prev_comm_stage == "waiting_deposit_payment" else "finished"
-            if prev_comm_stage == "waiting_full_payment":
-                commission.finished_at = timezone.now()
-                final_image_object = commission.progress_image.get(stage=commission.final_stage)
-                final_image = ContentFile(final_image_object.image.read(), final_image_object.image.name)
-                commission.progress_image.all().delete()
-                commission.messages.all().delete()
-                commission.reference_images.all().delete()
-                ProgressImage(commission=commission, image=final_image, stage=commission.final_stage).save()
-
-            commission.save()
-
-            if prev_comm_stage == "waiting_deposit_payment":
-                sys_message = Message(content=_(commission.get_stage_display()), commission=commission).save()
-
-            artist_key = "deposit_confirmation_artist" if prev_comm_stage == "waiting_deposit_payment" else "full_confirmation_artist"
-            client_key = "deposit_confirmation" if prev_comm_stage == "waiting_deposit_payment" else "full_confirmation"
-
-            send_notification_to_artist(key=artist_key, level="SUCCESS", context={"uuid": str(commission.uuid)})
-            send_notification_to_client(commission.user, client_key, "SUCCESS", context={"uuid": str(commission.uuid)})
-
-        return HttpResponse("", 200)
     except InvalidWebhookSignatureError:
         print("Failed")
         return HttpResponse("", 401)
+
+    print("Success")
+    payment_id = body.get("data").get("id")
+    sdk = mercadopago.SDK(os.getenv("MP_ACCESS_TOKEN"))
+    request_options = mercadopago.config.RequestOptions()
+    payment = sdk.payment().get(payment_id, request_options)
+
+    if payment.get("response").get("status") == "approved":
+        raw_comm_id: str = payment.get("response").get("external_reference")
+        comm_id: str = raw_comm_id.removeprefix("comm-").removesuffix("-deposit").removesuffix("-full")
+        commission = Commission.objects.get(uuid=comm_id)
+
+        if commission.stage not in ["waiting_deposit_payment", "waiting_full_payment"]:
+            return HttpResponse("", 200)
+
+        prev_comm_stage = commission.stage
+        commission.stage = "sketch" if prev_comm_stage == "waiting_deposit_payment" else "finished"
+        if prev_comm_stage == "waiting_full_payment":
+            commission.finished_at = timezone.now()
+            final_image_object = commission.progress_image.get(stage=commission.final_stage)
+            final_image = ContentFile(final_image_object.image.read(), final_image_object.image.name)
+            commission.progress_image.all().delete()
+            commission.messages.all().delete()
+            commission.reference_images.all().delete()
+            ProgressImage(commission=commission, image=final_image, stage=commission.final_stage).save()
+
+        commission.save()
+
+        if prev_comm_stage == "waiting_deposit_payment":
+            sys_message = Message(content=_(commission.get_stage_display()), commission=commission).save()
+
+        artist_key = "deposit_confirmation_artist" if prev_comm_stage == "waiting_deposit_payment" else "full_confirmation_artist"
+        client_key = "deposit_confirmation" if prev_comm_stage == "waiting_deposit_payment" else "full_confirmation"
+
+        send_notification_to_artist(key=artist_key, level="SUCCESS", context={"uuid": str(commission.uuid)})
+        send_notification_to_client(commission.user, client_key, "SUCCESS", context={"uuid": str(commission.uuid)})
+
+    return HttpResponse("", 200)
 
 
 def commission_choice(request) -> HttpResponse:

@@ -63,7 +63,7 @@ class PaymentView(LoginRequiredMixin, View):
                    "amount": amount}
         return render(request, "accounts/partials/payment.html", context=context)
 
-    def post(self, request, uuid, currency):
+    def post(self, request, uuid, currency) -> HttpResponseRedirect | HttpResponse:
         commission: Commission = request.user.commissions.get(uuid=uuid)
 
         if (not commission.stage in ["waiting_deposit_payment", "waiting_full_payment"]) or (
