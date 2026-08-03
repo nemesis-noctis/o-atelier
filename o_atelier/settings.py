@@ -145,3 +145,4 @@ EMAIL_HOST_PASSWORD = os.getenv("EMAIL_APP_PASSWORD")
 DEFAULT_FROM_EMAIL = os.getenv("EMAIL_HOST")
 
 LOGIN_URL = reverse_lazy("login")
+SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"

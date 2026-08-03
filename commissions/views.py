@@ -1,13 +1,15 @@
 import json
 import os
+import uuid as uuid_pkg
 from urllib.parse import urlencode
 
 import mercadopago
+import requests
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.files.base import ContentFile
 from django.forms import RadioSelect
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -45,6 +47,71 @@ def set_required_fields_based_on_category(form: CommissionForm, category: str) -
 
 
 # Create your views here.
+
+def paypal_capture_order(request):
+    ...
+
+
+def paypal_create_order(request):
+    comm_uuid = json.loads(request.body).get("comm_uuid")
+    commission: Commission = request.user.commissions.get(uuid=comm_uuid)
+    amount = round(commission.price_usd / 2, 2)
+
+    if not commission.stage in ["waiting_deposit_payment", "waiting_full_payment"]:
+        return redirect("comms_in_progress")
+
+    auth_url = "https://api-m.sandbox.paypal.com/v1/oauth2/token"
+    auth_response = requests.post(auth_url, headers={"Content-Type": "application/x-www-form-urlencoded"},
+                                  auth=(os.getenv("PayPal_ClientId"), os.getenv("Pay_Pal_ClientSecret")),
+                                  data={"grant_type": "client_credentials"})
+    auth_data = auth_response.json()
+
+    print(f"{auth_data=}")
+    url = "https://api-m.sandbox.paypal.com/v2/checkout/orders"
+    body = {
+        "intent": "CAPTURE",
+        "payment_source": {
+            "paypal": {
+                "experience_context": {
+                    "payment_method_preference": "IMMEDIATE_PAYMENT_REQUIRED",
+                    "landing_page": "NO_PREFERENCE",
+                    "shipping_preference": "NO_SHIPPING",
+                    "user_action": "PAY_NOW",
+                    "return_url": "https://example.com/returnUrl",
+                    "cancel_url": "https://example.com/returnUrl"
+                }
+            }
+        },
+        "purchase_units": [
+            {"invoice_id": f"{uuid_pkg.uuid4()}",
+             "amount": {
+                 "currency_code": "USD",
+                 "value": f"{amount}",
+                 "breakdown": {
+                     "item_total": {
+                         "currency_code": "USD",
+                         "value": f"{amount}"
+                     },
+                 }
+             },
+             }
+        ]
+    }
+    headers = {
+        "Content-Type": "application/json",
+        "PayPal-Request-Id": f"{uuid_pkg.uuid4()}",
+        "Prefer": "return=representation",
+        "Authorization": f"{auth_data.get("token_type")} {auth_data.get("access_token")}",
+    }
+
+    print(f"{headers=}")
+    response = requests.request("POST", url, data=json.dumps(body), headers=headers)
+
+    print(response.text)
+
+    return JsonResponse(response.json())
+
+
 @csrf_exempt
 def commission_payment_webhook_receiver(request) -> HttpResponse:
     secret = os.getenv("WEBHOOK_SECRET_KEY")

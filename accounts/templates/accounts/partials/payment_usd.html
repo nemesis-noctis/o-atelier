@@ -1,0 +1,105 @@
+<div id="paypal-button-container"></div>
+<div id="result-message"></div>
+<script>
+    // Pass the createOrder, onApprove, onCancel, and onError callbacks to the SDK
+    async function createOrder(data) {
+        const response = await fetch("{% url 'paypal_create_order' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                'X-CSRFToken': "{{ csrf_token }}"
+            },
+            // We don't recommend passing order amounts from the client
+            // Your API should exchange a SKU for amount values
+            body: JSON.stringify({comm_uuid: "{{ commission.uuid }}"}),
+        });
+        const orderData = await response.json();
+        console.log(orderData)
+        return {orderId: orderData.id};
+    }
+
+    async function onApprove(data) {
+        const {orderId} = data;
+        const response = await fetch(`{% url 'paypal_capture_order' %}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        const orderData = await response.json();
+        return orderData;
+    }
+
+    function onCancel(data) {
+        document.getElementById("result-message").innerHTML =
+            `<p style="color: orange;">Payment cancelled</p>`;
+    }
+
+    function onError(err) {
+        console.error("PayPal Error:", err);
+        let errorMessage = "An error occurred. Please try again.";
+        // Handle specific error codes
+        if (err.message && err.message.includes("INSUFFICIENT_FUNDS")) {
+            errorMessage = "Payment declined due to insufficient funds.";
+        } else if (err.message && err.message.includes("INSTRUMENT_DECLINED")) {
+            errorMessage =
+                "Your payment method was declined. Please try another.";
+        } else if (err.message && err.message.includes("TRANSACTION_REFUSED")) {
+            errorMessage = "Transaction was refused. Please contact support.";
+        } else if (err.message && err.message.includes("DUPLICATE_INVOICE")) {
+            errorMessage =
+                "This order has already been processed. Please refresh and try again.";
+        }
+        document.getElementById("result-message").innerHTML =
+            `<p style="color: red;">${errorMessage}</p>`;
+    }
+
+    // After the browser is done downloading the SDK, it will invoke onLoad()
+    // and begin the SDK setup
+    async function onLoad() {
+        try {
+            const sdkInstance = await window.paypal.createInstance({
+                clientId: "BAACqVqDtm9_aQU0U_vLcxrZUyQrovrDDPI3CTxhsGvvdshK_4Ic5o6_yDC7P8SDYVKJ_AjwtRxRL8I6Hs", // clientId is safe to put in plaintext on the client
+                components: ["paypal-payments"],
+            });
+
+            const eligibility = await sdkInstance.findEligibleMethods();
+            const isPayPalEligible = eligibility.isEligible("paypal");
+
+            if (isPayPalEligible) {
+                const paypalButton = document.createElement("paypal-button");
+                document
+                    .querySelector("#paypal-button-container")
+                    .append(paypalButton);
+
+                const paypalCheckoutSession =
+                    await sdkInstance.createPayPalOneTimePaymentSession({
+                        onApprove,
+                        onCancel,
+                        onError,
+                    });
+
+                paypalButton.addEventListener("click", async () => {
+                    try {
+                        // Get the promise reference by invoking createOrder()
+                        // Do not await this async function since it can cause transient activation issues
+                        const createOrderPromise = createOrder();
+                        await paypalCheckoutSession.start(
+                            {presentationMode: "auto"},
+                            createOrderPromise,
+                        );
+                    } catch (error) {
+                        console.error(error);
+                    }
+                });
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+</script>
+<script
+        async
+        src="https://www.sandbox.paypal.com/web-sdk/v6/core"
+        onload="onLoad()"
+></script>
