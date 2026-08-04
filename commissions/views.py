@@ -46,10 +46,29 @@ def set_required_fields_based_on_category(form: CommissionForm, category: str) -
     return form
 
 
-# Create your views here.
+def get_paypal_auth_token():
+    auth_url = "https://api-m.sandbox.paypal.com/v1/oauth2/token"
+    auth_response = requests.post(auth_url, headers={"Content-Type": "application/x-www-form-urlencoded"},
+                                  auth=(os.getenv("PayPal_ClientId"), os.getenv("Pay_Pal_ClientSecret")),
+                                  data={"grant_type": "client_credentials"})
+    return auth_response.json()
 
+
+# Create your views here.
 def paypal_capture_order(request):
-    ...
+    auth_data = get_paypal_auth_token()
+    data = json.loads(request.body)
+    order_id = data["orderId"]
+
+    url = f"https://api-m.sandbox.paypal.com/v2/checkout/orders/{order_id}/capture"
+    headers = {
+        "Content-Type": "application/json",
+        "PayPal-Request-Id": f"{uuid_pkg.uuid4()}",
+        "Authorization": f"{auth_data.get("token_type")} {auth_data.get("access_token")}",
+    }
+
+    response = requests.post(url, headers=headers)
+    return JsonResponse(response.json())
 
 
 def paypal_create_order(request):
@@ -60,14 +79,10 @@ def paypal_create_order(request):
     if not commission.stage in ["waiting_deposit_payment", "waiting_full_payment"]:
         return redirect("comms_in_progress")
 
-    auth_url = "https://api-m.sandbox.paypal.com/v1/oauth2/token"
-    auth_response = requests.post(auth_url, headers={"Content-Type": "application/x-www-form-urlencoded"},
-                                  auth=(os.getenv("PayPal_ClientId"), os.getenv("Pay_Pal_ClientSecret")),
-                                  data={"grant_type": "client_credentials"})
-    auth_data = auth_response.json()
-
-    print(f"{auth_data=}")
+    auth_data = get_paypal_auth_token()
     url = "https://api-m.sandbox.paypal.com/v2/checkout/orders"
+
+    invoice_prefix = "deposit" if commission.stage == "waiting_deposit_confirmation" else "full"
     body = {
         "intent": "CAPTURE",
         "payment_source": {
@@ -77,19 +92,19 @@ def paypal_create_order(request):
                     "landing_page": "NO_PREFERENCE",
                     "shipping_preference": "NO_SHIPPING",
                     "user_action": "PAY_NOW",
-                    "return_url": "https://example.com/returnUrl",
+                    "return_url": "http://localhost:8000/accounts/profile",
                     "cancel_url": "https://example.com/returnUrl"
                 }
             }
         },
         "purchase_units": [
-            {"invoice_id": f"{uuid_pkg.uuid4()}",
+            {"invoice_id": f"{invoice_prefix}-{commission.uuid}",
              "amount": {
-                 "currency_code": "USD",
+                 "currency_code": "BRL",
                  "value": f"{amount}",
                  "breakdown": {
                      "item_total": {
-                         "currency_code": "USD",
+                         "currency_code": "BRL",
                          "value": f"{amount}"
                      },
                  }
@@ -104,11 +119,7 @@ def paypal_create_order(request):
         "Authorization": f"{auth_data.get("token_type")} {auth_data.get("access_token")}",
     }
 
-    print(f"{headers=}")
     response = requests.request("POST", url, data=json.dumps(body), headers=headers)
-
-    print(response.text)
-
     return JsonResponse(response.json())
 
 
