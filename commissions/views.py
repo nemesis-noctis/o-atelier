@@ -46,17 +46,17 @@ def set_required_fields_based_on_category(form: CommissionForm, category: str) -
     return form
 
 
-def get_paypal_auth_token():
+def get_paypal_auth_data():
     auth_url = "https://api-m.sandbox.paypal.com/v1/oauth2/token"
     auth_response = requests.post(auth_url, headers={"Content-Type": "application/x-www-form-urlencoded"},
-                                  auth=(os.getenv("PayPal_ClientId"), os.getenv("Pay_Pal_ClientSecret")),
+                                  auth=(os.getenv("PayPal_ClientId"), os.getenv("PayPal_ClientSecret")),
                                   data={"grant_type": "client_credentials"})
     return auth_response.json()
 
 
 # Create your views here.
-def paypal_capture_order(request):
-    auth_data = get_paypal_auth_token()
+def paypal_capture_order(request) -> JsonResponse:
+    auth_data = get_paypal_auth_data()
     data = json.loads(request.body)
     order_id = data["orderId"]
 
@@ -72,7 +72,7 @@ def paypal_capture_order(request):
     return JsonResponse(response.json())
 
 
-def paypal_create_order(request):
+def paypal_create_order(request) -> JsonResponse:
     comm_uuid = json.loads(request.body).get("comm_uuid")
     commission: Commission = request.user.commissions.get(uuid=comm_uuid)
     amount = round(commission.price_usd / 2, 2)
@@ -80,7 +80,7 @@ def paypal_create_order(request):
     if not commission.stage in ["waiting_deposit_payment", "waiting_full_payment"]:
         return redirect("comms_in_progress")
 
-    auth_data = get_paypal_auth_token()
+    auth_data = get_paypal_auth_data()
     url = "https://api-m.sandbox.paypal.com/v2/checkout/orders"
 
     invoice_prefix = "deposit" if commission.stage == "waiting_deposit_confirmation" else "full"
@@ -125,31 +125,65 @@ def paypal_create_order(request):
 
 
 @csrf_exempt
-def commission_payment_webhook_receiver(request) -> HttpResponse:
+def payment_webhook_receiver(request) -> HttpResponse:
     secret = os.getenv("WEBHOOK_SECRET_KEY")
     headers = request.headers
     body = json.loads(request.body)
     print("webhook received")
-    try:
-        WebhookSignatureValidator.validate(
-            headers.get("x-signature"),
-            headers.get("x-request-id"),
-            body.get("data").get("id"),
-            secret,
-        )
-    except InvalidWebhookSignatureError:
-        print("Failed")
-        return HttpResponse("", 401)
 
-    print("Success")
-    payment_id = body.get("data").get("id")
-    sdk = mercadopago.SDK(os.getenv("MP_ACCESS_TOKEN"))
-    request_options = mercadopago.config.RequestOptions()
-    payment = sdk.payment().get(payment_id, request_options)
+    if headers.get("User-Agent").startswith("PayPal"):
+        url = "https://api-m.sandbox.paypal.com/v1/notifications/verify-webhook-signature"
+        auth_data = get_paypal_auth_data()
+        webhook_auth_body = {
+            "auth_algo": headers.get("PAYPAL-AUTH-ALGO"),
+            "cert_url": headers.get("PAYPAL-CERT-URL"),
+            "transmission_id": headers.get("PAYPAL-TRANSMISSION-ID"),
+            "transmission_sig": headers.get("PAYPAL-TRANSMISSION-SIG"),
+            "transmission_time": headers.get("PAYPAL-TRANSMISSION-TIME"),
+            "webhook_id": os.getenv("PayPal_Webhook_Id"),
+            "webhook_event": {}
+        }
+        response = requests.request("POST", url, data=json.dumps(webhook_auth_body), headers={
+            "Content-Type": "application/json",
+            "Authorization": f"{auth_data.get("token_type")} {auth_data.get("access_token")}"
+        })
 
-    if payment.get("response").get("status") == "approved":
+        if not response.json().get("verification_status") == "SUCCESS":
+            print("Failed")
+            return HttpResponse("", 401)
+
+        payment = body
+        status: str = payment.get("resource").get("status")
+
+        raw_comm_id: str = payment.get("resource").get("invoice_id")
+        comm_id: str = raw_comm_id.removeprefix("deposit").removeprefix("full")
+
+    elif headers.get("X-Meli-Trace-Bu").startswith("mercadopago"):
+        try:
+            WebhookSignatureValidator.validate(
+                headers.get("x-signature"),
+                headers.get("x-request-id"),
+                body.get("data").get("id"),
+                secret,
+            )
+        except InvalidWebhookSignatureError:
+            print("Failed")
+            return HttpResponse("", 401)
+
+        payment_id = body.get("data").get("id")
+        sdk = mercadopago.SDK(os.getenv("MP_ACCESS_TOKEN"))
+        request_options = mercadopago.config.RequestOptions()
+
+        payment = sdk.payment().get(payment_id, request_options)
+        status = payment.get("response").get("status")
+
         raw_comm_id: str = payment.get("response").get("external_reference")
         comm_id: str = raw_comm_id.removeprefix("comm-").removesuffix("-deposit").removesuffix("-full")
+
+    else:
+        return HttpResponse("", 401)
+
+    if status in {"approved", "COMPLETED"}:
         commission = Commission.objects.get(uuid=comm_id)
 
         if commission.stage not in ["waiting_deposit_payment", "waiting_full_payment"]:
@@ -177,6 +211,7 @@ def commission_payment_webhook_receiver(request) -> HttpResponse:
         send_notification_to_artist(key=artist_key, level="SUCCESS", context={"uuid": str(commission.uuid)})
         send_notification_to_client(commission.user, client_key, "SUCCESS", context={"uuid": str(commission.uuid)})
 
+    print("Success")
     return HttpResponse("", 200)
 
 

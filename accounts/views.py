@@ -50,7 +50,7 @@ def user_profile(request) -> HttpResponse:
 class Payment_USD_View(LoginRequiredMixin, View):
     login_url = reverse_lazy("login")
 
-    def get(self, request, uuid):
+    def get(self, request, uuid) -> HttpResponse:
         commission: Commission = request.user.commissions.get(uuid=uuid)
         amount = round(commission.price_usd / 2, 2)
 
