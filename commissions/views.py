@@ -68,6 +68,7 @@ def paypal_capture_order(request):
     }
 
     response = requests.post(url, headers=headers)
+    print(response.json())
     return JsonResponse(response.json())
 
 

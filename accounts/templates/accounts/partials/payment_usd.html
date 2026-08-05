@@ -23,7 +23,7 @@
                     </div>
                 </div>
                 <div class="card mw-100"
-                     style="border-radius: 30px;margin-right: auto;margin-left: auto;padding: 0px 30px;border-color: var(--bs-focus-ring-color);margin-bottom: 12px;height: 300px;">
+                     style="border-radius: 30px;margin-right: auto;margin-left: auto;padding: 0px 30px;border-color: var(--bs-focus-ring-color);margin-bottom: 12px;">
                     <div class="card-body align-content-center" style="text-align: center;">
                         <div id="paymentBrick_container"></div>
                         <h1 style="color: rgb(76,84,92);font-family: 'Abhaya Libre', serif;margin-bottom: 34px;font-size: 34px;">
@@ -73,10 +73,16 @@
 
         const orderData = await response.json();
         const status = orderData?.purchase_units?.[0]?.payments?.captures?.[0]?.status;
+        const issue = orderData?.details?.[0]?.issue;
 
         if (status === "COMPLETED") {
             document.getElementById("result-message").innerHTML =
                 `<p style="color: green;">{% translate "Pagamento aprovado! O status do seu pedido foi atualizado." %}</p>`;
+
+        } else if (issue === "DUPLICATE_INVOICE_ID") {
+            document.getElementById("result-message").innerHTML =
+                `<p style="color: orange;">{% translate "Pagamento duplicado, esta tentativa de pagamento não foi processada." %}</p>`;
+
         } else {
             document.getElementById("result-message").innerHTML =
                 `<p style="color: red;">{% translate 'Não foi possível confirmar o pagamento. Tente novamente.' %}</p>`;
@@ -87,7 +93,7 @@
 
     function onCancel(data) {
         document.getElementById("result-message").innerHTML =
-            `<p style="color: orange;">Payment cancelled</p>`;
+            `<p style="color: orange;">{% translate "Pagamento Cancelado" %}</p>`;
     }
 
     function onError(err) {
