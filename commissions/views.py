@@ -56,8 +56,8 @@ def get_paypal_auth_data():
 
 # Create your views here.
 
-def terms_of_service(request):
-    tos_already_seen = request.session.pop("tos_already_seen", False)
+def terms_of_service(request) -> HttpResponseRedirect | HttpResponse:
+    tos_already_seen = request.session.get("tos_already_seen", False)
 
     if tos_already_seen:
         return redirect("comms_choice")
