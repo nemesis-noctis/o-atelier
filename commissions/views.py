@@ -101,11 +101,11 @@ def paypal_create_order(request) -> JsonResponse:
         "purchase_units": [
             {"invoice_id": f"{invoice_prefix}-{commission.uuid}",
              "amount": {
-                 "currency_code": "BRL",
+                 "currency_code": "USD",
                  "value": f"{amount}",
                  "breakdown": {
                      "item_total": {
-                         "currency_code": "BRL",
+                         "currency_code": "USD",
                          "value": f"{amount}"
                      },
                  }
