@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}
+    {% translate 'Termos de Serviço' %}
+{% endblock %}
+
+{% block content %}
+    {% include 'include/navbar.html' %}
+    <section class="mt-9 mt-sm-9 mt-md-9 mt-lg-9 mt-xl-9 mt-xxl-10"
+             style="width: 100%;height: 100%;color: rgb(33, 37, 41);">
+        <div class="row gx-4 gy-2 mw-100 justify-content-center">
+            <div class="col col-sm col-md col-lg-6 col-xl-5 col-xxl-4" style="width: 60vw;">
+                <div class="card mw-100"
+                     style="border-radius: 30px;margin-right: auto;margin-left: auto;padding: 20px 30px;border-color: var(--bs-focus-ring-color);">
+                    <div class="card-body" style="text-align: center;">
+                        <h2 style="font-family: 'Abhaya Libre', serif;margin-bottom: 24px;color: rgb(33, 37, 41);">
+                            {% translate 'TERMOS DE SERVIÇO' %}
+                        </h2>
+                        <div class="row gy-3 row-cols-1 row-cols-sm-1 row-cols-md-1 row-cols-lg-1 row-cols-xl-2 row-cols-xxl-2">
+                            <div class="col overflow-scroll" style="height: 600px;">
+
+                                <div style="margin-bottom: 12px;background: #EDF5FE;padding: 12px;border-radius: 18px;text-align: left;">
+                                    <span class="d-block"
+                                          style="margin-bottom: 8px;text-align: center;color: rgb(33,37,41);font-family: 'Abhaya Libre', serif;font-size: 22px;">
+                                        {% translate '1. Pedidos e Pagamento:' %}
+                                    </span>
+                                    <span style="color: rgb(105,167,252);font-size: 14px;">
+                                        <strong>{% translate 'Solicitação: ' %}</strong> {% trans 'Todos os pedidos devem ser feitos exclusivamente através do formulário oficial no meu site, caso seu pedido não possa ser realizado pelo formulário por qualquer motivo, entre em contato comigo pelas minhas redes sociais/email.' %}
+                                        <br/><br/>
+                                        <strong>{% translate 'Formas de Pagamento: ' %}</strong> {% translate 'Aceito Pix, Cartão de Crédito e PayPal.' %}
+                                        <br/><br/>
+                                        <strong>{% translate 'Garantia e Pagamento final: ' %}</strong> {% translate "O pagamento é dividido em duas etapas: 50% quando o pedido for aceito (garantia não reembolsável para início do projeto e reserva de vaga). 50% na entrega final (necessário para a liberação dos arquivos sem marca d'água e alta resolução)." %}
+                                        <br/><br/>
+                                        <strong>{% translate 'Taxas e Moeda:' %}</strong> {% translate 'Os valores são cobrados em Real ou Dólar. Impostos e taxas de conversão já estão inclusos no valor final.' %}
+                                    </span>
+                                </div>
+
+                                <div style="margin-bottom: 12px;background: #EDF5FE;padding: 12px;border-radius: 18px;text-align: left;">
+                                    <span class="d-block"
+                                          style="margin-bottom: 8px;text-align: center;color: rgb(33,37,41);font-family: 'Abhaya Libre', serif;font-size: 22px;">
+                                        {% translate '2. Prazos, fila e Entrega: ' %}
+                                    </span>
+                                    <span style="color: rgb(105,167,252);font-size: 14px;">
+                                        <strong>{% translate 'Prazo de Entrega: ' %}</strong> {% trans 'O tempo de produção varia de acordo com a complexidade da arte. O prazo limite máximo para a entrega de qualquer comissão é de até 3 meses (prazo máximo para pedidos complexos, pedidos mais simples possuem uma velocidade de entrega bem menor). O prazo conta apenas a partir do pagamento da garantia e é pausado a cada etapa enquanto a artista aguarda a aprovação do cliente.' %}
+                                        <br/><br/>
+                                        <strong>{% translate 'Acompanhamento: ' %}</strong> {% translate 'O status do seu pedido pode ser acompanhado diretamente pelo site pelo perfil do cliente, e possui chat e notificações para dar feedback, pedir alterações e acompanhar o andamento do pedido.' %}
+                                        <br/><br/>
+                                        <strong>{% translate 'Formatos de Entrega: ' %}</strong> {% translate "O formato padrão disponibilizado para download no site será PNG em 300 DPI (alta resolução). Caso necessite de outro formato (ex: PSD, JPEG), este deve ser especificado no momento do pedido. Arquivos alternativos serão enviados diretamente por e-mail e/ou redes sociais." %}
+                                        <br/><br/>
+                                        <strong>{% translate '' %}</strong> {% translate '' %}
+                                    </span>
+                                </div>
+
+                                <div style="margin-bottom: 12px;background: #EDF5FE;padding: 12px;border-radius: 18px;text-align: left;">
+                                    <span class="d-block"
+                                          style="margin-bottom: 8px;text-align: center;color: rgb(33,37,41);font-family: 'Abhaya Libre', serif;font-size: 22px;">
+                                        {% translate '3. Processo de Criação e revisões: ' %}
+                                    </span>
+                                    <span style="color: rgb(105,167,252);font-size: 14px;">
+                                        <strong>{% translate 'Aprovação por Etapas:' %}</strong> {% translate 'O cliente poderá acompanhar o progresso da arte durante todo o processo através do chat e notificações.' %}
+                                        <br/><br/>
+                                        <strong>{% translate 'Revisões Gratuitas:' %}</strong> {% translate 'Alterações pequenas são gratuitas em qualquer etapa do projeto desde que condizam com a etapa atual (ex: esboço, alteração no esboço, coloração, alteração na cor).' %}
+                                        <br/><br/>
+                                        <strong>{% translate 'Alterações Adicionais:' %}</strong> {% translate 'Solicitações de mudanças complexas, alterações de etapas já aprovadas ou alterações radicais no conceito original estarão sujeitas à cobrança de uma taxa adicional, calculada com base na quantidade de trabalho extra necessário.' %}
+                                    </span>
+                                </div>
+
+                                <div style="margin-bottom: 12px;background: #EDF5FE;padding: 12px;border-radius: 18px;text-align: left;">
+                                    <span class="d-block"
+                                          style="margin-bottom: 8px;text-align: center;color: rgb(33,37,41);font-family: 'Abhaya Libre', serif;font-size: 22px;">
+                                        {% translate '4. Direitos Autorais e Uso da Arte' %}
+                                    </span>
+                                    <span style="color: rgb(105,167,252);font-size: 14px;">
+                                        <strong>{% translate 'Uso Pessoal e Comercial' %}</strong> {% translate 'Se a arte for destinada ao uso comercial (estampas, capas de livros/álbuns, itens para venda, overlays para VTubers/Streamers, jogos, etc.), será aplicada uma taxa adicional de +80% sobre o valor total da arte, o uso indevido sem direitos comerciais acarretará em ações legais.' %}
+                                        <br/><br/>
+                                        <strong>{% translate 'Créditos:' %}</strong> {% translate 'Ao publicar a arte em qualquer plataforma, o cliente deve obrigatoriamente creditar a autora citando/marcando seu nome de usuário na rede em questão ou fornecendo um link para o site ou alguma rede social da artista.' %}
+                                        <br/><br/>
+                                        <strong>{% translate 'Edições na Arte:' %}</strong> {% translate 'É permitido cortar ou aplicar filtros na arte final apenas para fins de uso pessoal. Alterações para fins comerciais são proibidas sem autorização prévia. Alterações ou utilização em contextos com conteúdo ilegal, discurso de ódio, falsificação, ou semelhantes, são totalmente proibidos, podendo acarretar em ações legais.' %}
+                                        <br/><br/>
+                                        <strong>{% translate 'Divulgação e Portfólio:' %}</strong> {% translate 'A artista se reserva o direito de publicar a arte final em redes sociais e portfólio, exceto se o cliente optar por manter a arte confidencial no momento do pedido. Artes marcadas como confidenciais não serão divulgadas em nenhum lugar. (Artes comerciais não possuem a opção de confidencialidade, apenas um adiamento da postagem em casos de inaugurações, lançamentos, etc).' %}
+                                        <br/><br/>
+                                        <strong>{% translate 'Inteligência Artificial e NFTs:' %}</strong> {% translate 'É estritamente proibido utilizar qualquer arte produzida por mim para treinamento de modelos de Inteligência Artificial ou para conversão/venda em formatos NFT/Web3. O descumprimento acarretará em medidas legais cabíveis.' %}
+                                        <br/><br/>
+                                        <strong>{% translate 'Direito autoral:' %}</strong> {% translate 'Os direitos autorais da arte produzida pertencem a mim, mas a propriedade intelectual do personagem (design/lore) continua sendo do cliente (caso o mesmo a possua) e ao mesmo é concedido direito de uso pessoal ou comercial a depender se o pedido for comercial ou não.' %}
+                                    </span>
+                                </div>
+
+                                <div style="margin-bottom: 12px;background: #EDF5FE;padding: 12px;border-radius: 18px;text-align: left;">
+                                    <span class="d-block"
+                                          style="margin-bottom: 8px;text-align: center;color: rgb(33,37,41);font-family: 'Abhaya Libre', serif;font-size: 22px;">
+                                        {% translate '5. Cancelamento e Reembolso' %}
+                                    </span>
+                                    <span style="color: rgb(105,167,252);font-size: 14px;">
+                                        <strong>{% translate 'Cancelamento pelo Cliente:' %}</strong> {% translate 'O cliente pode cancelar o pedido a qualquer momento. No entanto, todo o valor pago até o momento do cancelamento será retido a título de taxa de cancelamento/multa para cobrir o tempo e trabalho já investidos.' %}
+                                        <br/><br/>
+                                        <strong>{% translate 'Cancelamento pela Artista:' %}</strong> {% translate 'Caso a artista precise cancelar o pedido por motivos pessoais ou outros motivos que não sejam por descumprimento de alguma cláusula ou regra por parte do cliente, o reembolso será feito em 100% do valor pago pelo cliente até o momento, independentemente do progresso da arte, sendo esta a única forma possível de reembolso.' %}
+                                        <br/><br/>
+                                        <strong>{% translate 'Golpe e Fraude:' %}</strong> {% translate 'Abrir uma disputa/chargeback sem antes entrar em contato resultará na perda imediata do direito de uso da arte, exposed do perfil e inclusão em listas negras de comunidades, invalidação de licenças comerciais e possíveis ações legais. O mesmo se aplica para tentativas de golpes, fraude, má fé e quaisquer outras atitudes do gênero.' %}
+                                    </span>
+                                </div>
+
+                                <div style="margin-bottom: 12px;background: #EDF5FE;padding: 12px;border-radius: 18px;text-align: left;">
+                                    <span class="d-block"
+                                          style="margin-bottom: 8px;text-align: center;color: rgb(33,37,41);font-family: 'Abhaya Libre', serif;font-size: 22px;">
+                                        {% translate '6. Comunicação e Conduta' %}
+                                    </span>
+                                    <span style="color: rgb(105,167,252);font-size: 14px;">
+                                        <strong>{% translate 'Canais e Horários:' %}</strong> {% translate 'O atendimento é feito via site com possibilidade de contato por redes sociais/email caso a comunicação pelo site não seja possível, de segunda a sexta-feira, em horário comercial (das 9 até às 17 horas).' %}
+                                        <br/><br/>
+                                        <strong>{% translate 'Inatividade do Cliente:' %}</strong> {% translate 'O cliente deve responder às mensagens de aprovação em tempo hábil. Caso o cliente fique inativo ou sem responder por um longo período sem aviso prévio, após 3 meses o projeto independente do estágio em que se encontra será excluído permanentemente.' %}
+                                        <br/><br/>
+                                        <strong>{% translate 'Conduta do Cliente:' %}</strong> {% translate 'Comportamentos desrespeitosos, assédio, chantagem ou qualquer tipo de abuso resultarão no cancelamento imediato do serviço sem reembolso, além do bloqueio permanente do cliente no site e em todas as redes sociais, possível exposed do perfil, inclusão em listas negras de comunidades e possíveis ações legais.' %}
+                                    </span>
+                                </div>
+
+                            </div>
+                            <div class="col">
+                                <div class="row"
+                                     style="background: #EDF5FE;padding: 12px;border-radius: 18px;margin-bottom: 24px;">
+                                    <div class="col" style="font-size: 18px;"><span class="d-block"
+                                                                                    style="margin-bottom: 12px;color: white;border-radius: 18px;background: rgb(105,167,252);">Faço</span>
+                                        <ul style="text-align: left;font-size: 14px;color: rgb(105,167,252);">
+                                            <li>Oc&#39;s</li>
+                                            <li>Personagens Humanos</li>
+                                            <li>Personagens Furry/Híbridos</li>
+                                            <li>Chibi</li>
+                                            <li>Criaturas/Animais</li>
+                                            <li>Mechas/Robôs</li>
+                                            <li>Fanarts</li>
+                                            <li>Cenários</li>
+                                            <li>Objetos (Armas, Acessórios, etc) </li>
+                                            <li>Sheets</li>
+                                            <li>Cenas</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col"><span class="d-block"
+                                                           style="font-size: 18px;margin-bottom: 12px;color: rgb(105,167,252);background: white;border-radius: 18px;">Não Faço</span>
+                                        <ul style="text-align: left;font-size: 14px;color: rgb(105,167,252);">
+                                            <li>Nsfw</li>
+                                            <li>Gore Pesado</li>
+                                            <li>Conteúdo de Ódio ou Descriminação</li>
+                                            <li>Fetiches</li>
+                                            <li>Cópia de Estilo de Outros Artistas</li>
+                                            <li>Realismo</li>
+                                            <li>Artes Hiperdetalhadas</li>
+                                            <li>Alterações de Artes de Outros Artistas</li>
+                                            <li>Animação/Gifs</li>
+                                            <li>Qualquer Conteúdo Que Possa Me Deixar Desconfortável</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div style="margin: 34px 0;"><span class="d-block"
+                                                                   style="font-size: 14px;width: 60%;margin: 0 auto;"><span
+                                        style="color: rgb(0, 0, 0); background-color: transparent;">Ao solicitar uma comissão, você concorda automaticamente com todos os termos e condições descritos. Leia com atenção antes de efetuar o pedido.</span></span>
+                                </div>
+                                <a href="{% url "comms_choice" %}" class="btn btn-primary commission-request-btn"
+                                   style="margin: 24px auto;">
+                                    {% translate 'Aceitar termos e continuar' %}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}

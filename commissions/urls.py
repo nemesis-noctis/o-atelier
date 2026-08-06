@@ -10,4 +10,5 @@ urlpatterns = [
     path("payment-webhook-receiver", views.payment_webhook_receiver, name="payment_webhook_receiver"),
     path("paypal-create-order", views.paypal_create_order, name="paypal_create_order"),
     path("paypal-capture-order", views.paypal_capture_order, name="paypal_capture_order"),
+    path("terms-of-service", views.terms_of_service, name="terms_of_service")
 ]

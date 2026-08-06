@@ -55,6 +55,17 @@ def get_paypal_auth_data():
 
 
 # Create your views here.
+
+def terms_of_service(request):
+    tos_already_seen = request.session.pop("tos_already_seen", False)
+
+    if tos_already_seen:
+        return redirect("comms_choice")
+    else:
+        request.session["tos_already_seen"] = True
+        return render(request, "commissions/terms_of_service.html", context={"landing_data": get_landing_data()})
+
+
 def paypal_capture_order(request) -> JsonResponse:
     auth_data = get_paypal_auth_data()
     data = json.loads(request.body)
