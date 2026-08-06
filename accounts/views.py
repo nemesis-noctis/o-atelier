@@ -54,7 +54,8 @@ class Payment_USD_View(LoginRequiredMixin, View):
         commission: Commission = request.user.commissions.get(uuid=uuid)
         amount = round(commission.price_usd / 2, 2)
 
-        return render(request, "accounts/partials/payment_usd.html", context={"commission": commission})
+        return render(request, "accounts/partials/payment_usd.html",
+                      context={"commission": commission, "amount_usd": amount})
 
 
 class Payment_BRL_View(LoginRequiredMixin, View):
@@ -68,7 +69,7 @@ class Payment_BRL_View(LoginRequiredMixin, View):
 
         amount = round(commission.price_brl / 2, 2)
         context = {"commission": commission,
-                   "amount": amount}
+                   "amount_brl": amount}
         return render(request, "accounts/partials/payment_brl.html", context=context)
 
     def post(self, request, uuid) -> HttpResponseRedirect | HttpResponse:

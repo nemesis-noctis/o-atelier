@@ -83,7 +83,7 @@ def paypal_create_order(request) -> JsonResponse:
     auth_data = get_paypal_auth_data()
     url = "https://api-m.sandbox.paypal.com/v2/checkout/orders"
 
-    invoice_prefix = "deposit" if commission.stage == "waiting_deposit_confirmation" else "full"
+    invoice_prefix = "deposit" if commission.stage == "waiting_deposit_payment" else "full"
     body = {
         "intent": "CAPTURE",
         "payment_source": {
@@ -126,7 +126,6 @@ def paypal_create_order(request) -> JsonResponse:
 
 @csrf_exempt
 def payment_webhook_receiver(request) -> HttpResponse:
-    secret = os.getenv("WEBHOOK_SECRET_KEY")
     headers = request.headers
     body = json.loads(request.body)
     print("webhook received")
@@ -160,6 +159,7 @@ def payment_webhook_receiver(request) -> HttpResponse:
 
     elif headers.get("X-Meli-Trace-Bu").startswith("mercadopago"):
         try:
+            secret = os.getenv("WEBHOOK_SECRET_KEY")
             WebhookSignatureValidator.validate(
                 headers.get("x-signature"),
                 headers.get("x-request-id"),

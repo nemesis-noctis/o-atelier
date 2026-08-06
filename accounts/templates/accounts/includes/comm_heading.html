@@ -32,9 +32,20 @@
     </div>
     <div class="col text-start text-sm-start text-md-end"
          style="padding-right: 24px;padding-left: 28px;">
-                            <span class="d-block" style="font-size: 12px;color: #6ba7f7;">
-                                {% translate 'Preço:' %} BRL: {{ commission.price_brl }}$ | USD: {{ commission.price_usd }}$
-                            </span>
+            <span class="d-block" style="font-size: 12px;color: #6ba7f7;">
+                {% translate 'Preço Total:' %} BRL: {{ commission.price_brl|stringformat:".2f" }}$ | USD: {{ commission.price_usd|stringformat:".2f" }}$
+            </span>
+        {% if amount_brl %}
+            <span class="d-block" style="font-size: 12px;color: var(--bs-warning);">
+                {% translate 'Preço a pagar:' %} BRL: {{ amount_brl|stringformat:".2f" }}$
+            </span>
+        {% endif %}
+        {% if amount_usd %}
+            <span class="d-block" style="font-size: 12px;color: var(--bs-warning);">
+                {% translate 'Preço a pagar:' %} USD: {{ amount_usd|stringformat:".2f" }}$
+            </span>
+        {% endif %}
+
         {% if user.is_superuser and commission.stage == "waiting_confirmation" %}
             <div>
                 <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24"

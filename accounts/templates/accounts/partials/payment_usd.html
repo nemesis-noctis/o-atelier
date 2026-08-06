@@ -25,8 +25,8 @@
                 <div class="card mw-100"
                      style="border-radius: 30px;margin-right: auto;margin-left: auto;padding: 0px 30px;border-color: var(--bs-focus-ring-color);margin-bottom: 12px;">
                     <div class="card-body align-content-center" style="text-align: center;">
-                        <div id="paymentBrick_container"></div>
-                        <h1 style="color: rgb(76,84,92);font-family: 'Abhaya Libre', serif;margin-bottom: 34px;font-size: 34px;">
+                        {% include 'accounts/includes/comm_heading.html' %}
+                        <h1 style="color: rgb(76,84,92);font-family: 'Abhaya Libre', serif;margin-bottom: 34px;font-size: 28px;">
                             {% translate 'Para prosseguir, realize o pagamento pelo PayPal.' %}
                         </h1>
                         <div id="paypal-button-container"
@@ -35,9 +35,12 @@
                         </div>
 
                         <div id="result-message"></div>
-                        <p>
-                            {% translate 'Ao clicar no botão de pagamento, um popup aparecerá para que você faça login no paypal e prossiga com o pagamento.' %}
-                        </p>
+                        <span style="display: block; margin-bottom: 8px">
+                            {% translate 'Ao clicar no botão de pagamento, um popup aparecerá para que você faça login e prossiga com o pagamento.' %}
+                        </span>
+                        <span style="color: #69a7fc; font-size: 12px">
+                            {% translate 'Caso o botão do paypal não apareça, reinicie a página ou entre em contato para suporte.' %}
+                        </span>
                     </div>
                 </div>
             </div>

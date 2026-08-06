@@ -10,7 +10,7 @@
                  "amount" é o valor total a ser pago por todos os meios de pagamento
                com exceção da Conta Mercado Pago e Parcelamento sem cartão de crédito, que tem seu valor de processamento determinado no backend através do "preferenceId"
                 */
-                amount: {{ amount|stringformat:".2f" }},
+                amount: {{ amount_brl|stringformat:".2f" }},
                 preferenceId: "<PREFERENCE_ID>",
                 payer: {
                     firstName: "",
