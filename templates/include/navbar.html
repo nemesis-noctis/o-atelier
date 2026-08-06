@@ -63,7 +63,8 @@
             <li class="nav-item z-1">
 
                 {% if user.is_authenticated and not user.is_superuser %}
-                    <a href="{% url "terms_of_service" %}" class="btn btn-primary commission-request-btn">
+                    <a href="{% url "terms_of_service" read_again=0 %}"
+                       class="btn btn-primary commission-request-btn">
                 {% else %}
                     <a href="{% url "comms_choice" %}" class="btn btn-primary commission-request-btn">
                 {% endif %}

@@ -56,14 +56,17 @@ def get_paypal_auth_data():
 
 # Create your views here.
 
-def terms_of_service(request) -> HttpResponseRedirect | HttpResponse:
+def terms_of_service(request, read_again) -> HttpResponseRedirect | HttpResponse:
     tos_already_seen = request.session.get("tos_already_seen", False)
 
-    if tos_already_seen:
+    if read_again:
+        pass
+    elif tos_already_seen:
         return redirect("comms_choice")
     else:
         request.session["tos_already_seen"] = True
-        return render(request, "commissions/terms_of_service.html", context={"landing_data": get_landing_data()})
+
+    return render(request, "commissions/terms_of_service.html", context={"landing_data": get_landing_data()})
 
 
 def paypal_capture_order(request) -> JsonResponse:
