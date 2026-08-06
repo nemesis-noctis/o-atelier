@@ -31,5 +31,6 @@ urlpatterns = [
     path("comm-detail/<uuid:pk>", views.CommsInProgressDetailsView.as_view(), name="comm_detail"),
     path("chat/<uuid:uuid>", views.CommChat.as_view(), name="comm_chat"),
     path("payment/<uuid:uuid>/currency-choice", views.payment_currency_choice, name="currency_choice"),
-    path("payment/<uuid:uuid>/<str:currency>", views.PaymentView.as_view(), name="payment"),
+    path("payment_brl/<uuid:uuid>/", views.Payment_BRL_View.as_view(), name="payment_brl"),
+    path("payment_usd/<uuid:uuid>/", views.Payment_USD_View.as_view(), name="payment_usd"),
 ]

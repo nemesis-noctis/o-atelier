@@ -47,27 +47,35 @@ def user_profile(request) -> HttpResponse:
                   context={"landing_data": get_landing_data(), "new_notifications": new_notifications})
 
 
-class PaymentView(LoginRequiredMixin, View):
+class Payment_USD_View(LoginRequiredMixin, View):
     login_url = reverse_lazy("login")
 
-    def get(self, request, uuid, currency: str) -> HttpResponseRedirect | HttpResponse:
+    def get(self, request, uuid) -> HttpResponse:
+        commission: Commission = request.user.commissions.get(uuid=uuid)
+        amount = round(commission.price_usd / 2, 2)
+
+        return render(request, "accounts/partials/payment_usd.html",
+                      context={"commission": commission, "amount_usd": amount})
+
+
+class Payment_BRL_View(LoginRequiredMixin, View):
+    login_url = reverse_lazy("login")
+
+    def get(self, request, uuid) -> HttpResponseRedirect | HttpResponse:
         commission: Commission = request.user.commissions.get(uuid=uuid)
 
-        if (not commission.stage in ["waiting_deposit_payment", "waiting_full_payment"]) or (
-                currency not in ["brl", "usd"]):
+        if not commission.stage in ["waiting_deposit_payment", "waiting_full_payment"]:
             return redirect("comms_in_progress")
 
-        amount = round(commission.price_brl / 2, 2) if currency == "brl" else round(commission.price_usd / 2, 2)
+        amount = round(commission.price_brl / 2, 2)
         context = {"commission": commission,
-                   "currency": currency,
-                   "amount": amount}
-        return render(request, "accounts/partials/payment.html", context=context)
+                   "amount_brl": amount}
+        return render(request, "accounts/partials/payment_brl.html", context=context)
 
-    def post(self, request, uuid, currency) -> HttpResponseRedirect | HttpResponse:
+    def post(self, request, uuid) -> HttpResponseRedirect | HttpResponse:
         commission: Commission = request.user.commissions.get(uuid=uuid)
 
-        if (not commission.stage in ["waiting_deposit_payment", "waiting_full_payment"]) or (
-                currency not in ["brl", "usd"]):
+        if not commission.stage in ["waiting_deposit_payment", "waiting_full_payment"]:
             return redirect("comms_in_progress")
 
         sdk = mercadopago.SDK(os.getenv("MP_ACCESS_TOKEN"))
@@ -77,7 +85,7 @@ class PaymentView(LoginRequiredMixin, View):
         }
 
         data = json.loads(request.body)
-        amount = round(commission.price_brl / 2, 2) if currency == "brl" else round(commission.price_usd / 2, 2)
+        amount = round(commission.price_brl / 2, 2)
 
         if data["payment_method_id"] == "pix":
             payment_data = {
@@ -109,10 +117,9 @@ class PaymentView(LoginRequiredMixin, View):
         payment_response = sdk.payment().create(payment_data, request_options)
         payment = payment_response["response"]
         context = {"commission": commission,
-                   "currency": currency,
                    "amount": amount,
                    "payment": payment}
-        return render(request, "accounts/partials/payment.html", context=context)
+        return render(request, "accounts/partials/payment_brl.html", context=context)
 
 
 @login_required
