@@ -122,7 +122,14 @@
                                     {% translate 'Ao solicitar uma comissão, você concorda automaticamente com todos os termos e condições descritos. Leia com atenção antes de efetuar o pedido.' %}
                                     </span>
                                 </div>
-                                <a href="{% url "comms_choice" %}" class="btn btn-primary commission-request-btn"
+                                <a href="
+                                      {% if read_again %}
+                                        javascript:history.back()
+                                      {% else %}
+                                        {% url "comms_choice" %}
+                                      {% endif %}
+                                    "
+                                   class="btn btn-primary commission-request-btn"
                                    style="margin: 24px auto;">
                                     {% translate 'Aceitar termos e continuar' %}
                                 </a>

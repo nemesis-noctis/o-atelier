@@ -66,7 +66,8 @@ def terms_of_service(request, read_again) -> HttpResponseRedirect | HttpResponse
     else:
         request.session["tos_already_seen"] = True
 
-    return render(request, "commissions/terms_of_service.html", context={"landing_data": get_landing_data()})
+    return render(request, "commissions/terms_of_service.html",
+                  context={"landing_data": get_landing_data(), "read_again": read_again})
 
 
 def paypal_capture_order(request) -> JsonResponse:
