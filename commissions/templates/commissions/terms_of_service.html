@@ -9,7 +9,7 @@
     {% include 'include/navbar.html' %}
     <section class="mt-9 mt-sm-9 mt-md-9 mt-lg-9 mt-xl-9 mt-xxl-10"
              style="width: 100%;height: 100%;color: rgb(33, 37, 41);">
-        <div class="row gx-4 gy-2 mw-100 justify-content-center">
+        <div class="row gx-0 gy-2 mw-100 justify-content-center">
             <div class="col col-sm col-md col-lg-6 col-xl-5 col-xxl-4" style="width: 60vw;">
                 <div class="card mw-100"
                      style="border-radius: 30px;margin-right: auto;margin-left: auto;padding: 20px 30px;border-color: var(--bs-focus-ring-color);">
@@ -116,43 +116,11 @@
 
                             </div>
                             <div class="col">
-                                <div class="row"
-                                     style="background: #EDF5FE;padding: 12px;border-radius: 18px;margin-bottom: 24px;">
-                                    <div class="col" style="font-size: 18px;"><span class="d-block"
-                                                                                    style="margin-bottom: 12px;color: white;border-radius: 18px;background: rgb(105,167,252);">Faço</span>
-                                        <ul style="text-align: left;font-size: 14px;color: rgb(105,167,252);">
-                                            <li>Oc&#39;s</li>
-                                            <li>Personagens Humanos</li>
-                                            <li>Personagens Furry/Híbridos</li>
-                                            <li>Chibi</li>
-                                            <li>Criaturas/Animais</li>
-                                            <li>Mechas/Robôs</li>
-                                            <li>Fanarts</li>
-                                            <li>Cenários</li>
-                                            <li>Objetos (Armas, Acessórios, etc) </li>
-                                            <li>Sheets</li>
-                                            <li>Cenas</li>
-                                        </ul>
-                                    </div>
-                                    <div class="col"><span class="d-block"
-                                                           style="font-size: 18px;margin-bottom: 12px;color: rgb(105,167,252);background: white;border-radius: 18px;">Não Faço</span>
-                                        <ul style="text-align: left;font-size: 14px;color: rgb(105,167,252);">
-                                            <li>Nsfw</li>
-                                            <li>Gore Pesado</li>
-                                            <li>Conteúdo de Ódio ou Descriminação</li>
-                                            <li>Fetiches</li>
-                                            <li>Cópia de Estilo de Outros Artistas</li>
-                                            <li>Realismo</li>
-                                            <li>Artes Hiperdetalhadas</li>
-                                            <li>Alterações de Artes de Outros Artistas</li>
-                                            <li>Animação/Gifs</li>
-                                            <li>Qualquer Conteúdo Que Possa Me Deixar Desconfortável</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <div style="margin: 34px 0;"><span class="d-block"
-                                                                   style="font-size: 14px;width: 60%;margin: 0 auto;"><span
-                                        style="color: rgb(0, 0, 0); background-color: transparent;">Ao solicitar uma comissão, você concorda automaticamente com todos os termos e condições descritos. Leia com atenção antes de efetuar o pedido.</span></span>
+                                {% include 'commissions/include/dos_and_donts.html' %}
+                                <div style="margin: 34px 0;">
+                                    <span class="d-block" style="font-size: 14px;width: 70%;margin: 0 auto;">
+                                    {% translate 'Ao solicitar uma comissão, você concorda automaticamente com todos os termos e condições descritos. Leia com atenção antes de efetuar o pedido.' %}
+                                    </span>
                                 </div>
                                 <a href="{% url "comms_choice" %}" class="btn btn-primary commission-request-btn"
                                    style="margin: 24px auto;">
