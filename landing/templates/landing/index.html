@@ -74,9 +74,20 @@
                                    style="color: #9ec5fe">@{{ landing_data.tiktok }}</a>
                             </li>
                         </ul>
+
                     </div>
+
                 </div>
+
             </div>
+            <div style="width: 80%; margin: 12px auto">
+                {% include 'commissions/include/dos_and_donts.html' %}
+                <a class="card-link" href="{% url "terms_of_service" read_again=1 %}"
+                   style="color: #69A7FC; font-size: 12px; display: block; text-align: right">
+                    {% translate 'Ler Termos de Serviço' %}
+                </a>
+            </div>
+
         </div>
     </div>
     <section class="mt-0 pt-4 pb-0 py-xl-5">

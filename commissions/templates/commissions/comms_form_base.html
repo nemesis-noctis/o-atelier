@@ -85,8 +85,9 @@
                             <span style="font-size: 15px;">
                             {% translate 'Ao prosseguir com o pedido, você concorda com os termos e condições, por favor, acesse o link para conferir antes de prosseguir.' %}
                             </span>
-                            <a class="card-link" href="#" style="color: #69A7FC;">
-                                {% translate 'Termos e Condições' %}
+                            <a class="card-link" href="{% url "terms_of_service" read_again=1 %}"
+                               style="color: #69A7FC;">
+                                {% translate 'Termos de serviço' %}
                             </a>
                         {% endif %}
 
