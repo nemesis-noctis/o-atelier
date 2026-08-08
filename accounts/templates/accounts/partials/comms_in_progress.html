@@ -4,6 +4,19 @@
     <h2 style="color: rgb(76,84,92);font-family: 'Abhaya Libre', serif;text-align: center;font-size: 22px;padding-top: 15px;padding-bottom: 10px;border-bottom: 1px solid var(--bs-dark-border-subtle);">
         {% translate 'Pedidos Em andamento' %}
     </h2>
+    <div style="text-align: right;">
+
+        {% for message in messages %}
+            {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                <div style="text-align: right;">
+                    <span class="d-block"
+                          style="text-align: center;color: var(--bs-danger);">
+                        {{ message }}
+                    </span>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
     <div>
         <div class="mw-100 row gy-4 row-cols-1 justify-content-center"
              style="width: 860px; margin-left: auto; margin-right: auto">
