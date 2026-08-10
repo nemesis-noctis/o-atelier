@@ -17,10 +17,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
 
         self.comm_uuid = self.scope["url_route"]["kwargs"]["uuid"]
-        if self.user.is_superuser:
-            self.commission = await Commission.objects.aget(uuid=self.comm_uuid)
-        else:
-            self.commission = await self.user.commissions.aget(uuid=self.comm_uuid)
+
+        try:
+            if self.user.is_superuser:
+                self.commission = await Commission.objects.aget(uuid=self.comm_uuid)
+            else:
+                self.commission = await self.user.commissions.aget(uuid=self.comm_uuid)
+        except Commission.DoesNotExist:
+            await self.close()
+            return
 
         await self.channel_layer.group_add(str(self.comm_uuid).replace("-", "_"), self.channel_name)
         await self.accept()
@@ -37,7 +42,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
         if (not form.is_valid()) or (content.strip() == "" and image_uuid is None):
             return
 
-        message_image = await MessageImage.objects.aget(uuid=image_uuid) if image_uuid else None
+        try:
+            message_image = await MessageImage.objects.aget(uuid=image_uuid) if image_uuid else None
+        except MessageImage.DoesNotExist:
+            await self.close()
+            return
+
         message = await Message.objects.acreate(
             content=content,
             user=self.user,

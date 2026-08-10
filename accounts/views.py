@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, PasswordResetDoneView, \
     PasswordResetCompleteView
+from django.db import transaction, IntegrityError
 from django.db.models import Count
 from django.db.models import Q
 from django.db.models import QuerySet
@@ -51,20 +52,41 @@ class Payment_USD_View(LoginRequiredMixin, View):
     login_url = reverse_lazy("login")
 
     def get(self, request, uuid) -> HttpResponse:
-        commission: Commission = request.user.commissions.get(uuid=uuid)
-        amount = round(commission.price_usd / 2, 2)
+        try:
+            commission: Commission = request.user.commissions.get(uuid=uuid)
+        except Commission.DoesNotExist:
+            messages.add_message(request, level=messages.ERROR,
+                                 message=_(f"Uma commission com o uuid: {uuid} não existe. Tente novamente."))
+            return redirect("comms_in_progress")
 
+        if not commission.stage in ["waiting_deposit_payment", "waiting_full_payment"]:
+            messages.add_message(request, level=messages.ERROR,
+                                 message=_(f"Um pagamento para esta commission ainda não está disponível."))
+            return redirect("comms_in_progress")
+
+        amount = round(commission.price_usd / 2, 2)
+        context = {
+            "commission": commission,
+            "amount_usd": amount
+        }
         return render(request, "accounts/partials/payment_usd.html",
-                      context={"commission": commission, "amount_usd": amount})
+                      context=context)
 
 
 class Payment_BRL_View(LoginRequiredMixin, View):
     login_url = reverse_lazy("login")
 
     def get(self, request, uuid) -> HttpResponseRedirect | HttpResponse:
-        commission: Commission = request.user.commissions.get(uuid=uuid)
+        try:
+            commission: Commission = request.user.commissions.get(uuid=uuid)
+        except Commission.DoesNotExist:
+            messages.add_message(request, level=messages.ERROR,
+                                 message=_(f"Uma commission com o uuid: {uuid} não existe. Tente novamente."))
+            return redirect("comms_in_progress")
 
         if not commission.stage in ["waiting_deposit_payment", "waiting_full_payment"]:
+            messages.add_message(request, level=messages.ERROR,
+                                 message=_(f"Um pagamento para esta commission ainda não está disponível."))
             return redirect("comms_in_progress")
 
         amount = round(commission.price_brl / 2, 2)
@@ -73,9 +95,16 @@ class Payment_BRL_View(LoginRequiredMixin, View):
         return render(request, "accounts/partials/payment_brl.html", context=context)
 
     def post(self, request, uuid) -> HttpResponseRedirect | HttpResponse:
-        commission: Commission = request.user.commissions.get(uuid=uuid)
+        try:
+            commission: Commission = request.user.commissions.get(uuid=uuid)
+        except Commission.DoesNotExist:
+            messages.add_message(request, level=messages.ERROR,
+                                 message=_(f"Uma commission com o uuid: {uuid} não existe. Tente novamente."))
+            return redirect("comms_in_progress")
 
         if not commission.stage in ["waiting_deposit_payment", "waiting_full_payment"]:
+            messages.add_message(request, level=messages.ERROR,
+                                 message=_(f"Um pagamento para esta commission ainda não está disponível."))
             return redirect("comms_in_progress")
 
         sdk = mercadopago.SDK(os.getenv("MP_ACCESS_TOKEN"))
@@ -87,7 +116,8 @@ class Payment_BRL_View(LoginRequiredMixin, View):
         data = json.loads(request.body)
         amount = round(commission.price_brl / 2, 2)
 
-        if data["payment_method_id"] == "pix":
+        payment_method = data.get("payment_method_id")
+        if payment_method == "pix":
             payment_data = {
                 "transaction_amount": amount,
                 "payment_method_id": data.get("payment_method_id"),
@@ -124,8 +154,16 @@ class Payment_BRL_View(LoginRequiredMixin, View):
 
 @login_required
 def payment_currency_choice(request, uuid) -> HttpResponse:
-    commission: Commission = request.user.commissions.get(uuid=uuid)
+    try:
+        commission: Commission = request.user.commissions.get(uuid=uuid)
+    except Commission.DoesNotExist:
+        messages.add_message(request, level=messages.ERROR,
+                             message=_(f"Uma commission com o uuid: {uuid} não existe. Tente novamente."))
+        return redirect("comms_in_progress")
+
     if not commission.stage in ["waiting_deposit_payment", "waiting_full_payment"]:
+        messages.add_message(request, level=messages.ERROR,
+                             message=_(f"Um pagamento para esta commission ainda não está disponível."))
         return redirect("comms_in_progress")
 
     return render(request, "accounts/partials/payment_currency_choice.html", context={"commission": commission})
@@ -135,15 +173,20 @@ class CommChat(LoginRequiredMixin, View):
     login_url = reverse_lazy("login")
 
     def get(self, request, uuid) -> HttpResponse:
-        if request.user.is_superuser:
-            commission = Commission.objects.get(uuid=uuid)
-        else:
-            commission = request.user.commissions.get(uuid=uuid)
+        try:
+            if request.user.is_superuser:
+                commission = Commission.objects.get(uuid=uuid)
+            else:
+                commission = request.user.commissions.get(uuid=uuid)
+        except Commission.DoesNotExist:
+            messages.add_message(request, level=messages.ERROR,
+                                 message=_(f"Uma commission com o uuid: {uuid} não existe. Tente novamente."))
+            return redirect("comms_in_progress")
 
-        messages = commission.messages.all().order_by("-created_at")
+        comm_msgs = commission.messages.all().order_by("-created_at")
 
         context = {
-            "all_messages": messages,
+            "all_messages": comm_msgs,
             "commission": commission,
             "form": forms.SendMessageForm(),
             "image_form": forms.MessageImageForm()
@@ -210,7 +253,14 @@ class CommissionNextStageView(LoginRequiredMixin, UserPassesTestMixin, View):
         return next_stage
 
     def get(self, request, uuid) -> HttpResponse:
-        commission = Commission.objects.get(uuid=uuid)
+
+        try:
+            commission = Commission.objects.get(uuid=uuid)
+        except Commission.DoesNotExist:
+            messages.add_message(request, level=messages.ERROR,
+                                 message=_(f"Uma commission com o uuid: {uuid} não existe. Tente novamente."))
+            return redirect("comms_in_progress")
+
         form = forms.NextStageForm()
         next_stage = self.set_commission_to_next_stage(commission, commit=False)
         context = {
@@ -222,27 +272,37 @@ class CommissionNextStageView(LoginRequiredMixin, UserPassesTestMixin, View):
 
     def post(self, request, uuid):
         form = forms.NextStageForm(request.POST, request.FILES)
-        commission = Commission.objects.get(uuid=uuid)
+        try:
+            commission = Commission.objects.get(uuid=uuid)
+        except Commission.DoesNotExist:
+            messages.add_message(request, level=messages.ERROR,
+                                 message=_(f"Uma commission com o uuid: {uuid} não existe. Tente novamente."))
+            return redirect("comms_in_progress")
 
         if form.is_valid():
-            previous_stage = commission.get_stage_display()
-            next_stage = self.set_commission_to_next_stage(commission, commit=True)
-            instance: ProgressImage = form.save(commit=False)
-            instance.commission = commission
-            instance.stage = previous_stage
-            instance.save()
+            try:
+                with transaction.atomic():
+                    previous_stage = commission.get_stage_display()
+                    next_stage = self.set_commission_to_next_stage(commission, commit=True)
+                    instance: ProgressImage = form.save(commit=False)
+                    instance.commission = commission
+                    instance.stage = previous_stage
+                    instance.save()
 
-            sys_message_image = MessageImage(image=instance.image)
-            sys_message_image.save()
-            sys_message = Message(content=_(commission.get_stage_display()), commission=commission,
-                                  image=sys_message_image).save()
+                    sys_message_image = MessageImage(image=instance.image)
+                    sys_message_image.save()
+                    sys_message = Message(content=_(commission.get_stage_display()), commission=commission,
+                                          image=sys_message_image).save()
 
-            notification_key = "comm_update_final" if commission.stage == "waiting_full_payment" else "comm_update"
-            send_notification_to_client(commission.user, notification_key, "MESSAGE",
-                                        context={"uuid": str(commission.uuid),
-                                                 "previous_stage": previous_stage.title(),
-                                                 "current_stage": next_stage.title()})
-
+                    notification_key = "comm_update_final" if commission.stage == "waiting_full_payment" else "comm_update"
+                    send_notification_to_client(commission.user, notification_key, "MESSAGE",
+                                                context={"uuid": str(commission.uuid),
+                                                         "previous_stage": previous_stage.title(),
+                                                         "current_stage": next_stage.title()})
+            except IntegrityError:
+                messages.add_message(request, level=messages.ERROR,
+                                     message=_(
+                                         f"Ocorreu um erro ao tentar atualizar o status da commission: {uuid}. Tente novamente."))
             return redirect("comms_in_progress")
         else:
             next_stage = self.set_commission_to_next_stage(commission, commit=False)
@@ -261,7 +321,13 @@ class AcceptCommissionView(LoginRequiredMixin, UserPassesTestMixin, View):
         return self.request.user.is_superuser
 
     def get(self, request, uuid) -> HttpResponse:
-        comm_to_accept = Commission.objects.get(uuid=uuid)
+        try:
+            comm_to_accept = Commission.objects.get(uuid=uuid)
+        except Commission.DoesNotExist:
+            messages.add_message(request, level=messages.ERROR,
+                                 message=_(f"Uma commission com o uuid: {uuid} não existe. Tente novamente."))
+            return redirect("comms_in_progress")
+
         form = forms.ReasonForm()
         form.fields["new_price_brl"].initial = comm_to_accept.price_brl
         form.fields["new_price_usd"].initial = comm_to_accept.price_usd
@@ -273,19 +339,30 @@ class AcceptCommissionView(LoginRequiredMixin, UserPassesTestMixin, View):
 
     def post(self, request, uuid):
         form = forms.ReasonForm(request.POST)
-        comm_to_accept = Commission.objects.get(uuid=uuid)
+        try:
+            comm_to_accept = Commission.objects.get(uuid=uuid)
+        except Commission.DoesNotExist:
+            messages.add_message(request, level=messages.ERROR,
+                                 message=_(f"Uma commission com o uuid: {uuid} não existe. Tente novamente."))
+            return redirect("comms_in_progress")
 
         if form.is_valid():
-            comm_to_accept.stage = "waiting_deposit_payment"
-            comm_to_accept.price_brl = form.cleaned_data["new_price_brl"]
-            comm_to_accept.price_usd = form.cleaned_data["new_price_usd"]
-            comm_to_accept.save()
-            accept_message = form.cleaned_data["reason"]
+            try:
+                with transaction.atomic():
+                    comm_to_accept.stage = "waiting_deposit_payment"
+                    comm_to_accept.price_brl = form.cleaned_data["new_price_brl"]
+                    comm_to_accept.price_usd = form.cleaned_data["new_price_usd"]
+                    comm_to_accept.save()
+                    accept_message = form.cleaned_data["reason"]
 
-            send_notification_to_client(comm_to_accept.user, "comm_accepted", "SUCCESS",
-                                        context={"message": accept_message, "uuid": str(comm_to_accept.uuid),
-                                                 "price_brl": comm_to_accept.price_brl,
-                                                 "price_usd": comm_to_accept.price_usd})
+                    send_notification_to_client(comm_to_accept.user, "comm_accepted", "SUCCESS",
+                                                context={"message": accept_message, "uuid": str(comm_to_accept.uuid),
+                                                         "price_brl": comm_to_accept.price_brl,
+                                                         "price_usd": comm_to_accept.price_usd})
+            except IntegrityError:
+                messages.add_message(request, level=messages.ERROR,
+                                     message=_(
+                                         f"Ocorreu um erro e a commission: {uuid} não foi aceita. Tente novamente."))
 
             return redirect("comms_in_progress")
         else:
@@ -300,60 +377,80 @@ class CancelCommissionView(LoginRequiredMixin, View):
     login_url = reverse_lazy("login")
 
     def get(self, request, uuid) -> HttpResponse:
-        if request.user.is_superuser:
-            comm_to_cancel = Commission.objects.get(uuid=uuid)
-            form = forms.ReasonForm()
-            context = {
-                "commission": comm_to_cancel,
-                "form": form
-            }
-            return render(request, "accounts/partials/cancel_confirmation.html", context=context)
-
-        else:
-            comm_to_cancel = request.user.commissions.get(uuid=uuid)
-            context = {
-                "commission": comm_to_cancel
-            }
-            return render(request, "accounts/partials/cancel_confirmation.html", context=context)
-
-    def post(self, request, uuid) -> HttpResponseRedirect | HttpResponse:
-        if request.user.is_superuser:
-            form = forms.ReasonForm(request.POST)
-            comm_to_cancel = Commission.objects.get(uuid=uuid)
-
-            if form.is_valid():
-                comm_original_stage = comm_to_cancel.stage
-                comm_to_cancel.stage = "canceled"
-                comm_to_cancel.progress_image.all().delete()
-                comm_to_cancel.reference_images.all().delete()
-                comm_to_cancel.finished_at = timezone.now()
-                comm_to_cancel.save()
-                cancellation_reason = form.cleaned_data["reason"]
-
-                notification_key = "comm_refusal" if comm_original_stage == "waiting_confirmation" else "comm_cancelation_client"
-                send_notification_to_client(comm_to_cancel.user, notification_key, "ALERT",
-                                            context={"message": cancellation_reason, "uuid": str(comm_to_cancel.uuid)})
-
-                return redirect("comms_in_progress")
-            else:
+        try:
+            if request.user.is_superuser:
+                comm_to_cancel = Commission.objects.get(uuid=uuid)
+                form = forms.ReasonForm()
                 context = {
                     "commission": comm_to_cancel,
                     "form": form
                 }
                 return render(request, "accounts/partials/cancel_confirmation.html", context=context)
 
-        else:
-            comm_to_cancel = request.user.commissions.get(uuid=uuid)
-            comm_to_cancel.stage = "canceled"
-            comm_to_cancel.progress_image.all().delete()
-            comm_to_cancel.reference_images.all().delete()
-            comm_to_cancel.finished_at = timezone.now()
-            comm_to_cancel.save()
+            else:
+                comm_to_cancel = request.user.commissions.get(uuid=uuid)
+                context = {
+                    "commission": comm_to_cancel
+                }
+        except Commission.DoesNotExist:
+            messages.add_message(request, level=messages.ERROR,
+                                 message=_(f"Uma commission com o uuid: {uuid} não existe. Tente novamente."))
+            return redirect("comms_in_progress")
 
-            send_notification_to_artist("comm_cancelation_artist", "ALERT",
-                                        context={"uuid": str(comm_to_cancel.uuid),
-                                                 "client": comm_to_cancel.user.username})
+        return render(request, "accounts/partials/cancel_confirmation.html", context=context)
 
+    def post(self, request, uuid) -> HttpResponseRedirect | HttpResponse:
+
+        try:
+            if request.user.is_superuser:
+                form = forms.ReasonForm(request.POST)
+                comm_to_cancel = Commission.objects.get(uuid=uuid)
+
+                if form.is_valid():
+                    with transaction.atomic():
+                        comm_original_stage = comm_to_cancel.stage
+                        comm_to_cancel.stage = "canceled"
+                        comm_to_cancel.progress_image.all().delete()
+                        comm_to_cancel.reference_images.all().delete()
+                        comm_to_cancel.finished_at = timezone.now()
+                        comm_to_cancel.save()
+                        cancellation_reason = form.cleaned_data["reason"]
+
+                        notification_key = "comm_refusal" if comm_original_stage == "waiting_confirmation" else "comm_cancelation_client"
+                        send_notification_to_client(comm_to_cancel.user, notification_key, "ALERT",
+                                                    context={"message": cancellation_reason,
+                                                             "uuid": str(comm_to_cancel.uuid)})
+
+                    return redirect("comms_in_progress")
+                else:
+                    context = {
+                        "commission": comm_to_cancel,
+                        "form": form
+                    }
+                    return render(request, "accounts/partials/cancel_confirmation.html", context=context)
+
+            else:
+                with transaction.atomic():
+                    comm_to_cancel = request.user.commissions.get(uuid=uuid)
+                    comm_to_cancel.stage = "canceled"
+                    comm_to_cancel.progress_image.all().delete()
+                    comm_to_cancel.reference_images.all().delete()
+                    comm_to_cancel.finished_at = timezone.now()
+                    comm_to_cancel.save()
+
+                    send_notification_to_artist("comm_cancelation_artist", "ALERT",
+                                                context={"uuid": str(comm_to_cancel.uuid),
+                                                         "client": comm_to_cancel.user.username})
+                return redirect("comms_in_progress")
+
+        except Commission.DoesNotExist:
+            messages.add_message(request, level=messages.ERROR,
+                                 message=_(f"Uma commission com o uuid: {uuid} não existe. Tente novamente."))
+            return redirect("comms_in_progress")
+
+        except IntegrityError:
+            messages.add_message(request, level=messages.ERROR,
+                                 message=_(f"Ocorreu um erro ao cancelar a commission: {uuid}. Tente novamente."))
             return redirect("comms_in_progress")
 
 
@@ -403,9 +500,12 @@ class NotificationsView(LoginRequiredMixin, View):
 
         notification_pk = request.POST.get("pk", "")
         if not notification_pk == "":
-            notification = request.user.notifications.get(pk=notification_pk)
-            notification.is_read = True
-            notification.save()
+            try:
+                notification = request.user.notifications.get(pk=notification_pk)
+                notification.is_read = True
+                notification.save()
+            except Notification.DoesNotExist:
+                pass
 
         # notification icon reloader
         messages.success(request, message="None")
@@ -454,15 +554,23 @@ class ChangeUserPasswordView(LoginRequiredMixin, UserPassesTestMixin, View):
         return self.request.user.is_superuser
 
     def get_user_pk(self, request) -> CustomUser:
-        if request.method == "GET":
-            user_pk = request.GET.get("user_pk", "")
-            return CustomUser.objects.get(pk=user_pk)
-        else:
-            user_pk = request.POST.get("user_pk", "")
-            return CustomUser.objects.get(pk=user_pk)
+        try:
+            if request.method == "GET":
+                user_pk = request.GET.get("user_pk", "")
+                return CustomUser.objects.get(pk=user_pk)
+            else:
+                user_pk = request.POST.get("user_pk", "")
+                return CustomUser.objects.get(pk=user_pk)
+        except CustomUser.DoesNotExist:
+            return None
 
     def get(self, request) -> HttpResponse:
         user = self.get_user_pk(request)
+        if not user:
+            messages.add_message(request, level=messages.ERROR,
+                                 message=_(f"Este usuário não existe. Tente novamente."))
+            return redirect("user_manager")
+
         context = {
             "user_": user,
             "form": forms.NewPasswordForm(user)
@@ -471,6 +579,11 @@ class ChangeUserPasswordView(LoginRequiredMixin, UserPassesTestMixin, View):
 
     def post(self, request) -> HttpResponse:
         user = self.get_user_pk(request)
+        if not user:
+            messages.add_message(request, level=messages.ERROR,
+                                 message=_(f"Este usuário não existe. Tente novamente."))
+            return redirect("user_manager")
+
         form = forms.NewPasswordForm(user, request.POST)
         context = {
             "user_": user,
@@ -485,7 +598,7 @@ class ChangeUserPasswordView(LoginRequiredMixin, UserPassesTestMixin, View):
             return render(request, "accounts/artist/partials/change_user_password.html", context=context)
 
 
-class BlockedUserView(LoginRequiredMixin, UserPassesTestMixin, View):
+class BlockUserView(LoginRequiredMixin, UserPassesTestMixin, View):
     login_url = reverse_lazy("login")
 
     def test_func(self) -> bool | None:
@@ -496,7 +609,13 @@ class BlockedUserView(LoginRequiredMixin, UserPassesTestMixin, View):
                       context={"b_status": b_status, "pk": pk})
 
     def post(self, request, b_status, pk):
-        user = CustomUser.objects.get(pk=pk)
+        try:
+            user = CustomUser.objects.get(pk=pk)
+        except CustomUser.DoesNotExist:
+            messages.add_message(request, level=messages.ERROR,
+                                 message=_(f"Este usuário não existe. Tente novamente."))
+            return redirect("user_manager")
+
         user.is_active = False if b_status == "block" else True
         user.save()
         return redirect("user_manager")
@@ -529,15 +648,19 @@ class GalleryAddView(LoginRequiredMixin, UserPassesTestMixin, View):
     def post(self, request, _type) -> HttpResponseRedirect:
         form = None
 
-        if _type == "image":
-            form = forms.AddImageToGalleryForm(request.POST, request.FILES)
+        if _type in ["image", "tag"]:
+            if _type == "image":
+                form = forms.AddImageToGalleryForm(request.POST, request.FILES)
 
-        elif _type == "tag":
-            form = forms.AddTagToGalleryForm(request.POST)
+            elif _type == "tag":
+                form = forms.AddTagToGalleryForm(request.POST)
 
-        if form is not None:
-            if form.is_valid():
-                form.save()
+            if form is not None:
+                if form.is_valid():
+                    form.save()
+        else:
+            messages.add_message(request, level=messages.ERROR,
+                                 message=_(f"Tipo inválido. Tente novamente."))
 
         return redirect("gallery_editor")
 
@@ -553,14 +676,21 @@ class GalleryDeleteView(LoginRequiredMixin, UserPassesTestMixin, View):
             return render(request, f"accounts/artist/partials/gallery_{_type}_delete_confirmation.html",
                           context={"pk": pk})
         else:
+            messages.add_message(request, level=messages.ERROR,
+                                 message=_(f"Tipo inválido. Tente novamente."))
             return redirect("gallery_editor")
 
     def post(self, request, _type, pk) -> HttpResponseRedirect:
-        if _type == "tag":
-            GalleryTag.objects.get(pk=pk).delete()
+        try:
+            if _type == "tag":
+                GalleryTag.objects.get(pk=pk).delete()
 
-        elif _type == "image":
-            GalleryImage.objects.get(pk=pk).delete()
+            elif _type == "image":
+                GalleryImage.objects.get(pk=pk).delete()
+
+        except GalleryTag.DoesNotExist, GalleryImage.DoesNotExist:
+            messages.add_message(request, level=messages.ERROR,
+                                 message=_(f"Nenhuma imagem ou tag encontrada para o id:{pk}. Tente novamente."))
 
         return redirect("gallery_editor")
 
@@ -633,23 +763,25 @@ class ChangeAccountDataView(LoginRequiredMixin, View):
 
         form = forms.EditAccountDataForm(request.user, post_data)
         if form.is_valid():
-            data = form.cleaned_data
-            request.user.username = data["username"]
-            request.user.email = data["email"]
-            request.user.save()
-            form.save()
+            try:
+                with transaction.atomic():
+                    data = form.cleaned_data
+                    request.user.username = data["username"]
+                    request.user.email = data["email"]
+                    request.user.save()
+                    form.save()
 
-            user: AbstractBaseUser | None = authenticate(request, username=data["username"],
-                                                         password=data["new_password1"])
-            login_user(request, user)
+                    user: AbstractBaseUser | None = authenticate(request, username=data["username"],
+                                                                 password=data["new_password1"])
+                    login_user(request, user)
 
-            messages.success(request, _("Dados alterados com sucesso."))
-            return render(request, "accounts/partials/change_account_data.html",
-                          context={"form": form})
+                    messages.success(request, _("Dados alterados com sucesso."))
+            except IntegrityError:
+                messages.add_message(request, level=messages.ERROR,
+                                     message=_(f"Ocorreu um erro ao atualizar seus dados. Tente novamente."))
 
-        else:
-            return render(request, "accounts/partials/change_account_data.html",
-                          context={"form": form})
+        return render(request, "accounts/partials/change_account_data.html",
+                      context={"form": form})
 
     def get(self, request) -> HttpResponse:
         form = forms.EditAccountDataForm(user=request.user,

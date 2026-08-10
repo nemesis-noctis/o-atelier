@@ -4,6 +4,16 @@
     <h2 style="color: rgb(76,84,92);font-family: 'Abhaya Libre', serif;text-align: center;font-size: 22px;padding-top: 15px;padding-bottom: 10px;border-bottom: 1px solid var(--bs-dark-border-subtle);">
         {% translate 'Gerenciar Usuários' %}
     </h2>
+    {% for message in messages %}
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+            <div style="text-align: right;">
+                    <span class="d-block"
+                          style="text-align: center;color: var(--bs-danger);">
+                        {{ message }}
+                    </span>
+            </div>
+        {% endif %}
+    {% endfor %}
     <div class="row mw-100 gy-1" style="margin-right: auto; margin-left: auto">
         <div class="col" style="text-align: justify;">
             <form hx-get="{% url "user_manager" %}?order_by={{ order_by }}"
