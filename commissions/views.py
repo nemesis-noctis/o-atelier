@@ -5,9 +5,11 @@ from urllib.parse import urlencode
 
 import mercadopago
 import requests
+import requests.exceptions as req_execept
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.files.base import ContentFile
+from django.db import transaction, IntegrityError
 from django.forms import RadioSelect
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
@@ -48,9 +50,15 @@ def set_required_fields_based_on_category(form: CommissionForm, category: str) -
 
 def get_paypal_auth_data():
     auth_url = "https://api-m.sandbox.paypal.com/v1/oauth2/token"
-    auth_response = requests.post(auth_url, headers={"Content-Type": "application/x-www-form-urlencoded"},
-                                  auth=(os.getenv("PayPal_ClientId"), os.getenv("PayPal_ClientSecret")),
-                                  data={"grant_type": "client_credentials"})
+    try:
+        auth_response = requests.post(auth_url, headers={"Content-Type": "application/x-www-form-urlencoded"},
+                                      auth=(os.getenv("PayPal_ClientId"), os.getenv("PayPal_ClientSecret")),
+                                      data={"grant_type": "client_credentials"},
+                                      timeout=10)
+        auth_response.raise_for_status()
+    except req_execept.ConnectTimeout, req_execept.ConnectionError, req_execept.HTTPError:
+        return None
+
     return auth_response.json()
 
 
@@ -72,6 +80,9 @@ def terms_of_service(request, read_again) -> HttpResponseRedirect | HttpResponse
 
 def paypal_capture_order(request) -> JsonResponse:
     auth_data = get_paypal_auth_data()
+    if not auth_data:
+        return JsonResponse(json.dumps({"auth_error": "auth request failed."}))
+
     data = json.loads(request.body)
     order_id = data["orderId"]
 
@@ -82,20 +93,30 @@ def paypal_capture_order(request) -> JsonResponse:
         "Authorization": f"{auth_data.get("token_type")} {auth_data.get("access_token")}",
     }
 
-    response = requests.post(url, headers=headers)
-    print(response.json())
+    try:
+        response = requests.post(url, headers=headers, timeout=10)
+    except req_execept.ConnectTimeout, req_execept.ConnectionError:
+        return JsonResponse(json.dumps({"capture_error": "capture order request failed."}))
+
     return JsonResponse(response.json())
 
 
 def paypal_create_order(request) -> JsonResponse:
-    comm_uuid = json.loads(request.body).get("comm_uuid")
-    commission: Commission = request.user.commissions.get(uuid=comm_uuid)
+    comm_uuid = json.loads(request.body).get("comm_uuid", "")
+    try:
+        commission: Commission = request.user.commissions.get(uuid=comm_uuid)
+    except Commission.DoesNotExist:
+        return JsonResponse(json.dumps({"comm_error": "commission uuid not found"}))
+
     amount = round(commission.price_usd / 2, 2)
 
     if not commission.stage in ["waiting_deposit_payment", "waiting_full_payment"]:
-        return redirect("comms_in_progress")
+        return JsonResponse(json.dumps({"stage_error": "comm not in any payment stage."}))
 
     auth_data = get_paypal_auth_data()
+    if not auth_data:
+        return JsonResponse(json.dumps({"auth_error": "auth request failed."}))
+
     url = "https://api-m.sandbox.paypal.com/v2/checkout/orders"
 
     invoice_prefix = "deposit" if commission.stage == "waiting_deposit_payment" else "full"
@@ -135,7 +156,11 @@ def paypal_create_order(request) -> JsonResponse:
         "Authorization": f"{auth_data.get("token_type")} {auth_data.get("access_token")}",
     }
 
-    response = requests.request("POST", url, data=json.dumps(body), headers=headers)
+    try:
+        response = requests.request("POST", url, data=json.dumps(body), headers=headers, timeout=10)
+    except req_execept.ConnectTimeout, req_execept.ConnectionError:
+        return JsonResponse(json.dumps({"create_error": "create order request failed."}))
+
     return JsonResponse(response.json())
 
 
@@ -148,6 +173,9 @@ def payment_webhook_receiver(request) -> HttpResponse:
     if headers.get("User-Agent").startswith("PayPal"):
         url = "https://api-m.sandbox.paypal.com/v1/notifications/verify-webhook-signature"
         auth_data = get_paypal_auth_data()
+        if not auth_data:
+            return JsonResponse(json.dumps({"auth_error": "auth request failed."}))
+
         webhook_auth_body = {
             "auth_algo": headers.get("PAYPAL-AUTH-ALGO"),
             "cert_url": headers.get("PAYPAL-CERT-URL"),
@@ -157,19 +185,25 @@ def payment_webhook_receiver(request) -> HttpResponse:
             "webhook_id": os.getenv("PayPal_Webhook_Id"),
             "webhook_event": {}
         }
-        response = requests.request("POST", url, data=json.dumps(webhook_auth_body), headers={
-            "Content-Type": "application/json",
-            "Authorization": f"{auth_data.get("token_type")} {auth_data.get("access_token")}"
-        })
+
+        try:
+            response = requests.request("POST", url, data=json.dumps(webhook_auth_body), timeout=10, headers={
+                "Content-Type": "application/json",
+                "Authorization": f"{auth_data.get("token_type")} {auth_data.get("access_token")}"
+            })
+
+        except req_execept.ConnectTimeout, req_execept.ConnectionError:
+            print("Failed")
+            return HttpResponse("", 500)
 
         if not response.json().get("verification_status") == "SUCCESS":
             print("Failed")
             return HttpResponse("", 401)
 
         payment = body
-        status: str = payment.get("resource").get("status")
+        status: str = payment.get("resource", {}).get("status")
 
-        raw_comm_id: str = payment.get("resource").get("invoice_id")
+        raw_comm_id: str = payment.get("resource", {}).get("invoice_id")
         comm_id: str = raw_comm_id.removeprefix("deposit").removeprefix("full")
 
     elif headers.get("X-Meli-Trace-Bu").startswith("mercadopago"):
@@ -185,46 +219,57 @@ def payment_webhook_receiver(request) -> HttpResponse:
             print("Failed")
             return HttpResponse("", 401)
 
-        payment_id = body.get("data").get("id")
+        payment_id = body.get("data", {}).get("id")
         sdk = mercadopago.SDK(os.getenv("MP_ACCESS_TOKEN"))
         request_options = mercadopago.config.RequestOptions()
 
         payment = sdk.payment().get(payment_id, request_options)
-        status = payment.get("response").get("status")
+        status = payment.get("response", {}).get("status")
 
-        raw_comm_id: str = payment.get("response").get("external_reference")
+        raw_comm_id: str = payment.get("response", {}).get("external_reference")
         comm_id: str = raw_comm_id.removeprefix("comm-").removesuffix("-deposit").removesuffix("-full")
 
     else:
+        print("Failed")
         return HttpResponse("", 401)
 
     if status in {"approved", "COMPLETED"}:
-        commission = Commission.objects.get(uuid=comm_id)
+        try:
+            commission = Commission.objects.get(uuid=comm_id)
+        except Commission.DoesNotExist:
+            print("Failed")
+            return HttpResponse("", 404)
 
         if commission.stage not in ["waiting_deposit_payment", "waiting_full_payment"]:
             return HttpResponse("", 200)
 
         prev_comm_stage = commission.stage
         commission.stage = "sketch" if prev_comm_stage == "waiting_deposit_payment" else "finished"
-        if prev_comm_stage == "waiting_full_payment":
-            commission.finished_at = timezone.now()
-            final_image_object = commission.progress_image.get(stage=commission.final_stage)
-            final_image = ContentFile(final_image_object.image.read(), final_image_object.image.name)
-            commission.progress_image.all().delete()
-            commission.messages.all().delete()
-            commission.reference_images.all().delete()
-            ProgressImage(commission=commission, image=final_image, stage=commission.final_stage).save()
+        try:
+            with transaction.atomic():
+                if prev_comm_stage == "waiting_full_payment":
+                    commission.finished_at = timezone.now()
+                    final_image_object = commission.progress_image.get(stage=commission.final_stage)
+                    final_image = ContentFile(final_image_object.image.read(), final_image_object.image.name)
+                    commission.progress_image.all().delete()
+                    commission.messages.all().delete()
+                    commission.reference_images.all().delete()
+                    ProgressImage(commission=commission, image=final_image, stage=commission.final_stage).save()
 
-        commission.save()
+                commission.save()
 
-        if prev_comm_stage == "waiting_deposit_payment":
-            sys_message = Message(content=_(commission.get_stage_display()), commission=commission).save()
+                if prev_comm_stage == "waiting_deposit_payment":
+                    sys_message = Message(content=_(commission.get_stage_display()), commission=commission).save()
 
-        artist_key = "deposit_confirmation_artist" if prev_comm_stage == "waiting_deposit_payment" else "full_confirmation_artist"
-        client_key = "deposit_confirmation" if prev_comm_stage == "waiting_deposit_payment" else "full_confirmation"
+                artist_key = "deposit_confirmation_artist" if prev_comm_stage == "waiting_deposit_payment" else "full_confirmation_artist"
+                client_key = "deposit_confirmation" if prev_comm_stage == "waiting_deposit_payment" else "full_confirmation"
 
-        send_notification_to_artist(key=artist_key, level="SUCCESS", context={"uuid": str(commission.uuid)})
-        send_notification_to_client(commission.user, client_key, "SUCCESS", context={"uuid": str(commission.uuid)})
+                send_notification_to_artist(key=artist_key, level="SUCCESS", context={"uuid": str(commission.uuid)})
+                send_notification_to_client(commission.user, client_key, "SUCCESS",
+                                            context={"uuid": str(commission.uuid)})
+        except IntegrityError:
+            print("Failed")
+            return HttpResponse("", 500)
 
     print("Success")
     return HttpResponse("", 200)
@@ -249,7 +294,6 @@ class CommissionFormView(View):
             return redirect("comms_choice")
 
         form = set_required_fields_based_on_category(form, category)
-
         form["category"].initial = category
 
         context = {
@@ -287,6 +331,12 @@ class CommissionFormView(View):
             form_data: dict = form.cleaned_data
 
             prices: dict = CALCULATORS[category](form_data)
+            if not prices:
+                context["category"] = form.cleaned_data["category"]
+                messages.error(request,
+                               _("Ocorreu um erro com a sua solicitação, por favor verifique os campos do formulário e tente novamente"))
+                return render(request, "commissions/comms_form_base.html", context=context)
+
             request.session["calculated_prices"] = prices
 
             required_details_form = self.comms_form_details_required_inverter(form, True)
@@ -330,10 +380,15 @@ def commission_confirmation(request) -> HttpResponse | HttpResponseRedirect:
 
         if form.is_valid():
             form_data = form.cleaned_data
-
             form_readable_names = get_human_readable_names(form.fields.values(), form_data)
 
             prices: dict = CALCULATORS[category](form_data)
+            if not prices:
+                context["category"] = form.cleaned_data["category"]
+                messages.error(request,
+                               _("Ocorreu um erro com a sua solicitação, por favor verifique os campos do formulário e tente novamente"))
+                return render(request, "commissions/comms_form_base.html", context=context)
+
             context["calculated_prices"] = prices
             request.session.delete("calculated_prices")
 
@@ -372,28 +427,44 @@ def commission_success(request) -> HttpResponse | HttpResponseRedirect:
         if form.is_valid():
             form_data = form.cleaned_data
             prices: dict = CALCULATORS[form_data["category"]](form_data)
+            if not prices:
+                message = _(
+                    "Ocorreu um erro com a sua solicitação, por favor verifique os campos do formulário e tente novamente"
+                )
 
-            commission: Commission = form.save(commit=False)
-            commission.user = request.user
-            commission.stage = "waiting_confirmation"
-            commission.price_brl = prices["brl"]
-            commission.price_usd = prices["usd"]
-            commission.save()
+                messages.error(request, message)
+                return redirect(f"{reverse_lazy("comms_form")}?{urlencode({"category": form_data.get("category")})}")
 
-            if reference_images_uuids:
-                for uuid in reference_images_uuids:
-                    image = models.ReferenceImage.objects.get(uuid=uuid)
-                    image.commission = commission
-                    image.is_temp = False
-                    image.save()
+            try:
+                with transaction.atomic():
+                    commission: Commission = form.save(commit=False)
+                    commission.user = request.user
+                    commission.stage = "waiting_confirmation"
+                    commission.price_brl = prices["brl"]
+                    commission.price_usd = prices["usd"]
+                    commission.save()
 
-            artist_notification_context = {"client_name": request.user.username,
-                                           "price_brl": commission.price_brl,
-                                           "price_usd": commission.price_usd}
+                    if reference_images_uuids:
+                        for uuid in reference_images_uuids:
+                            image = models.ReferenceImage.objects.get(uuid=uuid)
+                            image.commission = commission
+                            image.is_temp = False
+                            image.save()
 
-            send_notification_to_client(client=request.user, key="order_success", level="SUCCESS", context={})
-            send_notification_to_artist(key="new_order", level="MESSAGE", context=artist_notification_context)
-            decrease_comms_slots()
+                    artist_notification_context = {"client_name": request.user.username,
+                                                   "price_brl": commission.price_brl,
+                                                   "price_usd": commission.price_usd}
+
+                    send_notification_to_client(client=request.user, key="order_success", level="SUCCESS", context={})
+                    send_notification_to_artist(key="new_order", level="MESSAGE", context=artist_notification_context)
+                    decrease_comms_slots()
+            except IntegrityError:
+                message = _(
+                    "Ocorreu um erro com a sua solicitação, por favor tente novamente"
+                )
+
+                messages.error(request, message)
+                return redirect(f"{reverse_lazy("comms_form")}?{urlencode({"category": form_data.get("category")})}")
 
             return render(request, "commissions/comms_success.html", context={"landing_data": get_landing_data()})
 

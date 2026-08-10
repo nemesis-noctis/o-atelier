@@ -39,7 +39,6 @@ def calculate_character_price(commission_data: dict) -> dict[str, int | float]:
         return base_price + 10 if commission_data["fx"] == True else base_price
 
     def calculate_discount_price(base_price) -> int | float:
-        # Subtract prices
         prices_percent_body_type = {
             "bust": 0.6,
             "waist": 0.3,
@@ -74,6 +73,9 @@ def calculate_character_price(commission_data: dict) -> dict[str, int | float]:
         }
         art_type_price = discount_price + discount_price * prices_percent_art_type[commission_data["art_type"]]
         return art_type_price + art_type_price * prices_percent_aspect_ratio[commission_data["aspect_ratio"]]
+
+    if not commission_data:
+        return None
 
     base_price = calculate_base_price()
     discount_price = calculate_discount_price(base_price)
@@ -114,6 +116,9 @@ def calculate_landscape_price(commission_data: dict) -> dict[str, int | float]:
         }
 
         return discount_price + discount_price * prices_percent_aspect_ratio[commission_data["aspect_ratio"]]
+
+    if not commission_data:
+        return None
 
     base_price = calculate_base_price()
     discount_price = calculate_discount_price(base_price)
@@ -177,6 +182,9 @@ def calculate_object_price(commission_data: dict) -> dict[str, int | float]:
             commission_data["aspect_ratio"]]
         return aspect_ratio_price + aspect_ratio_price * prices_percent_art_type[commission_data["art_type"]]
 
+    if not commission_data:
+        return None
+    
     base_price = calculate_base_price()
     discount_price = calculate_discount_price(base_price)
     final_price = calculate_final_price(discount_price)
