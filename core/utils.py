@@ -1,4 +1,5 @@
 from django import forms
+from django.core.cache import cache
 from django.core.files import File
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
@@ -54,12 +55,24 @@ def add_current_data_to_post_if_empty(request, current_data) -> HttpRequest:
 def get_gallery_images_from_tags(request, tag: str, html_template: str, all_tags=None) -> HttpResponse:
     """Get gallery imagens from db and return response with the given template."""
     if tag == "all" or tag == "":
-        gallery_images = GalleryImage.objects.all()
+
+        gallery_images = cache.get("all_gallery_images")
+        if not gallery_images:
+            gallery_images = GalleryImage.objects.all()
+            cache.set("all_gallery_images", gallery_images, 600)
+
         return render(request, template_name=html_template,
                       context={"gallery_images": gallery_images, "gallery_tags": all_tags})
 
     else:
-        gallery_images = GalleryImage.objects.filter(tag=GalleryTag.objects.get(tag=tag))
+        gallery_images = cache.get(f"{tag}_gallery_images")
+        if not gallery_images:
+            try:
+                gallery_images = GalleryImage.objects.filter(tag=GalleryTag.objects.get(tag=tag))
+                cache.set(f"{tag}_gallery_images", gallery_images, 600)
+            except GalleryTag.DoesNotExist:
+                gallery_images = None
+
         return render(request, template_name=html_template,
                       context={"gallery_images": gallery_images, "gallery_tags": all_tags})
 

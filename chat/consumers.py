@@ -57,7 +57,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         event = {
             "type": "message_handler",
-            "message_uuid": message.uuid
+            "message_uuid": str(message.uuid)
         }
 
         await self.channel_layer.group_send(str(self.comm_uuid).replace("-", "_"), event)
