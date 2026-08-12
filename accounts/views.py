@@ -1,5 +1,6 @@
 import json
 import os
+import uuid as uuid_pkg
 
 import mercadopago
 from django.conf import settings
@@ -10,6 +11,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView, PasswordResetDoneView, \
     PasswordResetCompleteView
+from django.core.cache import cache
 from django.db import transaction, IntegrityError
 from django.db.models import Count
 from django.db.models import Q
@@ -266,14 +268,19 @@ class CommissionNextStageView(LoginRequiredMixin, UserPassesTestMixin, View):
         context = {
             "commission": commission,
             "form": form,
-            "next_stage": next_stage
+            "next_stage": next_stage,
+            "idempotency_key": uuid_pkg.uuid4()
         }
         return render(request, "accounts/artist/partials/next_stage_confirmation.html", context=context)
 
     def post(self, request, uuid):
+        is_new = cache.add(uuid, request.POST.get("idempotency_key"), 30)
+        if not is_new:
+            return redirect("comms_in_progress")
+
         form = forms.NextStageForm(request.POST, request.FILES)
         try:
-            commission = Commission.objects.get(uuid=uuid)
+            commission = Commission.objects.select_for_update().get(uuid=uuid)
         except Commission.DoesNotExist:
             messages.add_message(request, level=messages.ERROR,
                                  message=_(f"Uma commission com o uuid: {uuid} não existe. Tente novamente."))
@@ -340,7 +347,7 @@ class AcceptCommissionView(LoginRequiredMixin, UserPassesTestMixin, View):
     def post(self, request, uuid):
         form = forms.ReasonForm(request.POST)
         try:
-            comm_to_accept = Commission.objects.get(uuid=uuid)
+            comm_to_accept = Commission.objects.select_for_update().get(uuid=uuid)
         except Commission.DoesNotExist:
             messages.add_message(request, level=messages.ERROR,
                                  message=_(f"Uma commission com o uuid: {uuid} não existe. Tente novamente."))
@@ -404,7 +411,7 @@ class CancelCommissionView(LoginRequiredMixin, View):
         try:
             if request.user.is_superuser:
                 form = forms.ReasonForm(request.POST)
-                comm_to_cancel = Commission.objects.get(uuid=uuid)
+                comm_to_cancel = Commission.objects.select_for_update().get(uuid=uuid)
 
                 if form.is_valid():
                     with transaction.atomic():
@@ -431,7 +438,7 @@ class CancelCommissionView(LoginRequiredMixin, View):
 
             else:
                 with transaction.atomic():
-                    comm_to_cancel = request.user.commissions.get(uuid=uuid)
+                    comm_to_cancel: Commission = request.user.commissions.select_for_update().get(uuid=uuid)
                     comm_to_cancel.stage = "canceled"
                     comm_to_cancel.progress_image.all().delete()
                     comm_to_cancel.reference_images.all().delete()
