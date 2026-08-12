@@ -205,6 +205,9 @@ def payment_webhook_receiver(request) -> HttpResponse:
 
         raw_comm_id: str = payment.get("resource", {}).get("invoice_id")
         comm_id: str = raw_comm_id.removeprefix("deposit").removeprefix("full")
+        is_new = cache.add(comm_id, payment.get("id"), 86400)
+        if not is_new:
+            return HttpResponse("", 200)
 
     elif headers.get("X-Meli-Trace-Bu").startswith("mercadopago"):
         try:
@@ -220,6 +223,7 @@ def payment_webhook_receiver(request) -> HttpResponse:
             return HttpResponse("", 401)
 
         payment_id = body.get("data", {}).get("id")
+
         sdk = mercadopago.SDK(os.getenv("MP_ACCESS_TOKEN"))
         request_options = mercadopago.config.RequestOptions()
 
@@ -228,6 +232,9 @@ def payment_webhook_receiver(request) -> HttpResponse:
 
         raw_comm_id: str = payment.get("response", {}).get("external_reference")
         comm_id: str = raw_comm_id.removeprefix("comm-").removesuffix("-deposit").removesuffix("-full")
+        is_new = cache.add(comm_id, payment_id, 86400)
+        if not is_new:
+            return HttpResponse("", 200)
 
     else:
         print("Failed")
@@ -235,7 +242,7 @@ def payment_webhook_receiver(request) -> HttpResponse:
 
     if status in {"approved", "COMPLETED"}:
         try:
-            commission = Commission.objects.get(uuid=comm_id)
+            commission = Commission.objects.select_for_update().get(uuid=comm_id)
         except Commission.DoesNotExist:
             print("Failed")
             return HttpResponse("", 404)
@@ -269,6 +276,7 @@ def payment_webhook_receiver(request) -> HttpResponse:
                                             context={"uuid": str(commission.uuid)})
         except IntegrityError:
             print("Failed")
+            cache.delete(comm_id)
             return HttpResponse("", 500)
 
     print("Success")
