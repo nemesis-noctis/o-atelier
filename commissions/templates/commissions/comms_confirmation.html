@@ -147,6 +147,7 @@
                               style="margin-bottom: 12px;color: var(--bs-secondary);font-weight: bold;">{% translate 'Preço estimado:' %} <br> BRL: {{ calculated_prices.brl|floatformat:2 }}$ | USD: {{ calculated_prices.usd|floatformat:2 }}$</span>
                         <form method="post" action="{% url 'comms_success' %}">
                             {% csrf_token %}
+                            <input type="hidden" name="idempotency_key" value="{{ idempotency_key }}">
                             <button type="submit"
                                     class="btn btn-primary d-block commission-request-btn"
                                     style="margin: 12px auto;">

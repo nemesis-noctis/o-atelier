@@ -8,6 +8,7 @@ import requests
 import requests.exceptions as req_execept
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 from django.core.files.base import ContentFile
 from django.db import transaction, IntegrityError
 from django.forms import RadioSelect
@@ -204,6 +205,9 @@ def payment_webhook_receiver(request) -> HttpResponse:
 
         raw_comm_id: str = payment.get("resource", {}).get("invoice_id")
         comm_id: str = raw_comm_id.removeprefix("deposit").removeprefix("full")
+        is_new = cache.add(comm_id, payment.get("id"), 86400)
+        if not is_new:
+            return HttpResponse("", 200)
 
     elif headers.get("X-Meli-Trace-Bu").startswith("mercadopago"):
         try:
@@ -219,6 +223,7 @@ def payment_webhook_receiver(request) -> HttpResponse:
             return HttpResponse("", 401)
 
         payment_id = body.get("data", {}).get("id")
+
         sdk = mercadopago.SDK(os.getenv("MP_ACCESS_TOKEN"))
         request_options = mercadopago.config.RequestOptions()
 
@@ -227,6 +232,9 @@ def payment_webhook_receiver(request) -> HttpResponse:
 
         raw_comm_id: str = payment.get("response", {}).get("external_reference")
         comm_id: str = raw_comm_id.removeprefix("comm-").removesuffix("-deposit").removesuffix("-full")
+        is_new = cache.add(comm_id, payment_id, 86400)
+        if not is_new:
+            return HttpResponse("", 200)
 
     else:
         print("Failed")
@@ -234,9 +242,10 @@ def payment_webhook_receiver(request) -> HttpResponse:
 
     if status in {"approved", "COMPLETED"}:
         try:
-            commission = Commission.objects.get(uuid=comm_id)
+            commission = Commission.objects.select_for_update().get(uuid=comm_id)
         except Commission.DoesNotExist:
             print("Failed")
+            cache.delete(comm_id)
             return HttpResponse("", 404)
 
         if commission.stage not in ["waiting_deposit_payment", "waiting_full_payment"]:
@@ -268,6 +277,7 @@ def payment_webhook_receiver(request) -> HttpResponse:
                                             context={"uuid": str(commission.uuid)})
         except IntegrityError:
             print("Failed")
+            cache.delete(comm_id)
             return HttpResponse("", 500)
 
     print("Success")
@@ -402,6 +412,7 @@ def commission_confirmation(request) -> HttpResponse | HttpResponseRedirect:
             context["form_readable_names"] = form_readable_names
             context["reference_images_uuids"] = request.session["reference_images_uuids"] = images_uuids
             context["category"] = category
+            context["idempotency_key"] = uuid_pkg.uuid4()
             return render(request, "commissions/comms_confirmation.html", context=context)
 
         else:
@@ -422,17 +433,24 @@ def commission_success(request) -> HttpResponse | HttpResponseRedirect:
 
         form = forms.CommissionForm(request.session.pop("form_data"))
         reference_images_uuids: list[str] = request.session.pop("reference_images_uuids", [])
+        idempotency_key = request.POST.get("idempotency_key", None)
 
         if form.is_valid():
             form_data = form.cleaned_data
             prices: dict = CALCULATORS[form_data["category"]](form_data)
-            if not prices:
+
+            if (not prices) or (not idempotency_key):
                 message = _(
                     "Ocorreu um erro com a sua solicitação, por favor verifique os campos do formulário e tente novamente"
                 )
 
                 messages.error(request, message)
                 return redirect(f"{reverse_lazy("comms_form")}?{urlencode({"category": form_data.get("category")})}")
+
+            key_for_idempotency_key = f"{request.user.username}_comm_idempotency_key"
+            is_new = cache.add(key_for_idempotency_key, idempotency_key, 30)
+            if not is_new:
+                return render(request, "commissions/comms_success.html", context={"landing_data": get_landing_data()})
 
             try:
                 with transaction.atomic():
