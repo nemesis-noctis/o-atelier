@@ -245,6 +245,7 @@ def payment_webhook_receiver(request) -> HttpResponse:
             commission = Commission.objects.select_for_update().get(uuid=comm_id)
         except Commission.DoesNotExist:
             print("Failed")
+            cache.delete(comm_id)
             return HttpResponse("", 404)
 
         if commission.stage not in ["waiting_deposit_payment", "waiting_full_payment"]:
