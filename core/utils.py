@@ -22,7 +22,25 @@ def redirect_if_logged(func):
 
 def get_landing_data() -> LandingPage:
     """Get landing page and navbar data from db."""
-    data = LandingPage.objects.all().order_by("-pk")[0]
+    data = LandingPage.objects.all().order_by("-pk")
+    if not data:
+        landing_fields = {
+            "artist_name": "------",
+            "occupation": "------",
+            "instagram": "------",
+            "twitter": "------",
+            "youtube": "------",
+            "tiktok": "------",
+            "slots": 0,
+            "comms_status": False,
+            "bio": "------"
+        }
+
+        data = LandingPage(**landing_fields)
+        data.save()
+    else:
+        data = data[0]
+        
     return data
 
 
