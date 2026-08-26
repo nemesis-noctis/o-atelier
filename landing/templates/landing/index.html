@@ -15,7 +15,10 @@
                     <div class="ps-0 mx-auto profile-img-container">
                         <img class="img-fluid profile-image" width="735"
                              height="661"
-                             src="{{ landing_data.artist_icon.url }}">
+                             src=" {% if landing_data.artist_icon %}
+                                {{ landing_data.artist_icon.url }}
+                                {% endif %}
+                            ">
                     </div>
                 </div>
                 <div class="col-sm col-md col-lg col-xl col-xxl-9 ms-0 ps-3 hero-columns">

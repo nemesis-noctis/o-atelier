@@ -1,0 +1,13 @@
+services:
+  backend:
+    build: .
+    container_name: "o-atelier"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:8.8.2
+    container_name: redis
+    restart: unless-stopped
