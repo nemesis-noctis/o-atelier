@@ -29,6 +29,8 @@ msgpack==1.2.1
 packaging==26.2
 paypal-server-sdk==2.0.0
 pillow==12.2.0
+psycopg==3.3.4
+psycopg-binary==3.3.4
 pycparser==3.0
 pyOpenSSL==26.3.0
 python-dateutil==2.9.0.post0
