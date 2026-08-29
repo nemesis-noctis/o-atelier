@@ -18,10 +18,18 @@ services:
     image: redis:8.8.2
     container_name: redis
     restart: unless-stopped
+    volumes:
+      - "redis_data:/data"
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli ping | grep PONG" ]
+      interval: 20s
+      timeout: 10s
+      retries: 5
 
   rabbitmq:
     image: rabbitmq:4.3.5-management
     container_name: rabbitmq
+    restart: unless-stopped
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
@@ -34,12 +42,12 @@ services:
       interval: 20s
       timeout: 10s
       retries: 5
-  
-  
+
   database:
     image: postgres:18.6
     container_name: db_postgres
     shm_size: 256mb
+    restart: unless-stopped
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: admin
@@ -54,8 +62,8 @@ services:
       timeout: 10s
       retries: 5
 
-
 volumes:
   postgres_data:
   rabbitmq_data:
   media:
+  redis_data:
