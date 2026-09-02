@@ -24,7 +24,7 @@ NOTIFICATION_TEMPLATES = {
         {message}""")),
 
     "comm_cancelation_artist": (_noop("Pedido Cancelado, O'Atelier"), _noop(
-        """O pedido: {uuid} do cliente: {client} foi cancelado.""")),
+        """O pedido: {uuid} do cliente: {client_id} foi cancelado.""")),
 
     "comm_refusal": (_noop("Pedido Recusado, O'Atelier"), _noop(
         """O pedido: {uuid} foi recusado. 

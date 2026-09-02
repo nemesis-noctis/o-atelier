@@ -272,9 +272,10 @@ def payment_webhook_receiver(request) -> HttpResponse:
                 artist_key = "deposit_confirmation_artist" if prev_comm_stage == "waiting_deposit_payment" else "full_confirmation_artist"
                 client_key = "deposit_confirmation" if prev_comm_stage == "waiting_deposit_payment" else "full_confirmation"
 
-                send_notification_to_artist(key=artist_key, level="SUCCESS", context={"uuid": str(commission.uuid)})
-                send_notification_to_client(commission.user, client_key, "SUCCESS",
-                                            context={"uuid": str(commission.uuid)})
+                send_notification_to_artist.delay_on_commit(key=artist_key, level="SUCCESS",
+                                                            context={"uuid": str(commission.uuid)})
+                send_notification_to_client.delay_on_commit(commission.user.id, client_key, "SUCCESS",
+                                                            context={"uuid": str(commission.uuid)})
         except IntegrityError:
             print("Failed")
             cache.delete(comm_id)
@@ -472,8 +473,10 @@ def commission_success(request) -> HttpResponse | HttpResponseRedirect:
                                                    "price_brl": commission.price_brl,
                                                    "price_usd": commission.price_usd}
 
-                    send_notification_to_client(client=request.user, key="order_success", level="SUCCESS", context={})
-                    send_notification_to_artist(key="new_order", level="MESSAGE", context=artist_notification_context)
+                    send_notification_to_client.delay_on_commit(client_id=request.user.id, key="order_success",
+                                                                level="SUCCESS", context={})
+                    send_notification_to_artist.delay_on_commit(key="new_order", level="MESSAGE",
+                                                                context=artist_notification_context)
                     decrease_comms_slots()
             except IntegrityError:
                 message = _(
