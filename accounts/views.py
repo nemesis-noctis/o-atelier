@@ -30,7 +30,8 @@ from accounts.models import CustomUser
 from chat.models import Message, MessageImage
 from commissions.models import Commission, ProgressImage
 from core.models import Notification
-from core.notifications import render_notification, send_notification_to_client, send_notification_to_artist
+from core.notifications import render_notification
+from core.tasks import send_notification_to_client, send_notification_to_artist
 from core.utils import redirect_if_logged, get_landing_data, add_current_data_to_post_if_empty, \
     get_gallery_images_from_tags
 from landing.models import GalleryTag, GalleryImage, LandingPage

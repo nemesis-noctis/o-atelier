@@ -40,7 +40,7 @@ def get_landing_data() -> LandingPage:
         data.save()
     else:
         data = data[0]
-        
+
     return data
 
 
@@ -55,9 +55,11 @@ def add_current_data_to_post_if_empty(request, current_data) -> HttpRequest:
     post_data = request.POST.copy()
 
     for key, value in current_data.items():
-        if key == "artist_icon":
-            if key not in request.FILES:
+        if key == "artist_icon" and key not in request.FILES:
+            try:
                 request.FILES[key] = File(value.file.open(), value.name.replace("landing/", ""))
+            except ValueError:
+                pass
 
         elif isinstance(value, bool):
             continue

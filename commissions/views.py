@@ -22,7 +22,7 @@ from django.views.generic import View
 from mercadopago.webhook import WebhookSignatureValidator, InvalidWebhookSignatureError
 
 from chat.models import Message
-from core.notifications import send_notification_to_artist, send_notification_to_client
+from core.tasks import send_notification_to_artist, send_notification_to_client
 from core.utils import get_landing_data, decrease_comms_slots
 from . import forms
 from . import models
