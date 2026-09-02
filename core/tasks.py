@@ -7,7 +7,7 @@ from .models import Notification
 from .notifications import NOTIFICATION_TEMPLATES
 
 
-@shared_task
+@shared_task(autoretry_for=(Exception,), max_retries=10, default_retry_delay=3 * 60)
 def send_notification_to_client(client_id: CustomUser, key: str, level: str, context: dict) -> None:
     client = CustomUser.objects.get(client_id)
     kwargs = {
@@ -32,7 +32,7 @@ def send_notification_to_client(client_id: CustomUser, key: str, level: str, con
         )
 
 
-@shared_task
+@shared_task(autoretry_for=(Exception,), max_retries=10, default_retry_delay=3 * 60)
 def send_notification_to_artist(key: str, level: str, context: dict) -> None:
     artist = CustomUser.objects.get(is_superuser=True)
     Notification(user=artist,
