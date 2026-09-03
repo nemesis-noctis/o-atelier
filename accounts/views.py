@@ -30,7 +30,8 @@ from accounts.models import CustomUser
 from chat.models import Message, MessageImage
 from commissions.models import Commission, ProgressImage
 from core.models import Notification
-from core.notifications import render_notification, send_notification_to_client, send_notification_to_artist
+from core.notifications import render_notification
+from core.tasks import send_notification_to_client, send_notification_to_artist
 from core.utils import redirect_if_logged, get_landing_data, add_current_data_to_post_if_empty, \
     get_gallery_images_from_tags
 from landing.models import GalleryTag, GalleryImage, LandingPage
@@ -302,10 +303,10 @@ class CommissionNextStageView(LoginRequiredMixin, UserPassesTestMixin, View):
                                           image=sys_message_image).save()
 
                     notification_key = "comm_update_final" if commission.stage == "waiting_full_payment" else "comm_update"
-                    send_notification_to_client(commission.user, notification_key, "MESSAGE",
-                                                context={"uuid": str(commission.uuid),
-                                                         "previous_stage": previous_stage.title(),
-                                                         "current_stage": next_stage.title()})
+                    send_notification_to_client.delay_on_commit(commission.user.id, notification_key, "MESSAGE",
+                                                                context={"uuid": str(commission.uuid),
+                                                                         "previous_stage": previous_stage.title(),
+                                                                         "current_stage": next_stage.title()})
             except IntegrityError:
                 messages.add_message(request, level=messages.ERROR,
                                      message=_(
@@ -362,10 +363,11 @@ class AcceptCommissionView(LoginRequiredMixin, UserPassesTestMixin, View):
                     comm_to_accept.save()
                     accept_message = form.cleaned_data["reason"]
 
-                    send_notification_to_client(comm_to_accept.user, "comm_accepted", "SUCCESS",
-                                                context={"message": accept_message, "uuid": str(comm_to_accept.uuid),
-                                                         "price_brl": comm_to_accept.price_brl,
-                                                         "price_usd": comm_to_accept.price_usd})
+                    send_notification_to_client.delay_on_commit(comm_to_accept.user.id, "comm_accepted", "SUCCESS",
+                                                                context={"message": accept_message,
+                                                                         "uuid": str(comm_to_accept.uuid),
+                                                                         "price_brl": comm_to_accept.price_brl,
+                                                                         "price_usd": comm_to_accept.price_usd})
             except IntegrityError:
                 messages.add_message(request, level=messages.ERROR,
                                      message=_(
@@ -424,9 +426,9 @@ class CancelCommissionView(LoginRequiredMixin, View):
                         cancellation_reason = form.cleaned_data["reason"]
 
                         notification_key = "comm_refusal" if comm_original_stage == "waiting_confirmation" else "comm_cancelation_client"
-                        send_notification_to_client(comm_to_cancel.user, notification_key, "ALERT",
-                                                    context={"message": cancellation_reason,
-                                                             "uuid": str(comm_to_cancel.uuid)})
+                        send_notification_to_client.delay_on_commit(comm_to_cancel.user.id, notification_key, "ALERT",
+                                                                    context={"message": cancellation_reason,
+                                                                             "uuid": str(comm_to_cancel.uuid)})
 
                     return redirect("comms_in_progress")
                 else:
@@ -445,9 +447,9 @@ class CancelCommissionView(LoginRequiredMixin, View):
                     comm_to_cancel.finished_at = timezone.now()
                     comm_to_cancel.save()
 
-                    send_notification_to_artist("comm_cancelation_artist", "ALERT",
-                                                context={"uuid": str(comm_to_cancel.uuid),
-                                                         "client": comm_to_cancel.user.username})
+                    send_notification_to_artist.delay_on_commit("comm_cancelation_artist", "ALERT",
+                                                                context={"uuid": str(comm_to_cancel.uuid),
+                                                                         "client_id": comm_to_cancel.user.username})
                 return redirect("comms_in_progress")
 
         except Commission.DoesNotExist:

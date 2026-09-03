@@ -9,26 +9,24 @@ import requests.exceptions as req_execept
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
-from django.core.files.base import ContentFile
 from django.db import transaction, IntegrityError
 from django.forms import RadioSelect
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
-from django.utils import timezone
 from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 from mercadopago.webhook import WebhookSignatureValidator, InvalidWebhookSignatureError
 
-from chat.models import Message
-from core.notifications import send_notification_to_artist, send_notification_to_client
+from core.tasks import send_notification_to_artist, send_notification_to_client
 from core.utils import get_landing_data, decrease_comms_slots
 from . import forms
 from . import models
 from . import price_calculator
 from .forms import CommissionForm
-from .models import Commission, ProgressImage
+from .models import Commission
+from .tasks import update_commission
 
 CALCULATORS = {"character": price_calculator.calculate_character_price,
                "landscape": price_calculator.calculate_landscape_price,
@@ -251,34 +249,7 @@ def payment_webhook_receiver(request) -> HttpResponse:
         if commission.stage not in ["waiting_deposit_payment", "waiting_full_payment"]:
             return HttpResponse("", 200)
 
-        prev_comm_stage = commission.stage
-        commission.stage = "sketch" if prev_comm_stage == "waiting_deposit_payment" else "finished"
-        try:
-            with transaction.atomic():
-                if prev_comm_stage == "waiting_full_payment":
-                    commission.finished_at = timezone.now()
-                    final_image_object = commission.progress_image.get(stage=commission.final_stage)
-                    final_image = ContentFile(final_image_object.image.read(), final_image_object.image.name)
-                    commission.progress_image.all().delete()
-                    commission.messages.all().delete()
-                    commission.reference_images.all().delete()
-                    ProgressImage(commission=commission, image=final_image, stage=commission.final_stage).save()
-
-                commission.save()
-
-                if prev_comm_stage == "waiting_deposit_payment":
-                    sys_message = Message(content=_(commission.get_stage_display()), commission=commission).save()
-
-                artist_key = "deposit_confirmation_artist" if prev_comm_stage == "waiting_deposit_payment" else "full_confirmation_artist"
-                client_key = "deposit_confirmation" if prev_comm_stage == "waiting_deposit_payment" else "full_confirmation"
-
-                send_notification_to_artist(key=artist_key, level="SUCCESS", context={"uuid": str(commission.uuid)})
-                send_notification_to_client(commission.user, client_key, "SUCCESS",
-                                            context={"uuid": str(commission.uuid)})
-        except IntegrityError:
-            print("Failed")
-            cache.delete(comm_id)
-            return HttpResponse("", 500)
+        update_commission.delay_on_commit(commission)
 
     print("Success")
     return HttpResponse("", 200)
@@ -472,8 +443,10 @@ def commission_success(request) -> HttpResponse | HttpResponseRedirect:
                                                    "price_brl": commission.price_brl,
                                                    "price_usd": commission.price_usd}
 
-                    send_notification_to_client(client=request.user, key="order_success", level="SUCCESS", context={})
-                    send_notification_to_artist(key="new_order", level="MESSAGE", context=artist_notification_context)
+                    send_notification_to_client.delay_on_commit(client_id=request.user.id, key="order_success",
+                                                                level="SUCCESS", context={})
+                    send_notification_to_artist.delay_on_commit(key="new_order", level="MESSAGE",
+                                                                context=artist_notification_context)
                     decrease_comms_slots()
             except IntegrityError:
                 message = _(

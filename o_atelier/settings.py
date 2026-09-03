@@ -168,3 +168,7 @@ DEFAULT_FROM_EMAIL = os.getenv("EMAIL_HOST")
 
 LOGIN_URL = reverse_lazy("login")
 SECURE_CROSS_ORIGIN_OPENER_POLICY = "same-origin-allow-popups"
+
+# Celery
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
+CELERY_BACKEND_URL = "django-db"
